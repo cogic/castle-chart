@@ -1,3 +1,11 @@
+/*
+ * @Author: Cogic
+ * @Date: 2021-12-21 13:58:35
+ * @LastEditors: Cogic
+ * @LastEditTime: 2021-12-21 14:21:55
+ * @Description: 
+ * @FilePath: \castle-chart\src\router\index.js
+ */
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 
@@ -7,14 +15,6 @@ const routes = [
     name: 'Home',
     component: Home
   },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
 ]
 
 const router = createRouter({

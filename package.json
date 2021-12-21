@@ -1,6 +1,6 @@
 {
   "name": "castle-chart",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,9 +8,12 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "echarts": "^5.2.2",
     "vue": "^3.0.0",
+    "vue-grid-layout": "^3.0.0-beta1",
     "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "xlsx": "^0.17.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
