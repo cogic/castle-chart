@@ -2,9 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:49:44
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-21 17:11:58
+ * @LastEditTime: 2021-12-23 19:07:04
  * @Description: 
- * @FilePath: \castle-chart\src\views\Home.vue
 -->
 <template>
   <div id="stage">
@@ -18,8 +17,8 @@ export default {}
 
 <style scoped>
 #stage{
-  position: absolute;
-  width: 100%;
+  /* position: absolute; */
+  /* width: 100%; */
   height: 100%;
   background-color: antiquewhite;
 }

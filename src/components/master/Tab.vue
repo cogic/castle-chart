@@ -1,13 +1,12 @@
 <!--
  * @Author: Cogic
- * @Date: 2021-12-21 16:50:10
+ * @Date: 2021-12-23 15:12:38
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-21 16:50:10
+ * @LastEditTime: 2021-12-23 19:06:16
  * @Description: 
- * @FilePath: \castle-chart\src\views\ChartStore.vue
 -->
 <template>
-
+<div>TTTAAABBB</div>
 </template>
 
 <script>

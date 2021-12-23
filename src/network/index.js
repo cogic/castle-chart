@@ -2,9 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-22 10:51:29
+ * @LastEditTime: 2021-12-23 19:06:04
  * @Description: 
- * @FilePath: \castle-chart\src\network\index.js
  */
 import axios from 'axios'
 

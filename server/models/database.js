@@ -2,9 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:18
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-22 11:11:40
+ * @LastEditTime: 2021-12-23 19:07:22
  * @Description: 
- * @FilePath: \castle-chart\server\models\database.js
  */
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')

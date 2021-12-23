@@ -2,9 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:44
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-22 09:52:11
+ * @LastEditTime: 2021-12-23 19:07:35
  * @Description: 
- * @FilePath: \castle-chart\server\routes\index.js
  */
 const express = require("express");
 
