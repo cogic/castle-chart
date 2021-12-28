@@ -2,8 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:06:04
- * @Description: 
+ * @LastEditTime: 2021-12-29 00:55:08
+ * @Description:
  */
 import axios from 'axios'
 
@@ -11,14 +11,14 @@ import axios from 'axios'
 const baseURL = '/api' // baseURL 取在 vue.congfig.js 中的配置名，以解决跨域问题
 
 /**
- * @description: 
+ * @description:
  * @param {string} method
  * @param {string} url
  * @param {*} config
  * @return {*}
  * @author: Cogic
  */
-function request(method, url, config) {
+function request(method, url, config = {}) {
   const instance = axios.create({
     baseURL,
     method,
@@ -49,13 +49,13 @@ function request(method, url, config) {
 }
 
 /**
- * @description: 
+ * @description:
  * @param {string} url
  * @param {*} config
  * @return {*}
  * @author: Cogic
  */
-function get(url, config) {
+function get(url, config = {}) {
   return request('get', url, config)
 }
 
@@ -63,10 +63,10 @@ function get(url, config) {
  * @description:
  * @param {string} url
  * @param {*} config
- * @return {*} 
+ * @return {*}
  * @author: Cogic
  */
-function post(url, config) {
+function post(url, config = {}) {
   return request('post', url, config)
 }
 

@@ -1,8 +1,8 @@
 <!--
  * @Author: Cogic
- * @Date: 2021-12-21 16:50:10
+ * @Date: 2021-12-21 16:50:26
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:06:55
+ * @LastEditTime: 2021-12-29 00:54:08
  * @Description: 
 -->
 <template>
@@ -10,13 +10,14 @@
 </template>
 
 <script>
-import StoreStage from '@/components/master/StoreStage.vue'
+import StoreStage from '@/components/master/main/StoreStage.vue'
 export default {
   components: { StoreStage },
   data() {
     return {
       stageConfig: {
-        title: '我的图表',
+        type: 'panel',
+        title: '我的仪表板',
         tools: {
           build: {
             show: true,
@@ -39,34 +40,24 @@ export default {
         },
         files: [
           {
+            id: 1,
             name: 'file1',
           },
           {
+            id: 2,
             name: 'file2',
-          },
-          {
-            name: 'file3',
-          },
-          {
-            name: 'file4',
-          },
-          {
-            name: 'file1',
-          },
-          {
-            name: 'file2',
-          },
-          {
-            name: 'file3',
-          },
-          {
-            name: 'file4',
           },
         ],
+        style: {
+          title: {
+            backgroundColor: 'rgb(207, 157, 150)',
+          },
+        },
       },
     }
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

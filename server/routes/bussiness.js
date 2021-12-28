@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:52
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:07:31
+ * @LastEditTime: 2021-12-28 01:39:17
  * @Description: 
  */
 const database = require('../models/database')
@@ -39,6 +39,10 @@ function userLogin(req, res) {
       res.end('请求 /user/login 成功')
     })
   })
+}
+
+function userLoginCheck(req,res){
+
 }
 
 function userLogout(req, res) {

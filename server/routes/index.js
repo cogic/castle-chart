@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:44
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:07:35
+ * @LastEditTime: 2021-12-28 01:38:46
  * @Description: 
  */
 const express = require("express");
@@ -14,15 +14,16 @@ const business = require("./bussiness");
 router
 .post('/user/regiser',business.userRegister)
 .post('/user/login',business.userLogin)
+.post('/user/login-check',business.userLoginCheck)
 .post('/user/logout',business.userLogout)
 // .post('/user/delete-user')
 // .post('/user/set-info')
-// .get('/user/get-info')
+// .post('/user/get-info')
 .post('/table/new-one',business.newTable)
 // .post('/table/set-one')
-.get('/table/get-list',business.getTableList)
-.get('/table/get-one',business.getTable)
-.get('/table/delete-one',business.deleteTable)
+.post('/table/get-list',business.getTableList)
+.post('/table/get-one',business.getTable)
+.post('/table/delete-one',business.deleteTable)
 
 module.exports = router;
 

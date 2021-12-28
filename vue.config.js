@@ -2,8 +2,8 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:32:27
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-22 10:54:15
- * @Description: 
+ * @LastEditTime: 2021-12-29 00:55:54
+ * @Description:
  * @FilePath: \castle-chart\vue.config.js
  */
 module.exports = {
@@ -25,14 +25,41 @@ module.exports = {
     },
   },
   // configureWebpack: {
-  //   resolve:{
-  //     alias:{
-  //       'components':'@/components'
-  //     }
-  //   }
+  //   module: {
+  //     rules: [
+  //       {
+  //         test: /\.vue$/,
+  //         use: 'vue-loader',
+  //         options: {
+  //           compilerOptions: {
+  //             isCustomElement: (tag) => tag === 'plastic-button',
+  //           },
+  //         },
+  //       },
+  //       // ...
+  //     ],
+  //   },
   // },
-  // chainWebpack:config => {
-  //   config.resolve.alias
-  //   .set('components','@/components')
+  // chainWebpack: config => {
+  //  // get the existing vue-loader rule and tap into its options
+  //   config.module.rule('vue-loader').tap(options => {
+  //     option.compilerOptions = {
+  //        ...(options.compilerOptions || {}), // merge existing compilerOptions, if any
+  //        isCustomElement: tag => /^x-/.test(tag)
+  //     }
+  //   })
   // }
+  // chainWebpack: (config) => {
+  //   config.module
+  //     .rule('vue')
+  //     .use('vue-loader')
+  //     .tap((options) => {
+  //       return {
+  //         compilerOptions: {
+  //           // 为了 canvas-datagrid 而配置
+  //           isCustomElement: (tag) => tag === 'canvas-datagrid',
+  //         },
+  //       }
+  //     })
+  // },
 }

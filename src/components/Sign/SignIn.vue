@@ -2,56 +2,65 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:48:59
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:06:34
+ * @LastEditTime: 2021-12-28 01:42:45
  * @Description: 
 -->
 <template>
   <div id="stage">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" />
+      <input type="text" ref="username" @input="fixText" />
     </div>
     <div id="password">
       <label for="">密码</label>
-      <input type="password" />
+      <input type="password" ref="password" @input="fixText" />
     </div>
     <div id="safecode">
       <label for="">验证码</label>
-      <input type="password" />
+      <input type="text" @input="fixText" />
     </div>
-    <div id="login">登录</div>
+    <div id="login" @click="login">登录</div>
   </div>
 </template>
 
 <script>
-export default {}
+import api from '@/api'
+export default {
+  methods: {
+    // TODO 对输入长度、特殊字符等进行限制
+    // TODO 设置验证码
+
+    fixText(e) {
+      // 不允许空格
+      e.target.value = e.target.value.replaceAll(/\s/g, '')
+    },
+    login() {
+      const message = api.userLogin({
+        username: this.$refs.username.value,
+        password: this.$refs.password.value,
+      })
+      if(message.success) {
+        this.$router.replace('/')
+      }
+    },
+  },
+}
 </script>
 
 <style scoped>
 #stage {
   display: flex;
   flex-direction: column;
-  /* flex-wrap:wrap; */
   justify-content: space-between;
-  /* align-items:baseline; */
-  /* align-content:space-evenly; */
 
-  /* width: 100%; */
   height: 100%;
   padding: 50px 20px;
   background-color: rgb(251, 239, 213);
   border-radius: 10px;
 }
 #stage div {
-  /* order: 1; */
-  /* flex-grow: 0.5; */
-  /* flex-shrink: 0.1; */
-  /* flex-basis: 50px; */
-  /* align-self: center; */
-
   width: 100%;
   text-align: center;
-  /* background-color: aquamarine; */
   border-radius: 10px;
 }
 #stage label {
@@ -71,7 +80,7 @@ export default {}
   height: 100%;
   padding: 0 20px;
   color: rgb(0, 0, 0);
-  font-size: 24px;
+  font-size: 20px;
   vertical-align: middle;
   background-color: rgb(255, 255, 255);
   border-radius: 0 10px 10px 0;

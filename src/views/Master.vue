@@ -2,115 +2,115 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:05:31
+ * @LastEditTime: 2021-12-28 23:48:18
  * @Description: 
 -->
 <template>
-  <!-- <button @click="test">sdfsd</button> -->
   <header>
     <div class="left-head">
       <img class="logo" src="@/assets/logo.png" alt="logo" />
       <h1 class="headline">CastleChart</h1>
-      <div :class="['main-page', { active: currentTabNum == -1 }]" @click="tabSwitch(-1)">
+      <div :class="['main-page', { active: currentTabKey === 'main' }]" @click="tabSwitch({ key: 'main' })">
         <span class="iconfont">&#xe6bb;</span>
       </div>
     </div>
-    <div class="center-head">
-      <div :class="['tab', { active: currentTabNum == index }]" v-for="(tab, index) in topTabs" @click="tabSwitch(index)">{{ tab.topic }}</div>
+    <div class="center-head" id="tabbar" ref="tabbar">
+      <div :class="['tab', { active: currentTabKey === tab[1].key }]" v-for="(tab, index) in tabArr" @click="tabSwitch(tab[1])">
+        <span class="topic">{{ tab[1].topic }}</span>
+        <span class="closebt iconfont" @click.stop="closeTab(tab[0], index)">&#xe611;</span>
+      </div>
     </div>
     <div class="right-head">
       <div id="portrait">
-        <span class="name">用户名</span>
-        <img src="@/assets/portrait.png" alt="portrait" />
+        <span class="name">{{ username }}</span>
+        <img :src="userPortrait" alt="portrait" />
       </div>
     </div>
   </header>
   <section>
-    <!-- <component :is="currentTab"></component> -->
-    <nav v-if="currentTabNum == -1">
-      <ul>
-        <li v-for="tab in mainTabs">
-          <router-link :to="tab.to">{{ tab.topic }}</router-link>
-        </li>
-      </ul>
-    </nav>
     <main>
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component :is="Component" />
+          <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
         </keep-alive>
       </router-view>
-      <!-- <div v-else>dsfsd</div> -->
     </main>
   </section>
   <footer>&copy;2021</footer>
 </template>
 
 <script>
+import api from '@/api'
 export default {
   beforeUpdate() {
-    // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式
-    if (this.currentTabNum == -1) {
+    // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
+    if (this.currentTabKey === 'main') {
       this.currentMainTabPath = this.$route.path
+    }
+  },
+  beforeMount() {
+    const result = api.checkLogin()
+    if (result.success) {
+      this.username = result.user.name
+      this.userPortraitPath = result.user.portrait
+      // this.currentMainTabPath = this.$route.path
+    } else {
+      this.$router.replace('/sign')
     }
   },
   data() {
     return {
       testdata: 1,
-      currentTabNum: -1,
-      currentMainTabPath: '/master/home',
-      topTabs: [
-        {
-          topic: 'tab1',
-        },
-        {
-          topic: 'tab2',
-        },
-        {
-          topic: 'tab3',
-        },
-        {
-          topic: 'tab4',
-        },
-      ],
-      mainTabs: [
-        {
-          to: '/master/home',
-          topic: '首页',
-        },
-        {
-          to: '/master/data-source',
-          topic: '数据源',
-        },
-        {
-          to: '/master/chart-store',
-          topic: '图表',
-        },
-        {
-          to: '/master/panel-store',
-          topic: '仪表板',
-        },
-        // {
-        //   to: '/www.baidu.com',
-        //   topic: '帮助中心',
-        // },
-      ],
+      currentTabKey: 'main',
+      currentMainTabPath: '/master/main/home', // FIXME 这里默认设的是 home ，但是如果最初的不是 home，那么首次点击mainTab时切换回的也是 home，可改为生命周期中根据 $route 设置
+      tabMap: new Map(),
+      username: '用户名',
+      userPortraitPath:'portrait.png'
     }
   },
   computed: {
-    currentTab() {},
+    tabKey() {
+      return this.$route.fullPath
+    },
+    tabArr() {
+      return [...this.tabMap]
+    },
+    userPortrait(){
+      return require('@/assets/' + this.userPortraitPath)
+    }
   },
   methods: {
-    test() {
-      this.testdata++
-      console.log(this.testdata)
+    closeTab(key, i) {
+      // 关闭 tab，将其从 tabMap 删除
+      this.tabMap.delete(key)
+      // 判断应该切换到哪个 tab
+      if (this.currentTabKey === key) {
+        if (this.tabArr.length === 0) {
+          this.tabSwitch({ key: 'main' })
+        } else if (this.tabArr.length === i) {
+          this.tabSwitch(this.tabArr[i - 1][1])
+        } else {
+          this.tabSwitch(this.tabArr[i][1])
+        }
+      }
     },
-    tabSwitch(index) {
-      this.currentTabNum = index
-      if (index != -1) {
-        this.$router.replace('/master/tab/' + index)
+    tabSwitch(tabConfig) {
+      // 负责切换 router-view 里面的内容
+      this.currentTabKey = tabConfig.key
+      if (tabConfig.key !== 'main') {
+        this.$router.replace('/master/tab/' + tabConfig.type + '/' + tabConfig.key)
       } else {
         this.$router.replace(this.currentMainTabPath)
+      }
+    },
+    checkNewLoad(tabKey,callback) {
+      if(!this.tabMap.has(tabKey)) {
+        callback(true,(tabConfig)=>{
+          // 新 tab 加入 tabMap
+          this.tabMap.set(tabConfig.key, tabConfig)
+        })
+      } else {
+        callback(false)
       }
     },
   },
@@ -129,6 +129,8 @@ header {
 .left-head {
   display: flex;
   align-items: center;
+
+  flex-shrink: 0;
 }
 .left-head .logo {
   width: 45px;
@@ -159,54 +161,86 @@ header {
   font-size: 22px;
   line-height: 35px;
   text-align: center;
-  background-color: rgb(127, 186, 201);
+  background-color: rgb(157, 195, 204);
   border-radius: 10px;
 }
 .left-head .main-page.active span {
-  background-color: rgb(37, 171, 204);
+  background-color: rgb(30, 177, 214);
+}
+.left-head .main-page span:hover {
+  background-color: rgb(82, 165, 185);
 }
 
 .right-head {
   display: flex;
   align-items: center;
 
-  flex-shrink: 2;
+  flex-shrink: 0;
   /* background-color: aqua; */
 }
 .right-head .name {
-  margin: 0 5px;
-  color: rgb(70, 70, 70);
+  margin: 0 10px;
+  color: rgb(107, 107, 107);
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: bold;
 }
 .right-head img {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   margin-right: 10px;
   vertical-align: middle;
+  border: 2px solid rgba(163, 163, 163, 0.52);
   border-radius: 50%;
 }
 
-.center-head {
+header .center-head {
   display: flex;
   align-items: center;
 
+  min-width: 100px;
   flex-grow: 1;
 
   padding: 0 20px;
   /* background-color: aquamarine; */
 }
 .center-head .tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   flex-basis: 150px;
-  /* width: 150px; */
+
   height: 35px;
   margin-right: 5px;
+  padding: 0 10px;
   background-color: rgb(182, 182, 182);
   border-radius: 5px 5px 0 0;
   cursor: pointer;
+  overflow: hidden;
+}
+.center-head .tab:hover {
+  background-color: rgb(168, 199, 188);
 }
 .center-head .tab.active {
   background-color: rgb(58, 167, 130);
+}
+.center-head .topic {
+  color: rgb(51, 51, 51);
+  font-size: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+}
+.center-head .closebt {
+  color: rgb(70, 70, 70);
+  font-size: 20px;
+  /* background-color: antiquewhite; */
+  border-radius: 5px;
+}
+.center-head .closebt:hover {
+  color: rgb(255, 255, 255);
+  background-color: rgba(214, 9, 9, 0.692);
 }
 
 footer {
@@ -224,44 +258,10 @@ section {
   flex-grow: 1;
   /* flex-direction: column; */
 }
-nav {
-  /* width: min-content; */
-  /* height: calc(100%); */
-  padding: 10px;
-  background-color: rgb(246, 246, 246);
-}
-nav li {
-  margin-bottom: 10px;
-}
-nav a {
-  display: inline-block;
-  width: 100px;
-  color: rgb(93, 93, 93);
-  line-height: 50px;
-  text-align: center;
-  font-size: 15px;
-  background-color: rgb(228, 235, 236);
-  border-radius: 10px;
-  transition: background-color 0.5s;
-}
-
-nav a:hover {
-  background-color: rgb(197, 222, 224);
-}
-
-nav a.router-link-active {
-  color: rgb(255, 255, 255);
-  background-color: rgb(94, 156, 160);
-}
 
 main {
   flex-grow: 1;
 
-  /* position: absolute; */
-  /* top: 55px; */
-  /* left: 120px; */
-  /* width: calc(100% - 120px); */
-  /* height: calc(100% - 85px); */
   background-color: rgb(133, 133, 133);
 }
 </style>
