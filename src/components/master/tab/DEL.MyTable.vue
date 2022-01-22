@@ -2,21 +2,20 @@
  * @Author: Cogic
  * @Date: 2021-12-27 00:30:04
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:52:12
+ * @LastEditTime: 2021-12-31 17:07:42
  * @Description: 
 -->
 <template>
-  <div class="tableframe">
     <table ref="table" @keydown="changeCurrent">
       <tr v-for="r in row">
         <td :contenteditable="isContenteditable(r, c)" :class="[{ current: isCurrent(r, c) }, { index: !isContenteditable(r, c) }]" v-for="c in column" @mousedown="setCurrent(r, c)"></td>
       </tr>
     </table>
-  </div>
 </template>
 
 <script>
 // FIXME 当导入的表过大时，对表的快速修改就会很卡，原因暂不明确
+// FIXME 在导入和保存等时，并没有把表删减到最小尺寸，只是保存时删掉了靠后的无用项，靠前的没删
 export default {
   data() {
     return {
@@ -207,12 +206,6 @@ export default {
 </script>
 
 <style scoped>
-.tableframe {
-  flex-grow: 1;
-  width: 100px;
-  background-color: rgb(255, 255, 255);
-  overflow: scroll;
-}
 table {
   border: 1px solid rgb(230, 230, 230);
   border-spacing: 0px;

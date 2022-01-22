@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 16:50:26
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:54:08
+ * @LastEditTime: 2022-01-06 16:49:15
  * @Description: 
 -->
 <template>
@@ -11,7 +11,15 @@
 
 <script>
 import StoreStage from '@/components/master/main/StoreStage.vue'
+import API from '@/api'
 export default {
+  mounted() {
+    API.getPanelList((result)=>{
+      if (result.success) {
+        this.stageConfig.files = result.filesInfo
+      }
+    })
+  },
   components: { StoreStage },
   data() {
     return {
@@ -38,16 +46,7 @@ export default {
             show: true,
           },
         },
-        files: [
-          {
-            id: 1,
-            name: 'file1',
-          },
-          {
-            id: 2,
-            name: 'file2',
-          },
-        ],
+        files: [],
         style: {
           title: {
             backgroundColor: 'rgb(207, 157, 150)',

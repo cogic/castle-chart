@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:46:24
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:47:13
+ * @LastEditTime: 2022-01-01 23:51:53
  * @Description: 
 -->
 <template>
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import API from '@/api'
 export default {
   data() {
     return {
@@ -53,12 +53,13 @@ export default {
       ],
     }
   },
-  beforeCreate(){
-    const message = api.checkLogin()
-    if(message.success) {
+  beforeCreate() {
+    API.checkLogin((result) => {
+      if (result.success) {
         this.$router.replace('/')
       }
-  }
+    })
+  },
 }
 </script>
 
@@ -155,7 +156,7 @@ export default {
   .placard {
     align-items: center;
   }
-  .account{
+  .account {
     align-items: center;
   }
 }

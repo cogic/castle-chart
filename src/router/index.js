@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-24 23:21:27
+ * @LastEditTime: 2022-01-17 17:20:48
  * @Description:
  */
 import { createRouter, createWebHistory } from 'vue-router'
@@ -18,7 +18,12 @@ const PanelTab = () => import('@/components/master/tab/PanelTab.vue')
 const UserSign = () => import('@/views/UserSign.vue')
 const SignIn = () => import('@/components/sign/SignIn.vue')
 const SignUp = () => import('@/components/sign/SignUp.vue')
+const Test = () => import('./test.vue')
 const routes = [
+  {
+    path: '/test',
+    component: Test,
+  },
   {
     path: '/',
     redirect: '/master',

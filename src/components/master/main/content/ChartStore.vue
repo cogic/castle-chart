@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 16:50:10
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:54:36
+ * @LastEditTime: 2022-01-01 23:44:15
  * @Description: 
 -->
 <template>
@@ -11,7 +11,15 @@
 
 <script>
 import StoreStage from '@/components/master/main/StoreStage.vue'
+import API from '@/api'
 export default {
+  mounted() {
+    API.getChartList((result)=>{
+      if (result.success) {
+        this.stageConfig.files = result.filesInfo
+      }
+    })
+  },
   components: { StoreStage },
   data() {
     return {

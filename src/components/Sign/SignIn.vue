@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:48:59
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-28 01:42:45
+ * @LastEditTime: 2022-01-01 23:49:34
  * @Description: 
 -->
 <template>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import API from '@/api'
 export default {
   methods: {
     // TODO 对输入长度、特殊字符等进行限制
@@ -35,13 +35,19 @@ export default {
       e.target.value = e.target.value.replaceAll(/\s/g, '')
     },
     login() {
-      const message = api.userLogin({
-        username: this.$refs.username.value,
-        password: this.$refs.password.value,
-      })
-      if(message.success) {
-        this.$router.replace('/')
-      }
+      API.userLogin(
+        {
+          username: this.$refs.username.value,
+          password: this.$refs.password.value,
+        },
+        (result) => {
+          if (result.success) {
+            this.$router.replace('/')
+          } else {
+            console.log('登录失败');
+          }
+        }
+      )
     },
   },
 }

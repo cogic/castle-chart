@@ -1,0 +1,58 @@
+.handsontable th {
+  
+  background-color: rgb(238, 227, 207);
+}
+
+.handsontable td {
+  /* vertical-align: middle; */
+}
+
+.handsontable tbody th.ht__highlight,
+.handsontable thead th.ht__highlight {
+  background-color: rgb(223, 192, 136);
+}
+
+.handsontable td.area:before,
+.handsontable td.area-1:before,
+.handsontable td.area-2:before,
+.handsontable td.area-3:before,
+.handsontable td.area-4:before,
+.handsontable td.area-5:before,
+.handsontable td.area-6:before,
+.handsontable td.area-7:before {
+  background-color: rgb(204, 176, 51);
+}
+
+.handsontable .wtBorder.area {
+  background-color: rgb(209, 118, 95) !important;
+}
+
+.handsontable .wtBorder.current {
+  background-color: rgb(209, 118, 95) !important;
+}
+
+.handsontableInput {
+  box-shadow: 0 0 0 2px rgb(209, 118, 95) inset;
+}
+
+/* .handsontable .manualColumnResizer{
+  background-color: rgb(255, 166, 0);
+} */
+.handsontable .manualColumnResizer:hover{
+  background-color: rgb(255, 166, 0);
+}
+.handsontable .manualColumnResizer.active{
+  background-color: rgb(255, 166, 0);
+}
+.handsontable .manualColumnResizerGuide{
+  background-color: rgb(255, 166, 0);
+}
+.handsontable .manualRowResizer:hover{
+  background-color: rgb(255, 166, 0);
+}
+.handsontable .manualRowResizer.active{
+  background-color: rgb(255, 166, 0);
+}
+.handsontable .manualRowResizerGuide{
+  background-color: rgb(255, 166, 0);
+}

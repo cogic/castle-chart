@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:32:27
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:55:54
+ * @LastEditTime: 2022-01-03 16:22:55
  * @Description:
  * @FilePath: \castle-chart\vue.config.js
  */
@@ -24,6 +24,11 @@ module.exports = {
       },
     },
   },
+  // configureWebpack: {
+  //   entry: {
+  //     app: ['./node_modules/babel-polyfill/dist/polyfill.js', './src/main.js'],
+  //   },
+  // },
   // configureWebpack: {
   //   module: {
   //     rules: [

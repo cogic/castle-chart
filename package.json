@@ -10,6 +10,7 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "echarts": "^5.2.2",
+    "handsontable": "^11.0.1",
     "identify": "^0.1.5",
     "vue": "^3.0.0",
     "vue-grid-layout": "^3.0.0-beta1",

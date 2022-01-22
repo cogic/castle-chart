@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-28 23:48:18
+ * @LastEditTime: 2022-01-18 18:49:10
  * @Description: 
 -->
 <template>
@@ -27,20 +27,20 @@
       </div>
     </div>
   </header>
-  <section>
-    <main>
+  <!-- <section> -->
+    <!-- <main> -->
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
         </keep-alive>
       </router-view>
-    </main>
-  </section>
+    <!-- </main> -->
+  <!-- </section> -->
   <footer>&copy;2021</footer>
 </template>
 
 <script>
-import api from '@/api'
+import API from '@/api'
 export default {
   beforeUpdate() {
     // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
@@ -49,14 +49,15 @@ export default {
     }
   },
   beforeMount() {
-    const result = api.checkLogin()
-    if (result.success) {
-      this.username = result.user.name
-      this.userPortraitPath = result.user.portrait
-      // this.currentMainTabPath = this.$route.path
-    } else {
-      this.$router.replace('/sign')
-    }
+    API.checkLogin((result) => {
+      if (result.success) {
+        this.username = result.user.name
+        this.userPortraitPath = result.user.portrait
+        // this.currentMainTabPath = this.$route.path
+      } else {
+        this.$router.replace('/sign')
+      }
+    })
   },
   data() {
     return {
@@ -65,7 +66,7 @@ export default {
       currentMainTabPath: '/master/main/home', // FIXME 这里默认设的是 home ，但是如果最初的不是 home，那么首次点击mainTab时切换回的也是 home，可改为生命周期中根据 $route 设置
       tabMap: new Map(),
       username: '用户名',
-      userPortraitPath:'portrait.png'
+      userPortraitPath: 'portrait.png',
     }
   },
   computed: {
@@ -75,9 +76,9 @@ export default {
     tabArr() {
       return [...this.tabMap]
     },
-    userPortrait(){
+    userPortrait() {
       return require('@/assets/' + this.userPortraitPath)
-    }
+    },
   },
   methods: {
     closeTab(key, i) {
@@ -103,9 +104,9 @@ export default {
         this.$router.replace(this.currentMainTabPath)
       }
     },
-    checkNewLoad(tabKey,callback) {
-      if(!this.tabMap.has(tabKey)) {
-        callback(true,(tabConfig)=>{
+    checkNewLoad(tabKey, callback) {
+      if (!this.tabMap.has(tabKey)) {
+        callback(true, (tabConfig) => {
           // 新 tab 加入 tabMap
           this.tabMap.set(tabConfig.key, tabConfig)
         })
@@ -256,12 +257,12 @@ footer {
 section {
   display: flex;
   flex-grow: 1;
-  /* flex-direction: column; */
 }
 
 main {
   flex-grow: 1;
-
   background-color: rgb(133, 133, 133);
+  /* FIXME 此处设置hidden是因为在chartTab页面在一些情况如打开DevTools并拉伸DevTools时，页面会不时出现横向overflow的现象，但最终应该是要找出overflow的原因而不是在这里设置hidden。复现方式：将次hidden设置注释掉，然后打开控制台并拉伸。 */
+  overflow: hidden; 
 }
 </style>

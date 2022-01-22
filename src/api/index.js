@@ -2,33 +2,28 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:55:13
+ * @LastEditTime: 2022-01-21 21:00:28
  * @Description:
  */
-import { post } from '@/api/network'
+import Network from '@/api/network'
 
+const showLog = false
 let testLogin = true
 
-/**
- * @description: data: {username, password}
- * @param {*} data
- * @return {*}
- * @author: Cogic
- */
-function userRegister(data) {
+function aLog(...value) {
+  if (showLog) {
+    console.log(...value)
+  }
+}
+
+function userRegister(data, callback) {
   testLogin = true
-  return { success: true }
+  callback({ success: true })
   // post('/user/regiser', { data }).then((res) => {})
 }
 
-/**
- * @description: data: {username, password}
- * @param {*} data
- * @return {*}
- * @author: Cogic
- */
-function userLogin(data) {
-  console.log('收到', data)
+function userLogin(data, callback) {
+  aLog('收到', data)
   let result = {
     success: false,
   }
@@ -36,12 +31,12 @@ function userLogin(data) {
     result.success = true
     testLogin = true
   }
-  console.log('返回', result)
-  return result
+  aLog('返回', result)
+  callback(result)
   // post('/user/login', { data }).then((res) => {})
 }
 
-function checkLogin() {
+function checkLogin(callback) {
   let result = {
     success: true,
     user: {},
@@ -52,42 +47,26 @@ function checkLogin() {
   } else {
     result.success = false
   }
-  console.log('返回', result)
-  return result
+  aLog('返回', result)
+  callback(result)
 }
 
-/**
- * @description:
- * @return {*}
- * @author: Cogic
- */
-function userLogout() {
-  return true
+function userLogout(callback) {
+  callback(true)
   // post('/user/logout').then((res) => {})
 }
 
-/**
- * @description: data: {tabledata}
- * @param {*} data
- * @return {*}
- * @author: Cogic
- */
-function newTable(data) {
+function newTable(data, callback) {
   let result = {
     success: true,
   }
-  console.log('收到', data)
-  console.log('返回', result)
-  return result
+  aLog('收到', data)
+  aLog('返回', result)
+  callback(result)
   // post('/table/new-one', { data }).then((res) => {})
 }
 
-/**
- * @description:
- * @return {*}
- * @author: Cogic
- */
-function getTableList() {
+function getTableList(callback) {
   const result = {
     success: true,
     filesInfo: [
@@ -105,19 +84,13 @@ function getTableList() {
       },
     ],
   }
-  console.log('返回', result)
-  return result
+  aLog('返回', result)
+  callback(result)
   // post('/table/get-list').then((res) => {})
 }
 
-/**
- * @description: data: {tablekey}
- * @param {*} data
- * @return {*}
- * @author: Cogic
- */
-function getTable(data) {
-  console.log('收到', data)
+function getTable(data, callback) {
+  aLog('收到', data)
   const result = {
     success: true,
     fileData: {
@@ -182,20 +155,268 @@ function getTable(data) {
   } else {
     result.success = false
   }
-  console.log('返回', result)
-  return result
+  aLog('返回', result)
+  callback(result)
   // post('/table/get-one', { data }).then((res) => {})
 }
 
-/**
- * @description: data: {tablekey}
- * @param {*} data
- * @return {*}
- * @author: Cogic
- */
-function deleteTable(data) {
-  return true
+function deleteTable(data, callback) {
+  callback(true)
   // post('/table/delete-one', { data }).then((res) => {})
 }
 
-export default { userRegister, userLogin, checkLogin, userLogout, newTable, getTableList, getTable, deleteTable }
+function getChartList(callback) {
+  const result = {
+    success: true,
+    filesInfo: [
+      {
+        id: '999',
+        name: 'eeeeeeeeeee',
+      },
+      {
+        id: '888',
+        name: '各个地方的法国队',
+      },
+      {
+        id: '777',
+        name: '嘎嘎嘎',
+      },
+    ],
+  }
+  aLog('返回', result)
+  callback(result)
+}
+
+function getChart(data, callback) {
+  aLog('收到', data)
+  const result = {
+    success: true,
+    fileData: {
+      id: '',
+      name: '',
+      data: [],
+      option: {},
+    },
+  }
+  if (data === '999') {
+    result.fileData.id = '999'
+    result.fileData.name = 'eeeeeeeeeee'
+    result.fileData.data = [
+      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      [150, 230, 224, 218, 135, 147, 260],
+    ]
+    result.fileData.option = {
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          type: 'line',
+          seriesLayoutBy: 'row',
+        },
+      ],
+    }
+  } else if (data === '888') {
+    result.fileData.id = '888'
+    result.fileData.name = '各个地方的法国队'
+    result.fileData.data = [
+      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      [120, 200, 150, 80, 70, 110, 130],
+    ]
+    result.fileData.option = {
+      xAxis: {
+        type: 'category',
+      },
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          type: 'bar',
+          seriesLayoutBy: 'row',
+        },
+      ],
+    }
+  } else if (data === '777') {
+    result.fileData.id = '777'
+    result.fileData.name = '嘎嘎嘎'
+    result.fileData.data = [
+      [10.0, 8.04],
+      [8.07, 6.95],
+      [13.0, 7.58],
+      [9.05, 8.81],
+      [11.0, 8.33],
+      [14.0, 7.66],
+      [13.4, 6.81],
+      [10.0, 6.33],
+      [14.0, 8.96],
+      [12.5, 6.82],
+      [9.15, 7.2],
+      [11.5, 7.2],
+      [3.03, 4.23],
+      [12.2, 7.83],
+      [2.02, 4.47],
+      [1.05, 3.33],
+      [4.05, 4.96],
+      [6.03, 7.24],
+      [12.0, 6.26],
+      [12.0, 8.84],
+      [7.08, 5.82],
+      [5.02, 5.68],
+    ]
+    result.fileData.option = {
+      xAxis: {},
+      yAxis: {},
+      series: [
+        {
+          symbolSize: 20,
+          type: 'scatter',
+        },
+      ],
+    }
+  } else if (data === 'buildchart') {
+    result.fileData.id = 'buildchart'
+    result.fileData.name = '新建图表'
+    result.fileData.data = []
+    result.fileData.option = {}
+  } else {
+    result.success = false
+  }
+  aLog('返回', result)
+  callback(result)
+}
+
+function getChartExamples(callback) {
+  Network.get('/data/chartSamples.json', { baseURL: '/' }).then((result) => {
+    aLog('返回', result.data)
+    callback(result.data)
+  })
+}
+
+function getPanelList(callback) {
+  const result = {
+    success: true,
+    filesInfo: [
+      {
+        id: '101',
+        name: '高度发达',
+      },
+      {
+        id: '102',
+        name: '突突突',
+      },
+      {
+        id: '103',
+        name: '胜多负少',
+      },
+    ],
+  }
+  aLog('返回', result)
+  callback(result)
+}
+
+function getPanel(data, callback) {
+  aLog('收到', data)
+  const result = {
+    success: true,
+    fileData: {
+      id: '',
+      name: '',
+      layout: [],
+      back: {},
+    },
+  }
+  if (data === '101') {
+    result.fileData.id = '101'
+    result.fileData.name = '高度发达'
+    result.fileData.layout = [
+      {
+        x: 0,
+        y: 0,
+        w: 5,
+        h: 4,
+        i: 0,
+        type: 'text',
+        config: {
+          data: [
+            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            [150, 230, 224, 218, 135, 147, 260],
+          ],
+          option: {
+            xAxis: {
+              type: 'category',
+            },
+            yAxis: {
+              type: 'value',
+            },
+            series: [
+              {
+                type: 'line',
+                seriesLayoutBy: 'row',
+              },
+            ],
+          },
+        },
+      },
+      {
+        x: 5,
+        y: 0,
+        w: 5,
+        h: 4,
+        i: 1,
+        type: 'chart',
+        config: {},
+      },
+      {
+        x: 10,
+        y: 0,
+        w: 5,
+        h: 4,
+        i: 2,
+        type: 'text',
+        config: { content: '这是一顶顶顶顶顶顶顶顶顶顶顶顶' },
+      },
+    ]
+    result.fileData.back = {
+      i: 'back',
+      type: 'back',
+      config: {},
+    }
+  } else if (data === '102') {
+    result.fileData.id = '102'
+    result.fileData.name = '突突突'
+    result.fileData.layout = []
+    result.fileData.back = {
+      i: 'back',
+      type: 'back',
+      config: {},
+    }
+  } else if (data === '103') {
+    result.fileData.id = '103'
+    result.fileData.name = '胜多负少'
+    result.fileData.layout = []
+    result.fileData.back = {
+      i: 'back',
+      type: 'back',
+      config: {},
+    }
+  } else if (data === 'buildpanel') {
+    result.fileData.id = 'buildpanel'
+    result.fileData.name = '新建仪表板'
+    result.fileData.layout = []
+    result.fileData.back = {
+      i: 'back',
+      type: 'back',
+      config: {},
+    }
+  } else {
+    result.success = false
+  }
+  aLog('返回', result)
+  callback(result)
+}
+
+export default { userRegister, userLogin, checkLogin, userLogout, newTable, getTableList, getTable, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }
