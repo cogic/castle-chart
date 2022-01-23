@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-22 14:50:01
+ * @LastEditTime: 2022-01-24 04:20:53
  * @Description: 
 -->
 <template>
@@ -17,78 +17,110 @@
     </div>
     <div class="content">
       <div class="left-box">
-        <div class="menu-top">
+        <div class="menu-top" v-show="!chartProjectBox">
           <div class="top-label">添加资源</div>
           <div class="item-box">
             <div class="top-item" v-for="source in sources" @click="addSource(source.id)">
               {{ source.name }}
               <div class="type-box" v-show="source.id === 'chart'">
-                <div class="type-item" v-for="type in source.types">{{ type.name }}</div>
+                <div class="type-item" v-for="type in source.types" @click.stop="addSource(type.id)">{{ type.name }}</div>
               </div>
             </div>
           </div>
         </div>
-        <div class="menu-label" v-show="getCurItem().type === 'chart'">图表类型</div>
-        <div class="menu-label" v-show="getCurItem().type === 'text'">文本</div>
-        <div class="menu-label" v-show="getCurItem().type === 'image'">图片</div>
-        <div class="model-main" v-show="getCurItem().type === 'chart'">
+        <div class="menu-label" v-show="getCurItem().type === 'chart' && !chartProjectBox">图表类型</div>
+        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据<input type="checkbox" v-model="keepData" /></div>
+        <div class="menu-label" v-show="getCurItem().type === 'text' && !chartProjectBox">文本样式</div>
+        <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div>
+        <div class="menu-label return" v-show="chartProjectBox" @click="chartProjectBox = false">返回</div>
+        <div class="menu-label" v-show="chartProjectBox">图表项目</div>
+        <div class="model-main" v-show="chartProjectBox">
+          <div class="model-box">
+            <div class="model-item" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
+              <div class="item-img">img</div>
+              <div class="item-name">{{ project.name }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="model-main" v-show="getCurItem().type === 'chart' && !chartProjectBox">
           <div class="model-menu">
             <div class="menu-item" :class="{ current: isCurrentSample(sample) }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
           </div>
           <template v-for="sample in chartSamples">
             <div class="model-box" v-if="isCurrentSample(sample)">
-              <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option), loadData(example.tableData)">
+              <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, undefined, true), setSetBox(example.option)">
                 <div class="item-img">img</div>
                 <div class="item-name">{{ example.name }}</div>
               </div>
             </div>
           </template>
         </div>
-        <div class="model-main" v-if="getCurItem().type === 'text'">
-          <!-- <template v-for="sample in textSamples"> -->
+        <div class="model-main" v-if="getCurItem().type === 'text' && !chartProjectBox">
           <div class="model-box">
-            <div class="model-item" v-for="example in textExamples" @click="clearChart(), setChart(example.tableData, example.option), loadData(example.tableData)">
+            <div class="model-item" v-for="example in textExamples" @click="textSetExample(example.config)">
               <div class="item-img">img</div>
               <div class="item-name">{{ example.name }}</div>
             </div>
           </div>
-          <!-- </template> -->
         </div>
       </div>
       <div class="center-box">
         <div class="center-inner">
-          <div class="center-content" @click="setCurItemToBack">
+          <div class="center-content" ref="panelBack" @click="setCurItemToBack">
             <g-layout ref="GLayout"></g-layout>
           </div>
         </div>
       </div>
       <div class="right-box">
         <div class="option-menu">
-          <div class="menu-item" :class="{ current: !isDataBox }" @click="isDataBox = false">设置项</div>
+          <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
           <div class="menu-item" v-show="getCurItem().type === 'chart'" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
         </div>
         <template v-for="item in getLayout()" :key="item.i">
           <div class="option-box" v-show="getCurItem().i === item.i">
             <div class="set-box" v-show="!isDataBox">
-              <input type="text" v-model="aaa.a" />
-              <input type="text" v-model="aaa.b" />
-              <input type="text" @change="setConfig(item, 'content', $event.target.value)" />
-              <div class="set-item" v-for="item in 10">
-                <div class="name">设置项目 items</div>
-                <div class="setting">项目 item</div>
-                <div class="setting">项目 item</div>
+              <set-box v-if="item.type === 'chart'" :ref="'setBox' + item.i" :onSetChange="setChart"></set-box>
+              <div v-if="item.type === 'back'">
+                <div class="set-item">
+                  <div class="name">背景</div>
+                  <div class="setting">颜色<input type="color" v-model="panelBackColor" /></div>
+                </div>
+                <div class="set-item">
+                  <div class="name">组件块</div>
+                  <div class="setting">间距<input type="number" v-model="panelItemMargin" /></div>
+                </div>
               </div>
+              <div v-if="item.type === 'text'">
+                <div class="set-item">
+                  <div class="name">文本</div>
+                  <div class="setting">内容<input type="text" v-model="item.config.content" @input="textItemChange(item)" /></div>
+                  <div class="setting">字体<input type="text" v-model="item.config.fontFamily" @input="textItemChange(item)" /></div>
+                  <div class="setting">字体大小<input type="number" v-model="item.config.fontSize" @input="textItemChange(item)" /></div>
+                  <div class="setting">字体粗细<input type="text" v-model="item.config.fontWeight" @input="textItemChange(item)" /></div>
+                  <div class="setting">文字颜色<input type="color" v-model="item.config.color" @input="textItemChange(item)" /></div>
+                  <div class="setting">背景颜色<input type="color" v-model="item.config.backgroundColor" @input="textItemChange(item)" /></div>
+                </div>
+              </div>
+              <div v-if="item.type === 'image'">image</div>
             </div>
-            <div class="data-box" v-show="isDataBox">
+            <div class="data-box" v-show="isDataBox && !dataSoruceBox">
               <div class="data-menu">
-                导入数据
                 <div class="menu-item" @click="importData">本地导入</div>
-                <div class="menu-item">数据源导入</div>
-                <div class="menu-item">URL导入</div>
+                <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
+                <!-- TODO URL导入待做 -->
+                <div class="menu-item" v-show="false">URL导入</div>
               </div>
               <h-table :ref="'table' + item.i" :hookFunc="tableChange"></h-table>
               <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
               <div class="match-box" v-show="openMatch">match-box</div>
+            </div>
+            <div class="data-import" v-show="dataSoruceBox">
+              <div class="return" @click="dataSoruceBox = false">取消</div>
+              <div class="title">数据源</div>
+              <div class="source-box">
+                <div :class="{ 'source-item': true, selected: project.id == dataProjectSelect.id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
+              </div>
+              <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
             </div>
           </div>
         </template>
@@ -102,8 +134,9 @@ import API from '@/api'
 import GLayout from '@/components/master/tab/GLayout.vue'
 import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
+import SetBox from '@/components/master/tab/SetBox.vue'
 export default {
-  components: { GLayout, HTable },
+  components: { GLayout, HTable, SetBox },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
@@ -114,25 +147,26 @@ export default {
             this.panelName = result.fileData.name
             this.setLayout(result.fileData.layout, result.fileData.back)
             this.setCurItemToBack()
-            this.$refs.GLayout.index = result.fileData.layout.length
+            this.panelBackColor = result.fileData.back.config.backgroundColor
+            this.panelItemMargin = result.fileData.back.config.itemMargin
+            // this.$refs.GLayout.index = result.fileData.layout.length
           }
         })
         this.isDataBox = false
+        this.chartProjectBox = false
+        this.dataSoruceBox = false
+        this.keepData = false
       }
     })
   },
   mounted() {
-    // this.$refs.myTable.addHook(() => {
-    //   setTimeout(() => {
-    //     this.setChart(this.$refs.myTable.getData())
-    //   }, 0)
-    // })
     API.getPanel(this.$route.params.tabkey, (result) => {
       if (result.success) {
         this.addTab({ type: 'panel', topic: result.fileData.name, key: result.fileData.id })
-        this.panelName = result.fileData.name
-        this.setLayout(result.fileData.layout, result.fileData.back)
-        this.setCurItemToBack()
+        // this.panelBackColor = result.fileData.back.config.backgroundColor
+        // this.panelName = result.fileData.name
+        // this.setLayout(result.fileData.layout, result.fileData.back)
+        // this.setCurItemToBack()
       }
     })
     API.getChartExamples((result) => {
@@ -142,16 +176,64 @@ export default {
   },
   data() {
     return {
+      keepData: false,
+      dataSoruceBox: false,
+      dataProjects: [],
+      dataProjectSelect: {},
+      chartProjectBox: false,
+      chartProjects: [],
+
+      panelBackColor: '',
+      panelItemMargin: '',
+
       isDataBox: false,
+
+      openMatch: false,
 
       chartSamples: [],
       curSampleName: '',
-      textExamples: [{ name: '标题一' }, { name: '标题二' }, { name: '正文一' }, { name: '正文二' }],
-
-      aaa: {
-        a: 'hhh',
-        b: 'dsfsdfsdf',
-      },
+      textExamples: [
+        {
+          name: '标题字',
+          config: {
+            fontFamily: 'sans-serif',
+            fontSize: 22,
+            fontWeight: 'bold',
+            color: '#000000',
+            backgroundColor: '#ffffff',
+          },
+        },
+        {
+          name: '正文字',
+          config: {
+            fontFamily: 'sans-serif',
+            fontSize: 16,
+            fontWeight: 'normal',
+            color: '#000000',
+            backgroundColor: '#ffffff',
+          },
+        },
+        {
+          name: '黑底标题',
+          config: {
+            fontFamily: 'sans-serif',
+            fontSize: 22,
+            fontWeight: 'bold',
+            color: '#ffffff',
+            backgroundColor: '#000000',
+          },
+        },
+        {
+          name: '黑底正文',
+          config: {
+            fontFamily: 'sans-serif',
+            fontSize: 16,
+            fontWeight: 'normal',
+            color: '#ffffff',
+            backgroundColor: '#000000',
+          },
+        },
+      ],
 
       panelName: '',
       sources: [
@@ -188,32 +270,78 @@ export default {
       type: Function,
     },
   },
+  watch: {
+    panelBackColor(newValue) {
+      this.$refs.panelBack.style.backgroundColor = newValue
+    },
+    panelItemMargin(newValue) {
+      this.$refs.GLayout.margin = [newValue, newValue]
+    },
+    openMatch() {
+      setTimeout(() => {
+        this.$refs.myTable.render()
+      }, 0)
+    },
+    dataSoruceBox(newValue) {
+      if (newValue) {
+        this.loadDataSource()
+      }
+    },
+  },
   methods: {
-    tableChange(data){
+    textSetExample(config) {
+      this.getCurItem().config = Object.assign(this.getCurItem().config, config)
+      this.textItemChange(this.getCurItem())
+    },
+    loadDataSource() {
+      API.getTableList((result) => {
+        this.dataProjects = result.filesInfo
+      })
+      this.dataProjects = this.dataProjects.map((val) => {
+        API.getTable(val.id, (result) => {
+          val.data = result.fileData.data
+        })
+        return val
+      })
+    },
+    textItemChange(item) {
+      this.$refs.GLayout.setTextItem(item)
+    },
+    tableChange(data) {
       setTimeout(() => {
         this.setChart(data)
       }, 0)
     },
-    setChart(data, option = {}) {
+    setChart(data, option, flag) {
+      if (flag && this.keepData) {
+        data = this.$refs['table' + this.getCurItem().i][0].getData()
+      }
       this.$refs.GLayout.setChart(data, option)
-      // console.log(this.$refs.GLayout.$refs['chart' + this.getCurItem().i])
-      // this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(data, option)
     },
     clearChart() {
       this.$refs.GLayout.clearChart()
-      // this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].clear()
     },
-    loadData(data) {
-      // console.log(this.$refs)
-      this.$refs['table' + this.getCurItem().i][0].loadData(data)
+    loadData(data, itemI, flag) {
+      // console.log(this.$refs['table' + this.getCurItem().i][0]);
+      if (itemI) {
+        if (flag && this.keepData) {
+          data = this.$refs['table' + itemI][0].getData()
+        }
+        this.$refs['table' + itemI][0].loadData(data)
+      } else {
+        if (flag && this.keepData) {
+          data = this.$refs['table' + this.getCurItem().i][0].getData()
+        }
+        this.$refs['table' + this.getCurItem().i][0].loadData(data)
+      }
     },
-
+    importData() {
+      XSheet.importFile((tableData, tableName) => {
+        this.loadData(tableData)
+      })
+    },
     setCurSample(e, sampleName) {
-      // if (this.curSampleName === sampleName) {
-      //   this.curSampleName = null
-      // } else {
       this.curSampleName = sampleName
-      // }
     },
     isCurrentSample(sample) {
       if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
@@ -243,20 +371,68 @@ export default {
       return this.$refs.GLayout ? this.$refs.GLayout.curItem : {}
     },
     setLayout(layout, back) {
-      this.$refs.GLayout.layout = layout
+      this.$refs.GLayout.setLayout(layout)
       this.$refs.GLayout.back = back
     },
     getLayout() {
       return this.$refs.GLayout ? [...this.$refs.GLayout.layout, this.$refs.GLayout.back] : []
     },
-    addSource(sourceType) {
-      this.$refs.GLayout.addItem(sourceType, {})
-      if (sourceType === 'chart') {
+    addSource(sourceType, project) {
+      if (sourceType === 'newChart') {
+        this.$refs.GLayout.addItem('chart', {})
         setTimeout(() => {
-          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(this.chartSamples[0].examples[0].tableData,this.chartSamples[0].examples[0].option)
+          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(this.chartSamples[0].examples[0].tableData, this.chartSamples[0].examples[0].option)
+          this.loadData(this.chartSamples[0].examples[0].tableData)
+          this.setSetBox(this.chartSamples[0].examples[0].option, this.getCurItem().i)
           window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
-          window.dispatchEvent(new Event('resize'))
         }, 0)
+      } else if (sourceType === 'oldChart') {
+        API.getChartList((result) => {
+          this.chartProjects = result.filesInfo
+        })
+        this.chartProjects = this.chartProjects.map((val) => {
+          API.getChart(val.id, (result) => {
+            val.tableData = result.fileData.data
+            val.option = result.fileData.option
+          })
+          return val
+        })
+        this.chartProjectBox = true
+      } else if (sourceType === 'addOldChart') {
+        this.$refs.GLayout.addItem('chart', {})
+        setTimeout(() => {
+          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(project.tableData, project.option)
+          this.loadData(project.tableData)
+          this.setSetBox(project.option, this.getCurItem().i)
+          window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
+        }, 0)
+      } else if (sourceType === 'text') {
+        this.$refs.GLayout.addItem(sourceType, {
+          content: '文本内容',
+          fontFamily: 'sans-serif',
+          fontSize: 22,
+          fontWeight: 'bold',
+          color: '#000000',
+          backgroundColor: '#ffffff',
+        })
+        // console.log('ttttttttttttttttttttext')
+        // this.$refs.GLayout.layout[this.getCurItem().i].config = {
+        //   content: '文本内容',
+        //   fontFamily: 'sans-serif',
+        //   fontSize: 22,
+        //   fontWeight: 'bold',
+        //   color: '#000000',
+        //   backgroundColor: '#ffffff',
+        // }
+      } else if (sourceType === 'image') {
+        this.$refs.GLayout.addItem(sourceType, {})
+      }
+    },
+    setSetBox(option, itemI) {
+      if (itemI) {
+        this.$refs['setBox' + itemI][0].setSettings(option)
+      } else {
+        this.$refs['setBox' + this.getCurItem().i][0].setSettings(option)
       }
     },
   },
@@ -312,11 +488,8 @@ export default {
   background-color: rgb(255, 255, 255);
 }
 .content .left-box .menu-top {
-  /* display: flex; */
-  /* flex-direction: column; */
   position: relative;
   margin: 0 10px;
-  /* background-color: antiquewhite; */
   z-index: 10;
 }
 .content .left-box .top-label {
@@ -329,12 +502,8 @@ export default {
   border-radius: 20px;
 }
 .content .left-box .menu-top .item-box {
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* align-items: center; */
   position: absolute;
   width: calc(100%);
-  /* margin-top: -5px; */
   padding: 0 20px 0 20px;
   background-color: rgba(233, 233, 233, 0.799);
   border-radius: 5px;
@@ -355,9 +524,6 @@ export default {
 .content .left-box .menu-top .top-item:hover {
   background-color: rgb(35, 152, 199);
 }
-/* .content .left-box .menu-top .top-item:nth-of-type(1):hover {
-  border-radius: 20px 0 0 20px;
-} */
 .content .left-box .menu-top .top-item .type-box {
   display: none;
   position: absolute;
@@ -365,11 +531,6 @@ export default {
   left: 0px;
   width: 100%;
   padding: 0 10px;
-  /* width: max-content; */
-  /* margin: auto; */
-  /* padding: 0 15px 0 0; */
-  /* background-color: rgb(35, 152, 199); */
-  /* border-radius: 0 20px 20px 0; */
 }
 .content .left-box .menu-top .top-item:nth-of-type(1):hover .type-box {
   display: flex;
@@ -378,7 +539,6 @@ export default {
 .content .left-box .menu-top .top-item .type-item {
   display: inline-block;
   width: 50px;
-  /* margin-right: 5px; */
   line-height: 40px;
   background-color: rgb(137, 137, 137);
   border-radius: 20px;
@@ -395,11 +555,23 @@ export default {
   line-height: 30px;
   background-color: rgb(97, 161, 103);
 }
+.content .left-box .menu-label.return {
+  line-height: 50px;
+  background-color: rgb(97, 137, 161);
+}
+.content .left-box .menu-label.check {
+  color: rgb(37, 37, 37);
+  font-size: 14px;
+  line-height: 30px;
+  background-color: rgb(192, 192, 192);
+}
+.content .left-box .menu-label.check input {
+  margin-left: 5px;
+  vertical-align: middle;
+}
 .content .left-box .model-main {
   display: flex;
-  /* flex-direction: column; */
   flex-grow: 1;
-  /* height: 100%; */
   overflow: auto;
 }
 .content .left-box .model-main .model-menu {
@@ -435,20 +607,17 @@ export default {
 .content .left-box .model-box .model-item {
   display: flex;
   flex-direction: column;
-  /* width: 100%; */
   margin-bottom: 10px;
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
 }
 .content .left-box .model-box .model-item .item-img {
-  /* width: 100px; */
   height: 80px;
   flex-grow: 1;
   border-radius: 5px 5px 0 0;
 }
 .content .left-box .model-box .model-item .item-name {
-  /* width: 100px; */
   padding: 2px 5px;
   color: rgb(66, 66, 66);
   font-size: 12px;
@@ -500,27 +669,32 @@ export default {
   background-color: rgb(241, 241, 241);
   overflow-y: scroll;
 }
-.content .right-box .option-box .set-box .set-item {
+.set-box .set-item {
   margin: 0 0 5px 0;
   padding: 0 5px 5px 5px;
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
 }
-.content .right-box .option-box .set-box .set-item:hover {
+.set-box .set-item:hover {
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
 }
-.content .right-box .option-box .set-box .set-item .name {
-  color: rgb(68, 68, 68);
+.set-box .set-item .name {
+  color: rgb(109, 134, 159);
   font-size: 16px;
+  font-weight: bold;
   text-align: center;
   border-bottom: 1px solid rgb(151, 151, 151);
 }
-.content .right-box .option-box .set-box .set-item .setting {
+.set-box .set-item .setting {
   margin: 2px 0;
   padding: 2px 5px;
   color: rgb(68, 68, 68);
   font-size: 16px;
   border-radius: 3px;
+}
+.set-box .set-item .setting input {
+  width: 100px;
+  border: 1px solid rgb(0, 0, 0);
 }
 .content .right-box .option-box .data-box {
   display: flex;
@@ -558,6 +732,51 @@ export default {
   background-color: rgb(214, 113, 54);
 }
 
+.content .right-box .option-box .data-import {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.content .right-box .option-box .data-import .return {
+  text-align: center;
+  line-height: 50px;
+  background-color: rgb(144, 168, 151);
+}
+.content .right-box .option-box .data-import .confirm {
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 50px;
+  background-color: rgb(49, 133, 181);
+}
+.content .right-box .option-box .data-import .title {
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 30px;
+  background-color: rgb(138, 138, 138);
+}
+.content .right-box .option-box .data-import .source-box {
+  flex-grow: 1;
+  padding: 5px 5px 0 5px;
+  overflow-y: scroll;
+  background-color: rgb(233, 233, 233);
+}
+.content .right-box .option-box .data-import .source-box .source-item {
+  margin-bottom: 5px;
+  padding: 5px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 3px;
+  text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: keep-all;
+}
+.content .right-box .option-box .data-import .source-box .source-item:hover {
+  background-color: rgb(234, 246, 252);
+}
+.content .right-box .option-box .data-import .source-box .source-item.selected {
+  outline: 2px solid rgb(22, 115, 169);
+}
+
 .content .center-box {
   flex-grow: 1;
   flex-shrink: 1;
@@ -565,7 +784,7 @@ export default {
 }
 .content .center-box .center-inner {
   height: 100%;
-  /* padding: 20px; */
+  padding: 5px;
   background-color: rgb(44, 44, 44);
   overflow-y: scroll;
 }

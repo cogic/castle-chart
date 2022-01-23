@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-21 21:00:28
+ * @LastEditTime: 2022-01-24 00:27:50
  * @Description:
  */
 import Network from '@/api/network'
@@ -341,6 +341,22 @@ function getPanel(data, callback) {
         i: 0,
         type: 'text',
         config: {
+          content: '和和黑色短发',
+          fontFamily: 'sans-serif',
+          fontSize: 16,
+          fontWeight: 'normal',
+          color: '#ffffff',
+          backgroundColor: '#000000',
+        },
+      },
+      {
+        x: 5,
+        y: 0,
+        w: 5,
+        h: 4,
+        i: 1,
+        type: 'chart',
+        config: {
           data: [
             ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             [150, 230, 224, 218, 135, 147, 260],
@@ -362,15 +378,6 @@ function getPanel(data, callback) {
         },
       },
       {
-        x: 5,
-        y: 0,
-        w: 5,
-        h: 4,
-        i: 1,
-        type: 'chart',
-        config: {},
-      },
-      {
         x: 10,
         y: 0,
         w: 5,
@@ -383,7 +390,10 @@ function getPanel(data, callback) {
     result.fileData.back = {
       i: 'back',
       type: 'back',
-      config: {},
+      config: {
+        backgroundColor: '#eaeaea',
+        itemMargin: 5,
+      },
     }
   } else if (data === '102') {
     result.fileData.id = '102'
@@ -392,7 +402,10 @@ function getPanel(data, callback) {
     result.fileData.back = {
       i: 'back',
       type: 'back',
-      config: {},
+      config: {
+        backgroundColor: '#eaeaea',
+        itemMargin: 5,
+      },
     }
   } else if (data === '103') {
     result.fileData.id = '103'
@@ -401,7 +414,10 @@ function getPanel(data, callback) {
     result.fileData.back = {
       i: 'back',
       type: 'back',
-      config: {},
+      config: {
+        backgroundColor: '#eaeaea',
+        itemMargin: 5,
+      },
     }
   } else if (data === 'buildpanel') {
     result.fileData.id = 'buildpanel'
@@ -410,7 +426,10 @@ function getPanel(data, callback) {
     result.fileData.back = {
       i: 'back',
       type: 'back',
-      config: {},
+      config: {
+        backgroundColor: '#eaeaea',
+        itemMargin: 5,
+      },
     }
   } else {
     result.success = false

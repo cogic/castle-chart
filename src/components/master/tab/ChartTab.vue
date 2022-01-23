@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-22 14:49:15
+ * @LastEditTime: 2022-01-24 03:56:21
  * @Description: 
 -->
 <template>
@@ -19,11 +19,12 @@
       <div class="left-box">
         <div class="model-menu">
           <div class="menu-label">图表类型</div>
+          <div class="menu-label check">保留数据<input type="checkbox" v-model="keepData" /></div>
           <div class="menu-item" :class="{ current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
         </div>
         <template v-for="sample in chartSamples">
           <div class="model-box" v-if="curSampleName === sample.name">
-            <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option), loadData(example.tableData)">
+            <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, true), setSetBox(example.option)">
               <div class="item-img">img</div>
               <div class="item-name">{{ example.name }}</div>
             </div>
@@ -32,32 +33,36 @@
       </div>
       <div class="center-box">
         <div class="center-content">
-          <e-chart ref="myChart"></e-chart>
+          <e-chart ref="myChart" :data="chartData" :option="chartOption"></e-chart>
         </div>
       </div>
       <div class="right-box">
         <div class="option-menu">
-          <div class="menu-item" :class="{ current: !isDataBox }" @click="isDataBox = false">设置项</div>
+          <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
           <div class="menu-item" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
         </div>
         <div class="option-box" ref="optionBox">
-          <div class="data-box" v-show="isDataBox">
+          <div class="set-box" v-show="!isDataBox">
+            <set-box ref="setBox" :onSetChange="setChart"></set-box>
+          </div>
+          <div class="data-box" v-show="isDataBox && !dataSoruceBox">
             <div class="data-menu">
-              导入数据
               <div class="menu-item" @click="importData">本地导入</div>
-              <div class="menu-item">数据源导入</div>
-              <div class="menu-item">URL导入</div>
+              <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
+              <!-- TODO URL导入待做 -->
+              <div class="menu-item" v-show="false">URL导入</div>
             </div>
             <h-table ref="myTable" :hookFunc="tableChange"></h-table>
             <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
             <div class="match-box" v-show="openMatch">match-box</div>
           </div>
-          <div class="set-box" v-show="!isDataBox">
-            <div class="set-item" v-for="item in 10">
-              <div class="name">设置项目 items</div>
-              <div class="setting">项目 item</div>
-              <div class="setting">项目 item</div>
+          <div class="data-import" v-show="dataSoruceBox">
+            <div class="return" @click="dataSoruceBox = false">取消</div>
+            <div class="title">数据源</div>
+            <div class="source-box">
+              <div :class="{ 'source-item': true, selected: project.id == dataProjectSelect.id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
             </div>
+            <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
           </div>
         </div>
       </div>
@@ -71,8 +76,9 @@ import API from '@/api'
 import EChart from '@/components/master/tab/EChart.vue'
 import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
+import SetBox from '@/components/master/tab/SetBox.vue'
 export default {
-  components: { EChart, HTable },
+  components: { EChart, HTable, SetBox },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
@@ -82,11 +88,16 @@ export default {
             callback({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
             this.chartName = result.fileData.name
             this.loadData(result.fileData.data)
-            this.setChart(result.fileData.data, result.fileData.option)
+            this.chartData = result.fileData.data
+            this.chartOption = result.fileData.option
+            this.$refs.setBox.setSettings(result.fileData.option)
+            // this.setChart(result.fileData.data, result.fileData.option)
           }
         })
         this.isDataBox = false
         this.hasTableData = false
+        this.dataSoruceBox = false
+        this.keepData = false
         this.curSampleName = null
       }
     })
@@ -95,9 +106,9 @@ export default {
     API.getChart(this.$route.params.tabkey, (result) => {
       if (result.success) {
         this.addTab({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
-        this.chartName = result.fileData.name
-        this.loadData(result.fileData.data)
-        this.setChart(result.fileData.data, result.fileData.option)
+        // this.chartName = result.fileData.name
+        // this.loadData(result.fileData.data)
+        // this.setChart(result.fileData.data, result.fileData.option)
       }
     })
     API.getChartExamples((result) => {
@@ -108,12 +119,17 @@ export default {
   },
   data() {
     return {
+      keepData: false,
       chartName: '',
-      // chartOption: {},
       chartSamples: [],
+      chartData: [],
+      chartOption: {},
       isDataBox: true,
       curSampleName: '',
       openMatch: false,
+      dataSoruceBox: false,
+      dataProjects: [],
+      dataProjectSelect: {},
     }
   },
   watch: {
@@ -121,6 +137,11 @@ export default {
       setTimeout(() => {
         this.$refs.myTable.render()
       }, 0)
+    },
+    dataSoruceBox(newValue) {
+      if (newValue) {
+        this.loadDataSource()
+      }
     },
   },
   props: {
@@ -132,13 +153,24 @@ export default {
     },
   },
   methods: {
-    tableChange(data){
+    loadDataSource() {
+      API.getTableList((result) => {
+        this.dataProjects = result.filesInfo
+      })
+      this.dataProjects = this.dataProjects.map((val) => {
+        API.getTable(val.id, (result) => {
+          val.data = result.fileData.data
+        })
+        return val
+      })
+    },
+    tableChange(data) {
       setTimeout(() => {
         this.setChart(data)
       }, 0)
     },
-    save(){
-      console.log(this.$refs.myChart.getOption());
+    save() {
+      console.log(this.$refs.myChart.getOption())
     },
     setCurSample(e, sampleName) {
       if (this.curSampleName === sampleName) {
@@ -147,19 +179,30 @@ export default {
         this.curSampleName = sampleName
       }
     },
-    setChart(data, option = {}) {
+    setChart(data, option = {}, flag) {
+      if (flag && this.keepData) {
+        data = this.$refs.myTable.getData()
+      }
       this.$refs.myChart.setOption(data, option)
     },
     clearChart() {
       this.$refs.myChart.clear()
     },
-    loadData(data) {
+    loadData(data, flag) {
+      if (flag && this.keepData) {
+        data = this.$refs.myTable.getData()
+      } else {
+        // this.chartData = data
+      }
       this.$refs.myTable.loadData(data)
     },
     importData() {
       XSheet.importFile((tableData, tableName) => {
         this.$refs.myTable.loadData(tableData)
       })
+    },
+    setSetBox(option) {
+      this.$refs.setBox.setSettings(this.$refs.myChart.getOption())
     },
   },
   updated() {
@@ -223,6 +266,17 @@ export default {
   line-height: 60px;
   background-color: rgb(97, 161, 103);
 }
+.content .left-box .menu-label.check {
+  color: rgb(37, 37, 37);
+  font-size: 14px;
+  line-height: 30px;
+  background-color: rgb(192, 192, 192);
+}
+.content .left-box .menu-label.check input {
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
 .content .left-box .model-menu .menu-item {
   color: rgb(63, 63, 63);
   font-size: 16px;
@@ -312,7 +366,7 @@ export default {
   background-color: rgb(241, 241, 241);
   overflow-y: scroll;
 }
-.content .right-box .option-box .set-box .set-item {
+/* .content .right-box .option-box .set-box .set-item {
   margin: 0 0 5px 0;
   padding: 0 5px 5px 5px;
   background-color: rgb(255, 255, 255);
@@ -333,7 +387,7 @@ export default {
   color: rgb(68, 68, 68);
   font-size: 16px;
   border-radius: 3px;
-}
+} */
 .content .right-box .option-box .data-box {
   display: flex;
   flex-direction: column;
@@ -368,6 +422,51 @@ export default {
 }
 .content .right-box .option-box .data-box .data-match:hover {
   background-color: rgb(214, 113, 54);
+}
+
+.content .right-box .option-box .data-import {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.content .right-box .option-box .data-import .return {
+  text-align: center;
+  line-height: 50px;
+  background-color: rgb(144, 168, 151);
+}
+.content .right-box .option-box .data-import .confirm {
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 50px;
+  background-color: rgb(49, 133, 181);
+}
+.content .right-box .option-box .data-import .title {
+  color: rgb(255, 255, 255);
+  text-align: center;
+  line-height: 30px;
+  background-color: rgb(138, 138, 138);
+}
+.content .right-box .option-box .data-import .source-box {
+  flex-grow: 1;
+  padding: 5px 5px 0 5px;
+  overflow-y: scroll;
+  background-color: rgb(233, 233, 233);
+}
+.content .right-box .option-box .data-import .source-box .source-item {
+  margin-bottom: 5px;
+  padding: 5px;
+  background-color: rgb(255, 255, 255);
+  border-radius: 3px;
+  text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: keep-all;
+}
+.content .right-box .option-box .data-import .source-box .source-item:hover {
+  background-color: rgb(234, 246, 252);
+}
+.content .right-box .option-box .data-import .source-box .source-item.selected {
+  outline: 2px solid rgb(22, 115, 169);
 }
 
 .content .center-box {

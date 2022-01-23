@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-18 18:49:10
+ * @LastEditTime: 2022-01-24 04:34:13
  * @Description: 
 -->
 <template>
@@ -24,6 +24,7 @@
       <div id="portrait">
         <span class="name">{{ username }}</span>
         <img :src="userPortrait" alt="portrait" />
+        <div class="logout">退出登录</div>
       </div>
     </div>
   </header>
@@ -193,6 +194,25 @@ header {
   vertical-align: middle;
   border: 2px solid rgba(163, 163, 163, 0.52);
   border-radius: 50%;
+}
+.right-head:hover .logout{
+  display: block;
+}
+.right-head .logout{
+  display: none;
+  position: absolute;
+  right: 10px;
+  margin-top: 2px;
+  padding: 5px 10px;
+  color: rgb(63, 63, 63);
+  font-size: 14px;
+  font-weight: bold;
+  background-color: rgb(255, 255, 255);
+  border: 3px solid rgb(181, 181, 181);
+  border-radius: 5px;
+}
+.right-head .logout:hover{
+  background-color: rgb(248, 191, 191);
 }
 
 header .center-head {

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-30 10:21:11
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-22 14:48:30
+ * @LastEditTime: 2022-01-24 03:12:08
  * @Description: 
 -->
 <template>
@@ -15,6 +15,12 @@ import { markRaw } from '@vue/reactivity'
 export default {
   mounted() {
     this.myChart = markRaw(echarts.init(this.$refs.chartBox))
+    if (this.data.length !== 0) {
+      this.setOption(this.data, this.option)
+    }
+    setTimeout(() => {
+      this.chartResize()
+    }, 0)
   },
   activated() {
     window.addEventListener('resize', this.chartResize)
@@ -23,15 +29,24 @@ export default {
     window.removeEventListener('resize', this.chartResize)
   },
   props: {
-    data: {},
-    option: {},
+    data: {
+      type: Array,
+      default: [],
+    },
+    option: {
+      type: Object,
+      default: {},
+    },
   },
   watch: {
     data(newValueData) {
       this.setOption(newValueData, this.option)
     },
-    option(newOption) {
-      this.setOption(this.data, newOption)
+    option: {
+      handler(newValue) {
+        this.setOption(undefined, newValue)
+      },
+      deep: true,
     },
   },
   data() {
@@ -51,6 +66,9 @@ export default {
     },
     setOption(data, option = {}) {
       this.myChart.setOption(option)
+      if (!data) {
+        return
+      }
       const preOption = this.myChart.getOption()
       const preSeries = preOption.series
       if (data.length === 0) {
