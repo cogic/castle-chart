@@ -2,291 +2,106 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 00:27:50
+ * @LastEditTime: 2022-01-25 01:54:18
  * @Description:
  */
 import Network from '@/api/network'
 
-const showLog = false
-let testLogin = true
+// 如果需要不依赖 server 运行，则取消下面两行的注释，并注释掉最后一行的 export default
+// import offline from '@/api/offline'
+// export default offline
 
-function aLog(...value) {
+const showLog = false
+
+function aLog(receive, back) {
   if (showLog) {
-    console.log(...value)
+    console.log('收到: ', receive, ' 返回: ', back)
+  }
+}
+function netPost(url, data, callback) {
+  if (data) {
+    Network.post(url, { data }).then((result) => {
+      aLog(data, result.data)
+      callback(result.data)
+    })
+  } else {
+    Network.post(url).then((result) => {
+      aLog(data, result.data)
+      callback(result.data)
+    })
   }
 }
 
 function userRegister(data, callback) {
-  testLogin = true
-  callback({ success: true })
-  // post('/user/regiser', { data }).then((res) => {})
+  netPost('/user/regiser', data, callback)
 }
-
 function userLogin(data, callback) {
-  aLog('收到', data)
-  let result = {
-    success: false,
-  }
-  if (data.username === 'aaa' && data.password === 'aaa') {
-    result.success = true
-    testLogin = true
-  }
-  aLog('返回', result)
-  callback(result)
-  // post('/user/login', { data }).then((res) => {})
+  netPost('/user/login', data, callback)
 }
-
 function checkLogin(callback) {
-  let result = {
-    success: true,
-    user: {},
-  }
-  if (testLogin) {
-    result.user.name = 'WhiteInk'
-    result.user.portrait = 'cat.png'
-  } else {
-    result.success = false
-  }
-  aLog('返回', result)
-  callback(result)
+  netPost('/user/login-check', undefined, callback)
 }
-
 function userLogout(callback) {
-  callback(true)
-  // post('/user/logout').then((res) => {})
+  netPost('/user/logout', undefined, callback)
 }
 
 function newTable(data, callback) {
-  let result = {
-    success: true,
-  }
-  aLog('收到', data)
-  aLog('返回', result)
-  callback(result)
-  // post('/table/new-one', { data }).then((res) => {})
+  netPost('/table/new-one', data, callback)
+}
+function newChart(data, callback) {
+  netPost('/chart/new-one', data, callback)
+}
+function newPanel(data, callback) {
+  netPost('/panel/new-one', data, callback)
 }
 
 function getTableList(callback) {
-  const result = {
-    success: true,
-    filesInfo: [
-      {
-        id: '111',
-        name: '哈哈哈',
-      },
-      {
-        id: '222',
-        name: 'okokokok',
-      },
-      {
-        id: '333',
-        name: '大fewer微软士大夫士大夫大师傅现场v西安人也瑞特人',
-      },
-    ],
-  }
-  aLog('返回', result)
-  callback(result)
-  // post('/table/get-list').then((res) => {})
+  netPost('/table/get-list', undefined, callback)
+}
+function getChartList(callback) {
+  netPost('/chart/get-list', undefined, callback)
+}
+function getPanelList(callback) {
+  netPost('/panel/get-list', undefined, callback)
 }
 
 function getTable(data, callback) {
-  aLog('收到', data)
-  const result = {
-    success: true,
-    fileData: {
-      id: '',
-      name: '',
-      data: [],
-    },
-  }
-  if (data === '111') {
-    result.fileData.id = '111'
-    result.fileData.name = '哈哈哈'
-    result.fileData.data = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-    ]
-  } else if (data === '222') {
-    result.fileData.id = '222'
-    result.fileData.name = 'okokokok'
-    result.fileData.data = [
-      ['a', 'b', 'c'],
-      ['d', 'e', 'f'],
-      ['g', 'h', 'i'],
-    ]
-  } else if (data === '333') {
-    result.fileData.id = '333'
-    result.fileData.name = '大fewer微软士大夫士大夫大师傅现场v西安人也瑞特人'
-    result.fileData.data = [
-      ['多少士大夫地方大师傅', '2', '3', '多少士大夫地方大师傅', '2', '3', '多少士大夫地方大师傅', '2', '3', '多少士大夫地方大师傅', '2', '3'],
-      ['4', 'aaasdfsd5', '6'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道', '7', '8', '撒旦发射点知道', '7', '8', '撒旦发射点知道', '7', '8', '撒旦发射点知道', '7', '8', '撒旦发射点知道', '7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-      ['7', '8', '撒旦发射点知道'],
-    ]
-  } else if (data === 'builddata') {
-    result.fileData.id = 'builddata'
-    result.fileData.name = '新建数据源'
-    result.fileData.data = []
-  } else {
-    result.success = false
-  }
-  aLog('返回', result)
-  callback(result)
-  // post('/table/get-one', { data }).then((res) => {})
+  // if (data === 'builddata') {
+  //   let result
+  //   result.fileData.id = 'builddata'
+  //   result.fileData.name = '新建数据源'
+  //   result.fileData.data = []
+
+  // } else {
+    netPost('/table/get-one', data, callback)
+  // }
+}
+function getChart(data, callback) {
+  console.log(data);
+  netPost('/chart/get-one', data, callback)
+}
+function getPanel(data, callback) {
+  netPost('/panel/get-one', data, callback)
 }
 
 function deleteTable(data, callback) {
-  callback(true)
-  // post('/table/delete-one', { data }).then((res) => {})
+  netPost('/table/delete-one', data, callback)
+}
+function deleteChart(data, callback) {
+  netPost('/chart/delete-one', data, callback)
+}
+function deletePanel(data, callback) {
+  netPost('/panel/delete-one', data, callback)
 }
 
-function getChartList(callback) {
-  const result = {
-    success: true,
-    filesInfo: [
-      {
-        id: '999',
-        name: 'eeeeeeeeeee',
-      },
-      {
-        id: '888',
-        name: '各个地方的法国队',
-      },
-      {
-        id: '777',
-        name: '嘎嘎嘎',
-      },
-    ],
-  }
-  aLog('返回', result)
-  callback(result)
+function saveTable(data, callback) {
+  netPost('/table/set-one', data, callback)
 }
-
-function getChart(data, callback) {
-  aLog('收到', data)
-  const result = {
-    success: true,
-    fileData: {
-      id: '',
-      name: '',
-      data: [],
-      option: {},
-    },
-  }
-  if (data === '999') {
-    result.fileData.id = '999'
-    result.fileData.name = 'eeeeeeeeeee'
-    result.fileData.data = [
-      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      [150, 230, 224, 218, 135, 147, 260],
-    ]
-    result.fileData.option = {
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {
-        type: 'value',
-      },
-      series: [
-        {
-          type: 'line',
-          seriesLayoutBy: 'row',
-        },
-      ],
-    }
-  } else if (data === '888') {
-    result.fileData.id = '888'
-    result.fileData.name = '各个地方的法国队'
-    result.fileData.data = [
-      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      [120, 200, 150, 80, 70, 110, 130],
-    ]
-    result.fileData.option = {
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {
-        type: 'value',
-      },
-      series: [
-        {
-          type: 'bar',
-          seriesLayoutBy: 'row',
-        },
-      ],
-    }
-  } else if (data === '777') {
-    result.fileData.id = '777'
-    result.fileData.name = '嘎嘎嘎'
-    result.fileData.data = [
-      [10.0, 8.04],
-      [8.07, 6.95],
-      [13.0, 7.58],
-      [9.05, 8.81],
-      [11.0, 8.33],
-      [14.0, 7.66],
-      [13.4, 6.81],
-      [10.0, 6.33],
-      [14.0, 8.96],
-      [12.5, 6.82],
-      [9.15, 7.2],
-      [11.5, 7.2],
-      [3.03, 4.23],
-      [12.2, 7.83],
-      [2.02, 4.47],
-      [1.05, 3.33],
-      [4.05, 4.96],
-      [6.03, 7.24],
-      [12.0, 6.26],
-      [12.0, 8.84],
-      [7.08, 5.82],
-      [5.02, 5.68],
-    ]
-    result.fileData.option = {
-      xAxis: {},
-      yAxis: {},
-      series: [
-        {
-          symbolSize: 20,
-          type: 'scatter',
-        },
-      ],
-    }
-  } else if (data === 'buildchart') {
-    result.fileData.id = 'buildchart'
-    result.fileData.name = '新建图表'
-    result.fileData.data = []
-    result.fileData.option = {}
-  } else {
-    result.success = false
-  }
-  aLog('返回', result)
-  callback(result)
+function saveChart(data, callback) {
+  netPost('/chart/set-one', data, callback)
+}
+function savePanel(data, callback) {
+  netPost('/panel/set-one', data, callback)
 }
 
 function getChartExamples(callback) {
@@ -296,146 +111,4 @@ function getChartExamples(callback) {
   })
 }
 
-function getPanelList(callback) {
-  const result = {
-    success: true,
-    filesInfo: [
-      {
-        id: '101',
-        name: '高度发达',
-      },
-      {
-        id: '102',
-        name: '突突突',
-      },
-      {
-        id: '103',
-        name: '胜多负少',
-      },
-    ],
-  }
-  aLog('返回', result)
-  callback(result)
-}
-
-function getPanel(data, callback) {
-  aLog('收到', data)
-  const result = {
-    success: true,
-    fileData: {
-      id: '',
-      name: '',
-      layout: [],
-      back: {},
-    },
-  }
-  if (data === '101') {
-    result.fileData.id = '101'
-    result.fileData.name = '高度发达'
-    result.fileData.layout = [
-      {
-        x: 0,
-        y: 0,
-        w: 5,
-        h: 4,
-        i: 0,
-        type: 'text',
-        config: {
-          content: '和和黑色短发',
-          fontFamily: 'sans-serif',
-          fontSize: 16,
-          fontWeight: 'normal',
-          color: '#ffffff',
-          backgroundColor: '#000000',
-        },
-      },
-      {
-        x: 5,
-        y: 0,
-        w: 5,
-        h: 4,
-        i: 1,
-        type: 'chart',
-        config: {
-          data: [
-            ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            [150, 230, 224, 218, 135, 147, 260],
-          ],
-          option: {
-            xAxis: {
-              type: 'category',
-            },
-            yAxis: {
-              type: 'value',
-            },
-            series: [
-              {
-                type: 'line',
-                seriesLayoutBy: 'row',
-              },
-            ],
-          },
-        },
-      },
-      {
-        x: 10,
-        y: 0,
-        w: 5,
-        h: 4,
-        i: 2,
-        type: 'text',
-        config: { content: '这是一顶顶顶顶顶顶顶顶顶顶顶顶' },
-      },
-    ]
-    result.fileData.back = {
-      i: 'back',
-      type: 'back',
-      config: {
-        backgroundColor: '#eaeaea',
-        itemMargin: 5,
-      },
-    }
-  } else if (data === '102') {
-    result.fileData.id = '102'
-    result.fileData.name = '突突突'
-    result.fileData.layout = []
-    result.fileData.back = {
-      i: 'back',
-      type: 'back',
-      config: {
-        backgroundColor: '#eaeaea',
-        itemMargin: 5,
-      },
-    }
-  } else if (data === '103') {
-    result.fileData.id = '103'
-    result.fileData.name = '胜多负少'
-    result.fileData.layout = []
-    result.fileData.back = {
-      i: 'back',
-      type: 'back',
-      config: {
-        backgroundColor: '#eaeaea',
-        itemMargin: 5,
-      },
-    }
-  } else if (data === 'buildpanel') {
-    result.fileData.id = 'buildpanel'
-    result.fileData.name = '新建仪表板'
-    result.fileData.layout = []
-    result.fileData.back = {
-      i: 'back',
-      type: 'back',
-      config: {
-        backgroundColor: '#eaeaea',
-        itemMargin: 5,
-      },
-    }
-  } else {
-    result.success = false
-  }
-  aLog('返回', result)
-  callback(result)
-}
-
-export default { userRegister, userLogin, checkLogin, userLogout, newTable, getTableList, getTable, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }
+export default { savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }

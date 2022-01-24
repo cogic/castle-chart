@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 04:34:13
+ * @LastEditTime: 2022-01-25 04:29:44
  * @Description: 
 -->
 <template>
@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="center-head" id="tabbar" ref="tabbar">
-      <div :class="['tab', { active: currentTabKey === tab[1].key }]" v-for="(tab, index) in tabArr" @click="tabSwitch(tab[1])">
+      <div :class="['tab', { active: currentTabKey === tab[1].key }]" v-for="(tab, index) in tabArr" :key="tab.tabKey" @click="tabSwitch(tab[1])">
         <span class="topic">{{ tab[1].topic }}</span>
         <span class="closebt iconfont" @click.stop="closeTab(tab[0], index)">&#xe611;</span>
       </div>
@@ -24,18 +24,18 @@
       <div id="portrait">
         <span class="name">{{ username }}</span>
         <img :src="userPortrait" alt="portrait" />
-        <div class="logout">退出登录</div>
+        <div class="logout" @click="logout">退出登录</div>
       </div>
     </div>
   </header>
   <!-- <section> -->
-    <!-- <main> -->
-      <router-view v-slot="{ Component }">
-        <keep-alive>
-          <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
-        </keep-alive>
-      </router-view>
-    <!-- </main> -->
+  <!-- <main> -->
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
+    </keep-alive>
+  </router-view>
+  <!-- </main> -->
   <!-- </section> -->
   <footer>&copy;2021</footer>
 </template>
@@ -45,16 +45,15 @@ import API from '@/api'
 export default {
   beforeUpdate() {
     // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
-    if (this.currentTabKey === 'main') {
+    if (this.currentTabKey === 'main' && ['Home','DataStore','ChartStore','PanelStore'].includes(this.$route.name)){
       this.currentMainTabPath = this.$route.path
     }
   },
   beforeMount() {
-    API.checkLogin((result) => {
-      if (result.success) {
-        this.username = result.user.name
-        this.userPortraitPath = result.user.portrait
-        // this.currentMainTabPath = this.$route.path
+    API.checkLogin((message) => {
+      if (message.success) {
+        this.username = message.info.username
+        // this.userPortraitPath = message.info.portrait
       } else {
         this.$router.replace('/sign')
       }
@@ -82,6 +81,14 @@ export default {
     },
   },
   methods: {
+    logout() {
+      API.userLogout((message) => {
+        console.log(message)
+        if (message.success) {
+          this.$router.replace('/sign')
+        }
+      })
+    },
     closeTab(key, i) {
       // 关闭 tab，将其从 tabMap 删除
       this.tabMap.delete(key)
@@ -97,18 +104,30 @@ export default {
       }
     },
     tabSwitch(tabConfig) {
-      // 负责切换 router-view 里面的内容
-      this.currentTabKey = tabConfig.key
-      if (tabConfig.key !== 'main') {
-        this.$router.replace('/master/tab/' + tabConfig.type + '/' + tabConfig.key)
+      if (typeof tabConfig === 'function') {
+        // 负责切换 router-view 里面的内容
+        tabConfig((config) => {
+          this.currentTabKey = config.key
+          if (config.key !== 'main') {
+            this.$router.replace('/master/tab/' + config.type + '/' + config.key)
+          } else {
+            this.$router.replace(this.currentMainTabPath)
+          }
+        })
       } else {
-        this.$router.replace(this.currentMainTabPath)
+        this.currentTabKey = tabConfig.key
+        if (tabConfig.key !== 'main') {
+          this.$router.replace('/master/tab/' + tabConfig.type + '/' + tabConfig.key)
+        } else {
+          this.$router.replace(this.currentMainTabPath)
+        }
       }
     },
     checkNewLoad(tabKey, callback) {
       if (!this.tabMap.has(tabKey)) {
         callback(true, (tabConfig) => {
           // 新 tab 加入 tabMap
+          this.currentTabKey = tabConfig.key
           this.tabMap.set(tabConfig.key, tabConfig)
         })
       } else {
@@ -133,6 +152,7 @@ header {
   align-items: center;
 
   flex-shrink: 0;
+  cursor: default;
 }
 .left-head .logo {
   width: 45px;
@@ -195,10 +215,10 @@ header {
   border: 2px solid rgba(163, 163, 163, 0.52);
   border-radius: 50%;
 }
-.right-head:hover .logout{
+.right-head:hover .logout {
   display: block;
 }
-.right-head .logout{
+.right-head .logout {
   display: none;
   position: absolute;
   right: 10px;
@@ -210,9 +230,11 @@ header {
   background-color: rgb(255, 255, 255);
   border: 3px solid rgb(181, 181, 181);
   border-radius: 5px;
+  cursor: pointer;
 }
-.right-head .logout:hover{
-  background-color: rgb(248, 191, 191);
+.right-head .logout:hover {
+  color: rgb(255, 255, 255);
+  background-color: rgb(171, 84, 84);
 }
 
 header .center-head {
@@ -283,6 +305,6 @@ main {
   flex-grow: 1;
   background-color: rgb(133, 133, 133);
   /* FIXME 此处设置hidden是因为在chartTab页面在一些情况如打开DevTools并拉伸DevTools时，页面会不时出现横向overflow的现象，但最终应该是要找出overflow的原因而不是在这里设置hidden。复现方式：将次hidden设置注释掉，然后打开控制台并拉伸。 */
-  overflow: hidden; 
+  overflow: hidden;
 }
 </style>

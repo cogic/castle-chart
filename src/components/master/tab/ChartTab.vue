@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 03:56:21
+ * @LastEditTime: 2022-01-25 04:36:06
  * @Description: 
 -->
 <template>
@@ -25,7 +25,14 @@
         <template v-for="sample in chartSamples">
           <div class="model-box" v-if="curSampleName === sample.name">
             <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, true), setSetBox(example.option)">
-              <div class="item-img">img</div>
+              <div class="item-img">
+                <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'">
+                <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'">
+                <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'">
+                <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'">
+                <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'">
+                <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'">
+              </div>
               <div class="item-name">{{ example.name }}</div>
             </div>
           </div>
@@ -60,7 +67,7 @@
             <div class="return" @click="dataSoruceBox = false">取消</div>
             <div class="title">数据源</div>
             <div class="source-box">
-              <div :class="{ 'source-item': true, selected: project.id == dataProjectSelect.id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
+              <div :class="{ 'source-item': true, selected: project._id == dataProjectSelect._id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
             </div>
             <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
           </div>
@@ -83,14 +90,14 @@ export default {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        API.getChart(this.$route.params.tabkey, (result) => {
-          if (result.success) {
-            callback({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
-            this.chartName = result.fileData.name
-            this.loadData(result.fileData.data)
-            this.chartData = result.fileData.data
-            this.chartOption = result.fileData.option
-            this.$refs.setBox.setSettings(result.fileData.option)
+        API.getChart({_id:this.$route.params.tabkey}, (message) => {
+          if (message.success) {
+            callback({ type: 'chart', topic: message.info.name, key: message.info._id })
+            this.chartName = message.info.name
+            this.loadData(message.info.data)
+            this.chartData = message.info.data
+            this.chartOption = message.info.option
+            this.$refs.setBox.setSettings(message.info.option)
             // this.setChart(result.fileData.data, result.fileData.option)
           }
         })
@@ -103,14 +110,14 @@ export default {
     })
   },
   mounted() {
-    API.getChart(this.$route.params.tabkey, (result) => {
-      if (result.success) {
-        this.addTab({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
-        // this.chartName = result.fileData.name
-        // this.loadData(result.fileData.data)
-        // this.setChart(result.fileData.data, result.fileData.option)
-      }
-    })
+    // API.getChart(this.$route.params.tabkey, (result) => {
+    //   if (result.success) {
+    //     this.addTab({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
+    //     // this.chartName = result.fileData.name
+    //     // this.loadData(result.fileData.data)
+    //     // this.setChart(result.fileData.data, result.fileData.option)
+    //   }
+    // })
     API.getChartExamples((result) => {
       // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
       this.chartSamples = result
@@ -154,12 +161,12 @@ export default {
   },
   methods: {
     loadDataSource() {
-      API.getTableList((result) => {
-        this.dataProjects = result.filesInfo
+      API.getTableList((message) => {
+        this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable(val.id, (result) => {
-          val.data = result.fileData.data
+        API.getTable({_id:val.id}, (message) => {
+          val.data = message.info.data
         })
         return val
       })
@@ -170,7 +177,9 @@ export default {
       }, 0)
     },
     save() {
-      console.log(this.$refs.myChart.getOption())
+      API.saveChart({ _id: this.$route.params.tabkey, name: this.chartName, data: this.$refs.myTable.getData(),option:this.$refs.myChart.getOption() }, (message) => {
+        console.log(message)
+      })
     },
     setCurSample(e, sampleName) {
       if (this.curSampleName === sampleName) {
@@ -306,12 +315,19 @@ export default {
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
 }
 .content .left-box .model-box .model-item .item-img {
   width: 100px;
   height: 80px;
   flex-grow: 1;
+  text-align: center;
   border-radius: 5px 5px 0 0;
+}
+.content .left-box .model-box .model-item .item-img img {
+  width:60px;
+  height:60px;
+  margin-top: 10px;
 }
 .content .left-box .model-box .model-item .item-name {
   width: 100px;

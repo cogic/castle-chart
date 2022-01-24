@@ -151,6 +151,8 @@
             "subtext": "Fake Data",
             "left": "center"
           },
+          "xAxis": { "show": false },
+          "yAxis": { "show": false },
           "tooltip": {
             "trigger": "item"
           },
@@ -236,6 +238,8 @@
           "title": {
             "text": "Funnel"
           },
+          "xAxis": { "show": false },
+          "yAxis": { "show": false },
           "tooltip": {
             "trigger": "item",
             "formatter": "{a} <br/>{b} : {c}%"

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-30 10:21:11
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 03:12:08
+ * @LastEditTime: 2022-01-24 23:18:08
  * @Description: 
 -->
 <template>
@@ -73,15 +73,14 @@ export default {
       const preSeries = preOption.series
       if (data.length === 0) {
         data = [[]]
-      }
-      if (data.length <= 1) {
+      } else if (preSeries[0] && data.length <= 1) {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         one.data = []
         this.myChart.setOption({
           series: [one],
         })
       }
-      if (['line', 'bar'].includes(preSeries[0].type)) {
+      if (preSeries[0] && ['line', 'bar'].includes(preSeries[0].type)) {
         let series = []
         for (let i = 1; i < data.length; i++) {
           let one
@@ -101,7 +100,7 @@ export default {
           },
           series,
         })
-      } else if (['pie', 'funnel'].includes(preSeries[0].type)) {
+      } else if (preSeries[0] && ['pie', 'funnel'].includes(preSeries[0].type)) {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
         for (let i = 1; i < data.length; i++) {
@@ -114,7 +113,7 @@ export default {
         this.myChart.setOption({
           series: [one],
         })
-      } else if (preSeries[0].type === 'scatter') {
+      } else if (preSeries[0] && preSeries[0].type === 'scatter') {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
         for (let i = 1; i < data.length; i++) {

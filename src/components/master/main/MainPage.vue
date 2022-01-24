@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 21:11:03
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-29 00:54:04
+ * @LastEditTime: 2022-01-25 04:28:07
  * @Description: 
 -->
 <template>
@@ -89,6 +89,7 @@ nav a {
   background-color: rgb(228, 235, 236);
   border-radius: 10px;
   transition: background-color 0.5s;
+  cursor: pointer;
 }
 nav a:hover {
   background-color: rgb(197, 222, 224);

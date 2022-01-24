@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-31 16:53:30
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-22 14:48:04
+ * @LastEditTime: 2022-01-25 04:48:59
  * @Description: 
 -->
 <template>
@@ -122,7 +122,16 @@ export default {
       })
     },
     loadData(data) {
-      const newData = JSON.parse(JSON.stringify(data))
+      // FIXME 这里的 data 拷贝成 newData 时有点问题，应该是 data 有 proxy 代理的原因
+      // console.log(data);
+      // let data2 = data.slice()
+      // let newData = JSON.parse(JSON.stringify(data2))
+      let newData = []
+      data.forEach((el) => {
+        newData.push(el)
+      })
+      // let newData = data.slice()
+      // console.log(newData);
       this.hot.loadData(newData.length < 1 ? [[]] : newData) // lodaData 的 参数不能为空数组[]，但可以为[[]]
     },
     getData() {
@@ -151,6 +160,7 @@ export default {
 
 <style scoped>
 @import url('~@/assets/style/h-table.css');
+
 .table-main {
   background-color: rgb(255, 255, 255);
 }

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-01-23 00:15:49
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 03:41:20
+ * @LastEditTime: 2022-01-25 03:43:48
  * @Description: 
 -->
 <template>
@@ -77,7 +77,7 @@
     <div class="setting">轴距<input type="number" v-model="settings.xAxis[0].nameGap" /></div>
     <div class="setting">轴旋转角度<input type="number" v-model="settings.xAxis[0].nameRotate" /></div>
     <div class="setting">反向<input type="text" v-model="settings.xAxis[0].inverse" /></div>
-    <div class="setting">留白策略<input type="checkbox" v-model="settings.xAxis[0].boundaryGap" /></div>
+    <!-- <div class="setting">留白策略<input type="checkbox" v-model="settings.xAxis[0].boundaryGap" /></div> -->
   </div>
   <div class="set-item">
     <div class="name">y 轴</div>
@@ -90,7 +90,7 @@
     <div class="setting">轴距<input type="number" v-model="settings.yAxis[0].nameGap" /></div>
     <div class="setting">轴旋转角度<input type="number" v-model="settings.yAxis[0].nameRotate" /></div>
     <div class="setting">反向<input type="text" v-model="settings.yAxis[0].inverse" /></div>
-    <div class="setting">留白策略<input type="checkbox" v-model="settings.yAxis[0].boundaryGap" /></div>
+    <!-- <div class="setting">留白策略<input type="checkbox" v-model="settings.yAxis[0].boundaryGap" /></div> -->
   </div>
   <div class="set-item">
     <div class="name">指示器</div>
@@ -249,14 +249,14 @@ export default {
             text: '图表标题',
             show: false,
             textStyle: {
-              color: '#333',
+              color: '#000000',
               fontWeight: 'bolder',
               fontFamily: 'sans-serif',
               fontSize: 18,
             },
             subtext: '',
             subtextStyle: {
-              color: '#aaa',
+              color: '#000000',
               fontWeight: 'normal',
               fontFamily: 'sans-serif',
               fontSize: 12,
@@ -280,7 +280,7 @@ export default {
             show: true,
             name: '',
             nameTextStyle: {
-              color: '#fff',
+              color: '#ffffff',
               fontWeight: 'normal',
               fontFamily: 'sans-serif',
               fontSize: 12,
@@ -288,7 +288,7 @@ export default {
             nameGap: 15,
             nameRotate: 0,
             inverse: false,
-            boundaryGap: true,
+            // boundaryGap: true,
           },
         ],
         yAxis: [
@@ -296,7 +296,7 @@ export default {
             show: true,
             name: '',
             nameTextStyle: {
-              color: '#fff',
+              color: '#ffffff',
               fontWeight: 'normal',
               fontFamily: 'sans-serif',
               fontSize: 12,
@@ -304,7 +304,7 @@ export default {
             nameGap: 15,
             nameRotate: 0,
             inverse: false,
-            boundaryGap: true,
+            // boundaryGap: true,
           },
         ],
       },
@@ -344,7 +344,9 @@ export default {
       // tempChart.setOption({})
       // option = Object.assign(tempChart.getOption(),option)
       tempChart.setOption(this.settings)
-      tempChart.setOption(option)
+      if (option) {
+        tempChart.setOption(option)
+      }
       // let tempOption = tempChart.getOption()
       // tempChart.setOption(tempOption)
       return tempChart.getOption()
@@ -368,17 +370,28 @@ export default {
   font-size: 16px;
   font-weight: bold;
   text-align: center;
-  border-bottom: 1px solid rgb(151, 151, 151);
+  border-bottom: 2px solid rgb(197, 197, 197);
 }
 .set-item .setting {
+  display: flex;
+  justify-content: space-between;
   margin: 2px 0;
-  padding: 2px 5px;
-  color: rgb(68, 68, 68);
+  padding: 5px 5px;
+  color: rgb(17, 106, 77);
   font-size: 16px;
   border-radius: 3px;
 }
+.set-item .setting:hover {
+  background-color: rgb(241, 239, 237);
+}
 .set-item .setting input {
   width: 100px;
-  border: 1px solid rgb(0, 0, 0);
+  height: 23px;
+  padding: 0 5px;
+  border: 1px solid rgb(212, 212, 212);
+}
+.set-item .setting select {
+  width: 100px;
+  border: 1px solid rgb(212, 212, 212);
 }
 </style>

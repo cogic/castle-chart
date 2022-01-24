@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:18
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:07:22
+ * @LastEditTime: 2022-01-24 19:20:53
  * @Description: 
  */
 const MongoClient = require('mongodb').MongoClient
@@ -20,7 +20,7 @@ function connectDB(callback) {
   const client = new MongoClient(url, { useNewUrlParser: true })
   client.connect((err) => {
     assert.equal(null, err)
-    console.log('Connected')
+    // console.log('Connected')
 
     const db = client.db(dbName)
 
@@ -42,7 +42,7 @@ function insertDoc(docName, insertData, callback) {
     const collection = db.collection(docName)
     collection.insertOne(insertData, function (err, result) {
       assert.equal(err, null)
-      console.log('Inserted')
+      // console.log('Inserted')
       turnback()   
       callback(result)
     })
@@ -61,7 +61,7 @@ function findDoc(docName, whereData, callback) {
     const collection = db.collection(docName)
     collection.find(whereData).toArray(function (err, docs) {
       assert.equal(err, null)
-      console.log('Found')
+      // console.log('Found')
       turnback()
       callback(docs)
     })
@@ -79,9 +79,9 @@ function findDoc(docName, whereData, callback) {
 function updateDoc(docName, whereData, setData, callback) {
   connectDB((db, turnback) => {
     const collection = db.collection(docName)
-    collection.updateOne(whereData, setData, function (err, result) {
+    collection.updateOne(whereData, {$set:setData}, function (err, result) {
       assert.equal(err, null)
-      console.log('Updated')
+      // console.log('Updated')
       turnback()
       callback(result)
     })
@@ -100,7 +100,7 @@ function deleteDoc(docName, whereData, callback) {
     const collection = db.collection(docName)
     collection.deleteOne(whereData, function (err, result) {
       assert.equal(err, null)
-      console.log('Removed')
+      // console.log('Removed')
       turnback()
       callback(result)
     })

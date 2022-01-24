@@ -2,34 +2,46 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:49:29
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-01 15:51:01
+ * @LastEditTime: 2022-01-24 13:44:42
  * @Description: 
 -->
 <template>
   <div id="stage">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" ref="username" @input="fixText" />
+      <input type="text" v-model="username" @input="fixText" />
     </div>
     <div id="password">
       <label for="">密码</label>
-      <input type="password" ref="password" @input="fixText" />
+      <input type="password" v-model="password" @input="fixText" />
     </div>
     <div id="repassword">
       <label for="">确认密码</label>
-      <input type="password" @input="fixText" />
+      <input type="password" v-model="repassword" @input="fixText" />
     </div>
     <div id="safecode">
       <label for="">验证码</label>
       <input type="text" @input="fixText" />
     </div>
     <div id="register" @click="register">注册</div>
+    <div id="mesg">{{ mesg }}</div>
   </div>
 </template>
 
 <script>
 import API from '@/api'
 export default {
+  activated() {
+    this.mesg = ''
+  },
+  data() {
+    return {
+      username: '',
+      password: '',
+      repassword: '',
+      mesg: '',
+    }
+  },
   methods: {
     // TODO 对输入长度、特殊字符等进行限制
     // TODO 设置验证码
@@ -39,19 +51,33 @@ export default {
       e.target.value = e.target.value.replaceAll(/\s/g, '')
     },
     register() {
-      API.userRegister(
-        {
-          username: this.$refs.username.value,
-          password: this.$refs.password.value,
-        },
-        (result) => {
-          if (result.success) {
-            this.$router.replace('/')
-          } else {
-            console.log('注册失败');
+      if (this.username.length === 0) {
+        this.mesg = '请输入用户名!'
+      } else if (this.password.length === 0) {
+        this.mesg = '请输入密码!'
+      } else if (this.repassword.length === 0) {
+        this.mesg = '请输入确认密码!'
+      } else if (this.repassword !== this.password) {
+        this.mesg = '两次输入密码不一致!'
+      } else {
+        API.userRegister(
+          {
+            username: this.username,
+            password: this.password,
+          },
+          (message) => {
+            console.log(message)
+            if (message.success) {
+              this.mesg = '注册成功!'
+              this.$router.replace('/')
+            } else if(message.code === 40){
+              this.mesg = '用户名已存在!'
+            } else {
+              this.mesg = message.info ? message.info : 'unknown error'
+            }
           }
-        }
-      )
+        )
+      }
     },
   },
 }
@@ -105,5 +131,11 @@ export default {
 }
 #register:hover {
   background-color: rgb(10, 177, 35);
+}
+#mesg {
+  color: rgb(229, 73, 73);
+  font-size: 16px;
+  font-weight: bold;
+  height: 20px;
 }
 </style>

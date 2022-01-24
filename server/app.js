@@ -2,23 +2,23 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:18:57
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:07:43
+ * @LastEditTime: 2022-01-24 17:55:24
  * @Description: 
  */
 const express = require('express')
-// const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session')
 
 const router = require('./routes')
 const app = express()
 const port = 3030
 
 // 用于登录的 session
-// app.use(
-//   cookieSession({
-//     name: 'session',
-//     keys: ['key1', 'key2'],
-//   })
-// )
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: ['key1', 'key2'],
+  })
+)
 
 // express 托管静态资源
 // app.use(express.static('public'))

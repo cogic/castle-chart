@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 04:20:53
+ * @LastEditTime: 2022-01-25 04:44:33
  * @Description: 
 -->
 <template>
@@ -18,7 +18,7 @@
     <div class="content">
       <div class="left-box">
         <div class="menu-top" v-show="!chartProjectBox">
-          <div class="top-label">添加资源</div>
+          <div class="top-label">添加资源<span class="iconfont">&#xe651;</span></div>
           <div class="item-box">
             <div class="top-item" v-for="source in sources" @click="addSource(source.id)">
               {{ source.name }}
@@ -32,12 +32,14 @@
         <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据<input type="checkbox" v-model="keepData" /></div>
         <div class="menu-label" v-show="getCurItem().type === 'text' && !chartProjectBox">文本样式</div>
         <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div>
-        <div class="menu-label return" v-show="chartProjectBox" @click="chartProjectBox = false">返回</div>
+        <div class="menu-label return" v-show="chartProjectBox" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
         <div class="menu-label" v-show="chartProjectBox">图表项目</div>
         <div class="model-main" v-show="chartProjectBox">
           <div class="model-box">
             <div class="model-item" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
-              <div class="item-img">img</div>
+              <div class="item-img">
+                <img src="@/assets/image/图表.png" alt="" />
+              </div>
               <div class="item-name">{{ project.name }}</div>
             </div>
           </div>
@@ -49,7 +51,14 @@
           <template v-for="sample in chartSamples">
             <div class="model-box" v-if="isCurrentSample(sample)">
               <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, undefined, true), setSetBox(example.option)">
-                <div class="item-img">img</div>
+                <div class="item-img">
+                  <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
+                  <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
+                  <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
+                  <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
+                  <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
+                  <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
+                </div>
                 <div class="item-name">{{ example.name }}</div>
               </div>
             </div>
@@ -115,10 +124,10 @@
               <div class="match-box" v-show="openMatch">match-box</div>
             </div>
             <div class="data-import" v-show="dataSoruceBox">
-              <div class="return" @click="dataSoruceBox = false">取消</div>
+              <div class="return" @click="dataSoruceBox = false"><span class="iconfont">&#xe608;</span>取消</div>
               <div class="title">数据源</div>
               <div class="source-box">
-                <div :class="{ 'source-item': true, selected: project.id == dataProjectSelect.id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
+                <div :class="{ 'source-item': true, selected: project._id == dataProjectSelect._id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
               </div>
               <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
             </div>
@@ -141,15 +150,15 @@ export default {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        API.getPanel(this.$route.params.tabkey, (result) => {
-          if (result.success) {
-            callback({ type: 'panel', topic: result.fileData.name, key: result.fileData.id })
-            this.panelName = result.fileData.name
-            this.setLayout(result.fileData.layout, result.fileData.back)
+        API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
+          if (message.success) {
+            callback({ type: 'panel', topic: message.info.name, key: message.info._id })
+            this.panelName = message.info.name
+            this.setLayout(message.info.layout, message.info.back)
             this.setCurItemToBack()
-            this.panelBackColor = result.fileData.back.config.backgroundColor
-            this.panelItemMargin = result.fileData.back.config.itemMargin
-            // this.$refs.GLayout.index = result.fileData.layout.length
+            this.panelBackColor = message.info.back.config.backgroundColor
+            this.panelItemMargin = message.info.back.config.itemMargin
+            // this.$refs.GLayout.index = message.fileData.layout.length
           }
         })
         this.isDataBox = false
@@ -160,15 +169,15 @@ export default {
     })
   },
   mounted() {
-    API.getPanel(this.$route.params.tabkey, (result) => {
-      if (result.success) {
-        this.addTab({ type: 'panel', topic: result.fileData.name, key: result.fileData.id })
-        // this.panelBackColor = result.fileData.back.config.backgroundColor
-        // this.panelName = result.fileData.name
-        // this.setLayout(result.fileData.layout, result.fileData.back)
-        // this.setCurItemToBack()
-      }
-    })
+    // API.getPanel(this.$route.params.tabkey, (result) => {
+    //   if (result.success) {
+    //     this.addTab({ type: 'panel', topic: result.fileData.name, key: result.fileData.id })
+    //     // this.panelBackColor = result.fileData.back.config.backgroundColor
+    //     // this.panelName = result.fileData.name
+    //     // this.setLayout(result.fileData.layout, result.fileData.back)
+    //     // this.setCurItemToBack()
+    //   }
+    // })
     API.getChartExamples((result) => {
       this.chartSamples = result
       this.curSampleName = null
@@ -273,9 +282,11 @@ export default {
   watch: {
     panelBackColor(newValue) {
       this.$refs.panelBack.style.backgroundColor = newValue
+      this.$refs.GLayout.back.config.backgroundColor = newValue
     },
     panelItemMargin(newValue) {
       this.$refs.GLayout.margin = [newValue, newValue]
+      this.$refs.GLayout.back.config.itemMargin = newValue
     },
     openMatch() {
       setTimeout(() => {
@@ -294,12 +305,12 @@ export default {
       this.textItemChange(this.getCurItem())
     },
     loadDataSource() {
-      API.getTableList((result) => {
-        this.dataProjects = result.filesInfo
+      API.getTableList((message) => {
+        this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable(val.id, (result) => {
-          val.data = result.fileData.data
+        API.getTable({ _id: val.id }, (message) => {
+          val.data = message.info.data
         })
         return val
       })
@@ -355,11 +366,9 @@ export default {
       this.curSampleName = null
     },
     save() {
-      let panelData = {
-        layout: this.$refs.GLayout.layout,
-        back: this.$refs.GLayout.back,
-      }
-      console.log(panelData)
+      API.savePanel({ _id: this.$route.params.tabkey, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout }, (message) => {
+        console.log(message)
+      })
     },
     setConfig(item, key, value) {
       item.config[key] = value
@@ -371,6 +380,7 @@ export default {
       return this.$refs.GLayout ? this.$refs.GLayout.curItem : {}
     },
     setLayout(layout, back) {
+      console.log(layout)
       this.$refs.GLayout.setLayout(layout)
       this.$refs.GLayout.back = back
     },
@@ -387,13 +397,13 @@ export default {
           window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
         }, 0)
       } else if (sourceType === 'oldChart') {
-        API.getChartList((result) => {
-          this.chartProjects = result.filesInfo
+        API.getChartList((message) => {
+          this.chartProjects = message.info
         })
         this.chartProjects = this.chartProjects.map((val) => {
-          API.getChart(val.id, (result) => {
-            val.tableData = result.fileData.data
-            val.option = result.fileData.option
+          API.getChart({ _id: val.id }, (message) => {
+            val.tableData = message.info.data
+            val.option = message.info.option
           })
           return val
         })
@@ -401,8 +411,8 @@ export default {
       } else if (sourceType === 'addOldChart') {
         this.$refs.GLayout.addItem('chart', {})
         setTimeout(() => {
-          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(project.tableData, project.option)
-          this.loadData(project.tableData)
+          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(project.data, project.option)
+          this.loadData(project.data)
           this.setSetBox(project.option, this.getCurItem().i)
           window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
         }, 0)
@@ -501,6 +511,9 @@ export default {
   background-color: rgb(25, 126, 166);
   border-radius: 20px;
 }
+.content .left-box .top-label .iconfont {
+  margin-left: 5px;
+}
 .content .left-box .menu-top .item-box {
   position: absolute;
   width: calc(100%);
@@ -557,7 +570,12 @@ export default {
 }
 .content .left-box .menu-label.return {
   line-height: 50px;
+  font-size: 15px;
   background-color: rgb(97, 137, 161);
+}
+.content .left-box .menu-label.return .iconfont {
+  margin-right: 5px;
+  font-size: 20px;
 }
 .content .left-box .menu-label.check {
   color: rgb(37, 37, 37);
@@ -611,11 +629,18 @@ export default {
   background-color: rgb(255, 255, 255);
   border-radius: 5px;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
 }
 .content .left-box .model-box .model-item .item-img {
   height: 80px;
   flex-grow: 1;
+  text-align: center;
   border-radius: 5px 5px 0 0;
+}
+.content .left-box .model-box .model-item .item-img img {
+  width: 60px;
+  height: 60px;
+  margin-top: 10px;
 }
 .content .left-box .model-box .model-item .item-name {
   padding: 2px 5px;
@@ -685,16 +710,27 @@ export default {
   text-align: center;
   border-bottom: 1px solid rgb(151, 151, 151);
 }
-.set-box .set-item .setting {
+.set-item .setting {
+  display: flex;
+  justify-content: space-between;
   margin: 2px 0;
-  padding: 2px 5px;
-  color: rgb(68, 68, 68);
+  padding: 5px 5px;
+  color: rgb(17, 106, 77);
   font-size: 16px;
   border-radius: 3px;
 }
-.set-box .set-item .setting input {
+.set-item .setting:hover {
+  background-color: rgb(241, 239, 237);
+}
+.set-item .setting input {
   width: 100px;
-  border: 1px solid rgb(0, 0, 0);
+  height: 23px;
+  padding: 0 5px;
+  border: 1px solid rgb(212, 212, 212);
+}
+.set-item .setting select {
+  width: 100px;
+  border: 1px solid rgb(212, 212, 212);
 }
 .content .right-box .option-box .data-box {
   display: flex;
@@ -740,7 +776,12 @@ export default {
 .content .right-box .option-box .data-import .return {
   text-align: center;
   line-height: 50px;
+  font-size: 16px;
   background-color: rgb(144, 168, 151);
+}
+.content .right-box .option-box .data-import .return .iconfont{
+  margin-right: 5px;
+  font-size: 20px;
 }
 .content .right-box .option-box .data-import .confirm {
   color: rgb(255, 255, 255);

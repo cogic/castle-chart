@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-18 22:46:22
+ * @LastEditTime: 2022-01-25 04:45:41
  * @Description: 
 -->
 <template>
@@ -48,7 +48,7 @@ export default {}
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* transition: all 0.3s; */
+  transition: all 0.3s;
 }
 html,
 body {

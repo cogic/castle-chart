@@ -1,3 +1,7 @@
+.handsontable *{
+  transition: all 0s;
+}
+
 .handsontable th {
   
   background-color: rgb(238, 227, 207);

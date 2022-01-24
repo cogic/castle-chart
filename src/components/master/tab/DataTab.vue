@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:14:54
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-01 23:49:21
+ * @LastEditTime: 2022-01-25 04:06:10
  * @Description: 
 -->
 <template>
@@ -34,23 +34,28 @@ export default {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        API.getTable(this.$route.params.tabkey, (result) => {
-          if (result.success) {
-            callback({ type: 'data', topic: result.fileData.name, key: result.fileData.id })
-            this.tableData = result.fileData.data
+        // setTimeout(() => {
+          
+        // }, timeout);
+        API.getTable({ _id: this.$route.params.tabkey }, (message) => {
+          if (message.success) {
+            // this.addTab({ type: 'data', topic: message.info.name, key: message.info._id })
+            callback({ type: 'data', topic: message.info.name, key: message.info._id })
+            this.tableName = message.info.name
+            this.tableData = message.info.data
           }
         })
       }
     })
   },
   mounted() {
-    API.getTable(this.$route.params.tabkey, (result) => {
-      if (result.success) {
-        this.addTab({ type: 'data', topic: result.fileData.name, key: result.fileData.id })
-        this.tableName = result.fileData.name
-        this.tableData = result.fileData.data
-      }
-    })
+    // API.getTable({ _id: this.$route.params.tabkey }, (message) => {
+    //   if (message.success) {
+    //     this.addTab({ type: 'data', topic: message.info.name, key: message.info._id })
+    //     this.tableName = message.info.name
+    //     this.tableData = message.info.data
+    //   }
+    // })
   },
   components: { HTable },
   props: {
@@ -79,17 +84,13 @@ export default {
     },
     saveTableData() {
       // 保存 tabledata 到数据库
-      API.newTable({ name: this.tableName, data: this.$refs.table.getData() }, (result) => {
-        if(result.success) {
-          console.log('save success');
-        } else {
-          console.log('save fail');
-        }
+      API.saveTable({ _id: this.$route.params.tabkey, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
+        console.log(message)
       })
     },
     importData() {
       XSheet.importFile((tableData, tableName) => {
-        this.tableName = tableName
+        // this.tableName = tableName
         this.tableData = tableData
       })
     },
