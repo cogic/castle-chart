@@ -9,8 +9,11 @@ FIXME 把css和js看情况抽离出来，一些不需要数据库但可以整理
 FIXME 把api中的log改成其他的样式
 FIXME 有些props其实是不需要的，获取父组件内容可以用this.$parent，获取子组件内容可以通过获取子组件的DOM
 
+
 NOTE package 里的 identify 是做图形验证码的，可以在掘金搜索
 
 FIXME 由于表格数据都会转化成String，所以传给chart后会有点不对劲，可以尝试加一些转化等
 FIXME 页面的自适应还是有问题，尤其是在开启开发者工具的情况下，有时chart不resize，有时table点击时滚动条异常
 FIXME 不同浏览器有不同的默认样式，如字体、字体大小等（如火狐），需要用不同的浏览器测试。css也需要做兼容。
+
+FIXME 图表项目进入时数据好像会有问题

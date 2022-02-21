@@ -2,22 +2,21 @@
  * @Author: Cogic
  * @Date: 2021-12-23 09:55:01
  * @LastEditors: Cogic
- * @LastEditTime: 2021-12-23 19:06:29
+ * @LastEditTime: 2022-02-14 16:23:24
  * @Description: 
 -->
 <template>
-  <div class="s-canvas">
-    <canvas id="s-canvas" :width="contentWidth" :height="contentHeight"></canvas>
-  </div>
+  <canvas id="s-canvas" @click="refreshCode()" :width="contentWidth" :height="contentHeight"></canvas>
 </template>
 <script>
 export default {
-  name: 'SIdentify',
+  data() {
+    return {
+      identifyCode: '1234',
+      identifyCodes: '023456789ABCDEFGHJKLMNPQRSTUVWXYZ', //绘制的随机数
+    }
+  },
   props: {
-    identifyCode: {
-      type: String,
-      default: '1234',
-    },
     fontSizeMin: {
       type: Number,
       default: 35,
@@ -60,7 +59,7 @@ export default {
     },
     contentWidth: {
       type: Number,
-      default: 120,
+      default: 100,
     },
     contentHeight: {
       type: Number,
@@ -69,6 +68,9 @@ export default {
   },
   methods: {
     // 生成一个随机数
+    getCode() {
+      return this.identifyCode
+    },
     randomNum(min, max) {
       return Math.floor(Math.random() * (max - min) + min)
     },
@@ -79,32 +81,24 @@ export default {
       let b = this.randomNum(min, max)
       return 'rgb(' + r + ',' + g + ',' + b + ')'
     },
-    transparent() {
-      return 'rgb(255,255,255)'
-    },
     drawPic() {
       let canvas = document.getElementById('s-canvas')
       let ctx = canvas.getContext('2d')
       ctx.textBaseline = 'bottom'
-      // 绘制背景
-      //ctx.fillStyle = this.randomColor(
-      //this.backgroundColorMin,
-      // this.backgroundColorMax
-      //);
-      ctx.fillStyle = this.transparent()
+      ctx.fillStyle = '#EDEDED'
       ctx.fillRect(0, 0, this.contentWidth, this.contentHeight)
       // 绘制文字
       for (let i = 0; i < this.identifyCode.length; i++) {
         this.drawText(ctx, this.identifyCode[i], i)
       }
       //绘制背景
-      //this.drawLine(ctx)
-      //this.drawDot(ctx)
+      this.drawLine(ctx)
+      this.drawDot(ctx)
     },
     drawText(ctx, txt, i) {
       ctx.fillStyle = this.randomColor(this.colorMin, this.colorMax)
       ctx.font = this.randomNum(this.fontSizeMin, this.fontSizeMax) + 'px SimHei'
-      let x = (i + 1) * (this.contentWidth / (this.identifyCode.length + 1))
+      let x = (i + 1) * (this.contentWidth / (this.identifyCode.length+2))
       let y = this.randomNum(this.fontSizeMax, this.contentHeight - 5)
       var deg = this.randomNum(-10, 10)
       // 修改坐标原点和旋转角度
@@ -127,11 +121,25 @@ export default {
     },
     drawDot(ctx) {
       // 绘制干扰点
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 50; i++) {
         ctx.fillStyle = this.randomColor(0, 255)
         ctx.beginPath()
         ctx.arc(this.randomNum(0, this.contentWidth), this.randomNum(0, this.contentHeight), 1, 0, 2 * Math.PI)
         ctx.fill()
+      }
+    },
+    refreshCode() {
+      this.makeCode(this.identifyCodes, 4)
+    },
+    randomNum(min, max) {
+      max = max + 1
+      return Math.floor(Math.random() * (max - min) + min)
+    },
+    // 随机生成验证码字符串
+    makeCode(data, len) {
+      this.identifyCode = ''
+      for (let i = 0; i < len; i++) {
+        this.identifyCode += data[this.randomNum(0, data.length - 1)]
       }
     },
   },
@@ -142,6 +150,7 @@ export default {
   },
   mounted() {
     this.drawPic()
+    this.refreshCode()
   },
 }
 </script>

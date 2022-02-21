@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:44:33
+ * @LastEditTime: 2022-01-25 05:45:41
  * @Description: 
 -->
 <template>
@@ -67,7 +67,7 @@
         <div class="model-main" v-if="getCurItem().type === 'text' && !chartProjectBox">
           <div class="model-box">
             <div class="model-item" v-for="example in textExamples" @click="textSetExample(example.config)">
-              <div class="item-img">img</div>
+              <div class="item-img text" :style="example.config">Text 文本</div>
               <div class="item-name">{{ example.name }}</div>
             </div>
           </div>
@@ -641,6 +641,9 @@ export default {
   width: 60px;
   height: 60px;
   margin-top: 10px;
+}
+.content .left-box .model-box .model-item .item-img.text {
+  line-height: 80px;
 }
 .content .left-box .model-box .model-item .item-name {
   padding: 2px 5px;

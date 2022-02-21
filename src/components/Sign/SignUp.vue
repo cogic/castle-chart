@@ -2,26 +2,27 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:49:29
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 13:44:42
+ * @LastEditTime: 2022-02-14 16:49:58
  * @Description: 
 -->
 <template>
   <div id="stage">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" v-model="username" @input="fixText" />
+      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"/>
     </div>
     <div id="password">
       <label for="">密码</label>
-      <input type="password" v-model="password" @input="fixText" />
+      <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" />
     </div>
     <div id="repassword">
       <label for="">确认密码</label>
-      <input type="password" v-model="repassword" @input="fixText" />
+      <input type="password" v-model="repassword" @input="fixText"  @click="this.mesg = ''"/>
     </div>
     <div id="safecode">
       <label for="">验证码</label>
-      <input type="text" @input="fixText" />
+      <input type="text" v-model="safecode" @input="fixText"  @click="this.mesg = ''"/>
+      <safe-code class="codebox" ref="codebox" />
     </div>
     <div id="register" @click="register">注册</div>
     <div id="mesg">{{ mesg }}</div>
@@ -30,7 +31,9 @@
 
 <script>
 import API from '@/api'
+import SafeCode from '@/components/sign/SafeCode.vue'
 export default {
+  components: { SafeCode },
   activated() {
     this.mesg = ''
   },
@@ -59,6 +62,11 @@ export default {
         this.mesg = '请输入确认密码!'
       } else if (this.repassword !== this.password) {
         this.mesg = '两次输入密码不一致!'
+      } else if (this.safecode.length === 0) {
+        this.mesg = '请输入验证码!'
+      } else if (this.safecode.toLowerCase() !== this.$refs.codebox.getCode().toLowerCase()) {
+        this.$refs.codebox.refreshCode()
+        this.mesg = '验证码错误!'
       } else {
         API.userRegister(
           {
@@ -70,11 +78,12 @@ export default {
             if (message.success) {
               this.mesg = '注册成功!'
               this.$router.replace('/')
-            } else if(message.code === 40){
+            } else if (message.code === 40) {
               this.mesg = '用户名已存在!'
             } else {
               this.mesg = message.info ? message.info : 'unknown error'
             }
+            this.$refs.codebox.refreshCode()
           }
         )
       }
@@ -118,6 +127,15 @@ export default {
   font-size: 20px;
   vertical-align: middle;
   background-color: rgb(255, 255, 255);
+  border-radius: 0 10px 10px 0;
+}
+#safecode input {
+  width: 40%;
+  border-radius: 0;
+}
+#safecode .codebox {
+  float: right;
+  width: 30%;
   border-radius: 0 10px 10px 0;
 }
 #register {
