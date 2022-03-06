@@ -2,35 +2,39 @@
  * @Author: Cogic
  * @Date: 2022-01-17 16:47:47
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 03:50:37
+ * @LastEditTime: 2022-03-03 03:25:03
  * @Description: 
 -->
 <template>
-  <grid-layout id="GridLayout" :layout.sync="layout" :auto-size="autoSize" :margin="margin" :col-num="colNum" :row-height="rowHeight" :is-draggable="draggable" :is-resizable="resizable" :vertical-compact="verticalCompact" :use-css-transforms="true">
-    <grid-item
-      v-for="(item, index) in layout"
-      :class="{ selected: curItem.i === item.i }"
-      @resize="resizeEvent(item)"
-      @resized="resizeEvent(item)"
-      @mousedown="setCurItem($event, item)"
-      @click="setCurItem($event, item)"
-      :key="item.i"
-      :static="item.static"
-      :x="item.x"
-      :y="item.y"
-      :w="item.w"
-      :h="item.h"
-      :i="item.i"
-    >
-      <!-- <div>edit remove</div> -->
-      <div class="item-content" v-if="item.type === 'chart'"><e-chart :ref="'chart' + item.i" :data="item.config.data" :option="item.config.option"></e-chart></div>
-      <div class="item-content text" v-else-if="item.type === 'text'" :id="'textParent' + item.i"><h1 :id="'text' + item.i"></h1></div>
-      <div class="item-content" v-else-if="item.type === 'image'">图片</div>
-      <div v-else>NULL</div>
-      <!-- <span class="text">{{ itemTitle(item) }}</span> -->
-      <span class="remove" @click.stop="removeItem($event, item.i)" @mousedown.stop=""><span class="iconfont">&#xe673;</span></span>
-    </grid-item>
-  </grid-layout>
+  <div id="layout-box" ref="layoutBox">
+    <grid-layout id="GridLayout" :layout.sync="layout" :auto-size="autoSize" :margin="margin" :col-num="colNum" :row-height="rowHeight" :is-draggable="isDraggable" :is-resizable="isResizable" :vertical-compact="verticalCompact" :use-css-transforms="true">
+      <grid-item
+        v-for="(item, index) in layout"
+        :class="{ selected: curItem.i === item.i && isSelectable }"
+        @resize="resizeEvent(item)"
+        @resized="resizeEvent(item)"
+        @container-resized="resizeEvent(item)"
+        @mousedown="setCurItem($event, item)"
+        @click="setCurItem($event, item)"
+        :key="item.i"
+        :static="item.static"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :i="item.i"
+        drag-ignore-from=".no-drag"
+      >
+        <!-- <div>edit remove</div> -->
+        <div class="item-content" v-if="item.type === 'chart'"><e-chart :ref="'chart' + item.i" :data="item.config.data" :option="item.config.option"></e-chart></div>
+        <div class="item-content text" v-else-if="item.type === 'text'" :id="'textParent' + item.i"><h1 :id="'text' + item.i"></h1></div>
+        <div class="item-content" v-else-if="item.type === 'image'">图片</div>
+        <div v-else>NULL</div>
+        <!-- <span class="text">{{ itemTitle(item) }}</span> -->
+        <span class="remove no-drag" v-show="isRemovable" @click.stop="removeItem($event, item.i)" @mousedown.stop=""><span class="iconfont">&#xe673;</span></span>
+      </grid-item>
+    </grid-layout>
+  </div>
 </template>
 
 <script>
@@ -49,12 +53,12 @@ export default {
         i: 'back',
         type: 'back',
         config: {
-          backcroundColor: 'rgb(234, 234, 234)',
+          backgroundColor: '',
         },
       },
       curItem: {},
-      draggable: true,
-      resizable: true,
+      // draggable: true,
+      // resizable: true,
       colNum: 20,
       rowHeight: 30,
       index: 0,
@@ -65,12 +69,39 @@ export default {
       verticalCompact: true,
     }
   },
+  props: {
+    isResizable: {
+      type: Boolean,
+      default: true,
+    },
+    isDraggable: {
+      type: Boolean,
+      default: true,
+    },
+    isRemovable: {
+      type: Boolean,
+      default: true,
+    },
+    isSelectable: {
+      type: Boolean,
+      default: true,
+    },
+  },
   watch: {
     curItem(newValue, oldValue) {
       this.$parent.curItemChange()
     },
+    back: {
+      handler(newValue) {
+        this.$refs.layoutBox.style.backgroundColor = newValue.config.backgroundColor
+      },
+      deep: true,
+    },
   },
   methods: {
+    clearLayout() {
+      this.setLayout([])
+    },
     setTextItem(item) {
       document.getElementById('text' + item.i).innerHTML = item.config.content
       document.getElementById('text' + item.i).style.fontFamily = item.config.fontFamily
@@ -82,15 +113,17 @@ export default {
     setLayout(layoutData) {
       this.layout = []
       layoutData.forEach((el) => {
+        // this.addItem(el.type, el.config)
         this.layout.push(el)
         this.curItem = el
         if (el.type === 'chart') {
           setTimeout(() => {
-            this.$parent.loadData(el.config.data, el.i)
+            this.$parent.loadData(el.config.data, el)
             window.addEventListener('resize', this.$refs['chart' + el.i][0].chartResize)
             window.dispatchEvent(new Event('resize'))
           }, 0)
-        } else if (el.type === 'text') {
+        } 
+        else if (el.type === 'text') {
           setTimeout(() => {
             this.setTextItem(el)
           }, 0)
@@ -104,15 +137,26 @@ export default {
         setTimeout(() => {
           this.$refs['chart' + item.i][0].chartResize()
         }, 0)
+        // setTimeout(() => {
+        //   this.$refs['chart' + item.i][0].chartResize()
+        // }, 10)
       }
     },
-    setChart(data, option) {
-      // console.log(option);
-      if (data) {
-        this.curItem.config.data = data
-      }
-      if (option) {
-        this.curItem.config.option = option
+    setChart(data, option, item) {
+      if (!item) {
+        if (data) {
+          this.curItem.config.data = data
+        }
+        if (option) {
+          this.curItem.config.option = option
+        }
+      } else {
+        if (data) {
+          item.config.data = data
+        }
+        if (option) {
+          item.config.option = option
+        }
       }
       // this.$refs['chart' + this.curItem.i][0].chartResize()
     },
@@ -149,6 +193,8 @@ export default {
           this.setTextItem(item)
         }, 0)
       }
+      // console.log('11111' + new Date().toLocaleTimeString())
+      return item
     },
     removeItem(e, val) {
       const index = this.layout.map((item) => item.i).indexOf(val)
@@ -158,6 +204,16 @@ export default {
         this.curItem = this.back
       }, 0)
     },
+    // getItemById(id){
+    //   for (const key in this.layout) {
+    //     if (Object.hasOwnProperty.call(this.layout, key)) {
+    //       const item = this.layout[key];
+    //       if(item.i === id) {
+    //         return item
+    //       }
+    //     }
+    //   }
+    // }
   },
   mounted() {
     // this.index = this.layout.length
@@ -166,9 +222,6 @@ export default {
 </script>
 
 <style>
-.vue-grid-layout {
-  /* background: #eee; */
-}
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: rgb(255, 255, 255);
   /* border: 1px solid black; */
@@ -188,6 +241,10 @@ export default {
 }
 </style>
 <style scoped>
+#layout-box {
+  min-width: 100%;
+  min-height: 100%;
+}
 .remove {
   display: none;
   position: absolute;

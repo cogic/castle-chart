@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 21:11:03
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:28:07
+ * @LastEditTime: 2022-02-23 14:49:44
  * @Description: 
 -->
 <template>
@@ -10,7 +10,6 @@
     <nav>
       <ul>
         <li v-for="tab in mainTabs">
-          <!-- <router-link :to="tab.to">{{ tab.topic }}</router-link> -->
           <a :class="{ current: isCurrent(tab.to) }" @click="routerTo(tab.to)">{{ tab.topic }}</a>
         </li>
       </ul>
@@ -54,8 +53,6 @@ export default {
       return this.$route.name === to.name
     },
     routerTo(to) {
-      // console.log(this.$route);
-      // console.log(this.$router);
       this.$router.replace(to)
     },
   },
@@ -65,7 +62,6 @@ export default {
 <style scoped>
 .outer {
   display: flex;
-  /* flex-grow: 1; */
 
   width: 100%;
   height: 100%;
@@ -74,7 +70,6 @@ export default {
 
 nav {
   padding: 10px;
-  /* background-color: rgb(246, 246, 246); */
 }
 nav li {
   margin-bottom: 10px;

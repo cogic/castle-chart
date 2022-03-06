@@ -2,10 +2,11 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 01:54:18
+ * @LastEditTime: 2022-03-03 14:40:12
  * @Description:
  */
 import Network from '@/api/network'
+import AMapLoader from '@amap/amap-jsapi-loader'
 
 // 如果需要不依赖 server 运行，则取消下面两行的注释，并注释掉最后一行的 export default
 // import offline from '@/api/offline'
@@ -15,7 +16,13 @@ const showLog = false
 
 function aLog(receive, back) {
   if (showLog) {
-    console.log('收到: ', receive, ' 返回: ', back)
+    if (receive && back) {
+      console.log('收到: ', receive, ' 返回: ', back)
+    } else if (receive) {
+      console.log('收到: ', receive)
+    } else if (back) {
+      console.log('返回: ', back)
+    }
   }
 }
 function netPost(url, data, callback) {
@@ -73,16 +80,22 @@ function getTable(data, callback) {
   //   result.fileData.data = []
 
   // } else {
-    netPost('/table/get-one', data, callback)
+  netPost('/table/get-one', data, callback)
   // }
 }
 function getChart(data, callback) {
-  console.log(data);
   netPost('/chart/get-one', data, callback)
 }
 function getPanel(data, callback) {
   netPost('/panel/get-one', data, callback)
 }
+function getSharedChart(data, callback) {
+  netPost('/chart/get-shared', data, callback)
+}
+function getSharedPanel(data, callback) {
+  netPost('/panel/get-shared', data, callback)
+}
+
 
 function deleteTable(data, callback) {
   netPost('/table/delete-one', data, callback)
@@ -106,9 +119,36 @@ function savePanel(data, callback) {
 
 function getChartExamples(callback) {
   Network.get('/data/chartSamples.json', { baseURL: '/' }).then((result) => {
-    aLog('返回', result.data)
+    aLog(null, result.data)
     callback(result.data)
   })
 }
 
-export default { savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }
+function getGeoJson(adcode, callback) {
+  AMapLoader.load({
+    key:'b2c9e324ab22fdad78f5fbbe76b0e410',
+    version:'2.0',
+    AMapUI: {
+        version: '1.1',
+        plugins:['overlay/SimpleMarker']
+    }
+}).then((AMap)=>{
+  AMapUI.loadUI(["geo/DistrictExplorer"], function (DistrictExplorer) {
+    new DistrictExplorer().loadAreaNode(adcode, function (error, areaNode) {
+      let subFeatures = areaNode.getSubFeatures();
+      let geoJson = { type: "FeatureCollection", features: subFeatures };
+      aLog(adcode, geoJson)
+      callback(geoJson)
+    });
+  });
+})
+}
+
+// function setSharedChart(data){
+//   netPost('/chart/set-shared', data, callback)
+// }
+// function setSharedPanel(data){
+//   netPost('/panel/set-shared', data, callback)
+// }
+
+export default {getSharedChart,getSharedPanel, getGeoJson, savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }

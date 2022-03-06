@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:52
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:01:14
+ * @LastEditTime: 2022-03-02 17:40:33
  * @Description:
  */
 const database = require('../models/database')
@@ -114,7 +114,7 @@ function newPanel(req, res) {
   receive(
     req,
     (obj) => {
-      database.insertDoc('panel', { ownerId: loginInfo(req).id, name: obj.name, back: obj.back,layout:obj.layout }, (result) => {
+      database.insertDoc('panel', { ownerId: loginInfo(req).id, name: obj.name, back: obj.back, layout: obj.layout }, (result) => {
         endText(res, new Message(true, 10, result.insertedId), 'newPanel')
       })
     },
@@ -167,6 +167,36 @@ function getPanel(req, res) {
     'getPanel'
   )
 }
+function getSharedChart(req, res) {
+  receive(
+    req,
+    (obj) => {
+      database.findDoc('chart', { _id: new ObjectId(obj._id), isShared: true }, (docs) => {
+        if (docs.length === 0) {
+          endText(res, new Message(false, 10, '图表不存在'), 'getSharedChart')
+        } else {
+          endText(res, new Message(true, 10, docs[0]), 'getSharedChart')
+        }
+      })
+    },
+    'getSharedChart'
+  )
+}
+function getSharedPanel(req, res) {
+  receive(
+    req,
+    (obj) => {
+      database.findDoc('panel', { _id: new ObjectId(obj._id), isShared: true }, (docs) => {
+        if (docs.length === 0) {
+          endText(res, new Message(false, 10, '仪表板不存在'), 'getSharedPanel')
+        } else {
+          endText(res, new Message(true, 10, docs[0]), 'getSharedPanel')
+        }
+      })
+    },
+    'getSharedPanel'
+  )
+}
 
 function setTable(req, res) {
   receive(
@@ -200,6 +230,9 @@ function setChart(req, res) {
       if (obj.option) {
         newObj.option = obj.option
       }
+      if (obj.isShared != undefined) {
+        newObj.isShared = obj.isShared
+      }
       database.updateDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, newObj, (result) => {
         endText(res, new Message(true, 10, '更新图表成功'), 'setChart')
       })
@@ -220,6 +253,9 @@ function setPanel(req, res) {
       }
       if (obj.layout) {
         newObj.layout = obj.layout
+      }
+      if (obj.isShared != undefined) {
+        newObj.isShared = obj.isShared
       }
       database.updateDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, newObj, (result) => {
         endText(res, new Message(true, 10, '更新仪表板成功'), 'setPanel')
@@ -291,4 +327,4 @@ function test(req, res) {
   })
 }
 
-module.exports = { test, deletePanel, getPanelList, setPanel, getPanel, newPanel, deleteChart, getChartList, setChart, getChart, newChart, setTable, userRegister, userLogin, userLoginCheck, userLogout, newTable, getTable, getTableList, deleteTable }
+module.exports = { getSharedChart, getSharedPanel, test, deletePanel, getPanelList, setPanel, getPanel, newPanel, deleteChart, getChartList, setChart, getChart, newChart, setTable, userRegister, userLogin, userLoginCheck, userLogout, newTable, getTable, getTableList, deleteTable }

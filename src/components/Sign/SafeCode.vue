@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 09:55:01
  * @LastEditors: Cogic
- * @LastEditTime: 2022-02-14 16:23:24
+ * @LastEditTime: 2022-02-27 10:36:48
  * @Description: 
 -->
 <template>
@@ -13,7 +13,7 @@ export default {
   data() {
     return {
       identifyCode: '1234',
-      identifyCodes: '023456789ABCDEFGHJKLMNPQRSTUVWXYZ', //绘制的随机数
+      identifyCodes: '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', //绘制的随机数
     }
   },
   props: {

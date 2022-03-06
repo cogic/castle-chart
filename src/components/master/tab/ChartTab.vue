@@ -2,48 +2,60 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:36:06
+ * @LastEditTime: 2022-03-03 13:33:43
  * @Description: 
 -->
 <template>
   <div id="stage">
+    <share-window ref="popwin" v-show="isPop" />
     <div class="head">
       <div class="name">{{ chartName }}</div>
       <div class="head-menu">
-        <div class="menu-item" @click="save">保存</div>
-        <div class="menu-item">预览</div>
-        <div class="menu-item">分享</div>
+        <div class="menu-tip">{{ saveTip }}</div>
+        <div class="menu-item" @click="save(true)">保存</div>
+        <!-- <div class="menu-item" @click="preview">预览</div> -->
+        <div class="menu-item" @click="share">分享</div>
       </div>
     </div>
     <div class="content">
-      <div class="left-box">
+      <div class="left-box" v-show="leftShow">
         <div class="model-menu">
           <div class="menu-label">图表类型</div>
           <div class="menu-label check">保留数据<input type="checkbox" v-model="keepData" /></div>
           <div class="menu-item" :class="{ current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
         </div>
         <template v-for="sample in chartSamples">
-          <div class="model-box" v-if="curSampleName === sample.name">
+          <div class="model-box" v-if="isCurrentSample(sample)">
             <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, true), setSetBox(example.option)">
               <div class="item-img">
-                <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'">
-                <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'">
-                <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'">
-                <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'">
-                <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'">
-                <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'">
+                <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
+                <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
+                <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
+                <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
+                <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
+                <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
+                <img src="@/assets/image/地图.png" alt="" v-show="sample.name === '地图'" />
+                <img src="@/assets/image/仪表盘.png" alt="" v-show="sample.name === '仪表盘'" />
               </div>
               <div class="item-name">{{ example.name }}</div>
             </div>
           </div>
         </template>
       </div>
+      <div class="inout-button" @click="leftShow = !leftShow">
+        <span class="iconfont" v-if="leftShow">&#xe619;</span>
+        <span class="iconfont" v-else>&#xe61a;</span>
+      </div>
       <div class="center-box">
         <div class="center-content">
           <e-chart ref="myChart" :data="chartData" :option="chartOption"></e-chart>
         </div>
       </div>
-      <div class="right-box">
+      <div class="inout-button" @click="rightShow = !rightShow">
+        <span class="iconfont" v-if="!rightShow">&#xe619;</span>
+        <span class="iconfont" v-else>&#xe61a;</span>
+      </div>
+      <div class="right-box" v-show="rightShow">
         <div class="option-menu">
           <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
           <div class="menu-item" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
@@ -55,13 +67,14 @@
           <div class="data-box" v-show="isDataBox && !dataSoruceBox">
             <div class="data-menu">
               <div class="menu-item" @click="importData">本地导入</div>
-              <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
+              <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelect = {})">数据源导入</div>
               <!-- TODO URL导入待做 -->
               <div class="menu-item" v-show="false">URL导入</div>
             </div>
             <h-table ref="myTable" :hookFunc="tableChange"></h-table>
-            <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
-            <div class="match-box" v-show="openMatch">match-box</div>
+            <div class="data-match" @click="transData">转置数据</div>
+            <!-- <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
+            <div class="match-box" v-show="openMatch">match-box</div> -->
           </div>
           <div class="data-import" v-show="dataSoruceBox">
             <div class="return" @click="dataSoruceBox = false">取消</div>
@@ -84,15 +97,18 @@ import EChart from '@/components/master/tab/EChart.vue'
 import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 import SetBox from '@/components/master/tab/SetBox.vue'
+import ShareWindow from '@/components/ShareWindow.vue'
 export default {
-  components: { EChart, HTable, SetBox },
+  components: { EChart, HTable, SetBox, ShareWindow },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        API.getChart({_id:this.$route.params.tabkey}, (message) => {
+        this.clearChart() // 在加载数据前清除一下画布，消除keepalive的影响
+        API.getChart({ _id: this.$route.params.tabkey }, (message) => {
           if (message.success) {
             callback({ type: 'chart', topic: message.info.name, key: message.info._id })
+            this.chartId = this.$route.params.tabkey
             this.chartName = message.info.name
             this.loadData(message.info.data)
             this.chartData = message.info.data
@@ -105,9 +121,23 @@ export default {
         this.hasTableData = false
         this.dataSoruceBox = false
         this.keepData = false
-        this.curSampleName = null
+        if (this.chartSamples[0]) {
+          this.curSampleName = this.chartSamples[0].name
+        }
+        this.saveTip = ''
+        this.leftShow = true
+        this.rightShow = true
+        this.isPop = false
       }
     })
+    this.autoSave = setInterval(() => {
+      // 每1分钟自动保存一次
+      this.save()
+    }, 1000 * 60)
+  },
+  deactivated() {
+    this.save()
+    clearInterval(this.autoSave)
   },
   mounted() {
     // API.getChart(this.$route.params.tabkey, (result) => {
@@ -121,7 +151,7 @@ export default {
     API.getChartExamples((result) => {
       // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
       this.chartSamples = result
-      this.curSampleName = null
+      this.curSampleName = result[0].name
     })
   },
   data() {
@@ -131,12 +161,18 @@ export default {
       chartSamples: [],
       chartData: [],
       chartOption: {},
+      chartId: '',
       isDataBox: true,
       curSampleName: '',
       openMatch: false,
       dataSoruceBox: false,
       dataProjects: [],
       dataProjectSelect: {},
+      autoSave: undefined,
+      saveTip: '',
+      leftShow: true,
+      rightShow: true,
+      isPop: false,
     }
   },
   watch: {
@@ -160,12 +196,30 @@ export default {
     },
   },
   methods: {
+    transData(){
+      this.$refs.myTable.transData()
+    },
+    share() {
+      this.save(true)
+      this.isPop = true
+      this.$refs.popwin.isShared = true
+      API.saveChart({ _id: this.chartId, isShared: true }, (message) => {
+        console.log(message)
+      })
+    },
+    isCurrentSample(sample) {
+      if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
+        return true
+      } else {
+        return sample.name === this.curSampleName
+      }
+    },
     loadDataSource() {
       API.getTableList((message) => {
         this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable({_id:val.id}, (message) => {
+        API.getTable({ _id: val.id }, (message) => {
           val.data = message.info.data
         })
         return val
@@ -176,17 +230,23 @@ export default {
         this.setChart(data)
       }, 0)
     },
-    save() {
-      API.saveChart({ _id: this.$route.params.tabkey, name: this.chartName, data: this.$refs.myTable.getData(),option:this.$refs.myChart.getOption() }, (message) => {
+    save(isHand) {
+      if (!this.$refs.myChart) return
+      API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption() }, (message) => {
         console.log(message)
+        if (isHand) {
+          this.saveTip = '保存成功'
+        } else {
+          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+        }
       })
     },
     setCurSample(e, sampleName) {
-      if (this.curSampleName === sampleName) {
-        this.curSampleName = null
-      } else {
-        this.curSampleName = sampleName
-      }
+      // if (this.curSampleName === sampleName) {
+      //   this.curSampleName = null
+      // } else {
+      this.curSampleName = sampleName
+      // }
     },
     setChart(data, option = {}, flag) {
       if (flag && this.keepData) {
@@ -211,7 +271,8 @@ export default {
       })
     },
     setSetBox(option) {
-      this.$refs.setBox.setSettings(this.$refs.myChart.getOption())
+      this.$refs.setBox.setSettings(option)
+      // this.$refs.setBox.setSettings(this.$refs.myChart.getOption())
     },
   },
   updated() {
@@ -223,6 +284,7 @@ export default {
 <style scoped>
 #stage {
   display: flex;
+  /* position: relative; 为分享页面PopWindow而设置，否则其height:100%是以Body为参照 */
   flex-direction: column;
   height: 100%;
 }
@@ -237,6 +299,7 @@ export default {
   color: rgb(41, 41, 41);
   font-size: 20px;
   line-height: 35px;
+  cursor: default;
 }
 .head .head-menu {
   display: flex;
@@ -252,6 +315,13 @@ export default {
 }
 .head .head-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.801);
+}
+.head .head-menu .menu-tip {
+  padding-right: 5px;
+  color: rgb(116, 138, 161);
+  line-height: 35px;
+  font-size: 14px;
+  background-color: rgb(218, 218, 218);
 }
 
 .content {
@@ -274,6 +344,7 @@ export default {
   text-align: center;
   line-height: 60px;
   background-color: rgb(97, 161, 103);
+  cursor: default;
 }
 .content .left-box .menu-label.check {
   color: rgb(37, 37, 37);
@@ -282,8 +353,11 @@ export default {
   background-color: rgb(192, 192, 192);
 }
 .content .left-box .menu-label.check input {
+  width: 20px;
+  height: 20px;
   margin-left: 5px;
   vertical-align: middle;
+  cursor: pointer;
 }
 
 .content .left-box .model-menu .menu-item {
@@ -317,6 +391,9 @@ export default {
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
   cursor: pointer;
 }
+.content .left-box .model-box .model-item:hover {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
+}
 .content .left-box .model-box .model-item .item-img {
   width: 100px;
   height: 80px;
@@ -325,8 +402,8 @@ export default {
   border-radius: 5px 5px 0 0;
 }
 .content .left-box .model-box .model-item .item-img img {
-  width:60px;
-  height:60px;
+  width: 60px;
+  height: 60px;
   margin-top: 10px;
 }
 .content .left-box .model-box .model-item .item-name {
@@ -380,7 +457,7 @@ export default {
   height: 100%;
   padding: 5px;
   background-color: rgb(241, 241, 241);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 /* .content .right-box .option-box .set-box .set-item {
   margin: 0 0 5px 0;
@@ -446,26 +523,39 @@ export default {
   width: 100%;
 }
 .content .right-box .option-box .data-import .return {
+  color: rgb(65, 65, 65);
+  font-size: 20px;
   text-align: center;
   line-height: 50px;
   background-color: rgb(144, 168, 151);
+  cursor: pointer;
+}
+.content .right-box .option-box .data-import .return:hover {
+  background-color: rgb(67, 168, 97);
 }
 .content .right-box .option-box .data-import .confirm {
+  font-size: 20px;
   color: rgb(255, 255, 255);
   text-align: center;
   line-height: 50px;
   background-color: rgb(49, 133, 181);
+  cursor: pointer;
+}
+.content .right-box .option-box .data-import .confirm:hover {
+  background-color: rgb(75, 171, 226);
 }
 .content .right-box .option-box .data-import .title {
+  font-size: 24px;
   color: rgb(255, 255, 255);
   text-align: center;
-  line-height: 30px;
+  line-height: 35px;
   background-color: rgb(138, 138, 138);
+  cursor: default;
 }
 .content .right-box .option-box .data-import .source-box {
   flex-grow: 1;
   padding: 5px 5px 0 5px;
-  overflow-y: scroll;
+  overflow-y: auto;
   background-color: rgb(233, 233, 233);
 }
 .content .right-box .option-box .data-import .source-box .source-item {
@@ -476,23 +566,44 @@ export default {
   text-overflow: ellipsis;
   text-overflow: ellipsis;
   overflow: hidden;
-  word-break: keep-all;
+  /* word-break: keep-all; */
+  cursor: pointer;
 }
 .content .right-box .option-box .data-import .source-box .source-item:hover {
-  background-color: rgb(234, 246, 252);
+  outline: 2px solid rgb(196, 118, 17);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
 }
 .content .right-box .option-box .data-import .source-box .source-item.selected {
-  outline: 2px solid rgb(22, 115, 169);
+  background-color: rgb(231, 204, 127);
 }
 
 .content .center-box {
   flex-grow: 1;
   flex-shrink: 0;
-  padding: 20px;
+  padding: 5px;
   background-color: rgb(44, 44, 44);
 }
 .content .center-box .center-content {
   height: 100%;
   background-color: rgb(255, 255, 255);
+}
+
+.inout-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+}
+.inout-button:hover {
+  background-color: rgb(19, 160, 49);
+}
+.inout-button:hover .iconfont {
+  color: rgb(255, 255, 255);
+}
+.inout-button .iconfont {
+  color: rgb(9, 136, 57);
+  font-weight: bold;
+  font-size: 20px;
 }
 </style>

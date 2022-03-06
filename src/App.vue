@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:45:41
+ * @LastEditTime: 2022-03-02 00:06:51
  * @Description: 
 -->
 <template>
@@ -71,5 +71,8 @@ input {
   flex-direction: column;
   align-content: center;
   height: 100%;
+}
+.iconfont{
+  user-select: none;
 }
 </style>

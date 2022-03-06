@@ -2,14 +2,14 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:48:59
  * @LastEditors: Cogic
- * @LastEditTime: 2022-02-16 20:07:34
+ * @LastEditTime: 2022-03-02 18:06:01
  * @Description: 
 -->
 <template>
-  <div id="stage">
+  <div id="stage" @keypress.enter="login">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''" />
+      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"/>
     </div>
     <div id="password">
       <label for="">密码</label>
@@ -50,7 +50,6 @@ export default {
       e.target.value = e.target.value.replaceAll(/\s/g, '')
     },
     login() {
-      console.log(this.safecode.toLowerCase())
       if (this.username.length === 0) {
         this.mesg = '请输入用户名!'
       } else if (this.password.length === 0) {

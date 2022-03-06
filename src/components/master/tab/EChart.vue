@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-30 10:21:11
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 23:18:08
+ * @LastEditTime: 2022-03-03 10:08:18
  * @Description: 
 -->
 <template>
@@ -11,6 +11,7 @@
 
 <script>
 import * as echarts from 'echarts'
+import 'echarts-countries-js/echarts-countries-js/china'
 import { markRaw } from '@vue/reactivity'
 export default {
   mounted() {
@@ -21,13 +22,17 @@ export default {
     setTimeout(() => {
       this.chartResize()
     }, 0)
-  },
-  activated() {
     window.addEventListener('resize', this.chartResize)
   },
-  deactivated() {
+  beforeUnmount(){
     window.removeEventListener('resize', this.chartResize)
   },
+  // activated() {
+  //   window.addEventListener('resize', this.chartResize)
+  // },
+  // deactivated() {
+  //   window.removeEventListener('resize', this.chartResize)
+  // },
   props: {
     data: {
       type: Array,
@@ -62,6 +67,7 @@ export default {
       this.myChart.clear()
     },
     getOption() {
+      // console.log(this.myChart.getOption());
       return this.myChart.getOption()
     },
     setOption(data, option = {}) {
@@ -78,7 +84,7 @@ export default {
         one.data = []
         this.myChart.setOption({
           series: [one],
-        })
+        }, { replaceMerge: ['series'] })
       }
       if (preSeries[0] && ['line', 'bar'].includes(preSeries[0].type)) {
         let series = []
@@ -99,8 +105,8 @@ export default {
             data: data[0].slice(1),
           },
           series,
-        })
-      } else if (preSeries[0] && ['pie', 'funnel'].includes(preSeries[0].type)) {
+        }, { replaceMerge: ['xAxis', 'series'] })
+      } else if (preSeries[0] && ['pie', 'funnel','gauge','map'].includes(preSeries[0].type)) {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
         for (let i = 1; i < data.length; i++) {
@@ -112,7 +118,7 @@ export default {
         one.data = newData
         this.myChart.setOption({
           series: [one],
-        })
+        }, { replaceMerge: ['xAxis', 'yAxis', 'series'] })
       } else if (preSeries[0] && preSeries[0].type === 'scatter') {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
@@ -126,7 +132,7 @@ export default {
             data: data[0].slice(1),
           },
           series: [one],
-        })
+        }, { replaceMerge: ['xAxis', 'series'] })
       }
     },
   },

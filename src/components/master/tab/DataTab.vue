@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:14:54
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:06:10
+ * @LastEditTime: 2022-03-03 14:45:01
  * @Description: 
 -->
 <template>
@@ -11,11 +11,12 @@
       <span class="title">{{ tableName }}</span>
     </div>
     <div class="menubar">
-      <div class="menu save" @click="saveTableData">保存</div>
       <div class="menu import" @click="importData">导入</div>
       <div class="menu export" @click="downloadFile">导出</div>
-      <div class="menu export" @click="">撤销</div>
-      <div class="menu export" @click="">重做</div>
+      <!-- <div class="menu export" @click="">撤销</div> -->
+      <!-- <div class="menu export" @click="">重做</div> -->
+      <div class="menu save" @click="saveTableData(true)">保存</div>
+      <div class="menu-tip">{{ saveTip }}</div>
     </div>
     <div class="sheet">
       <div class="table-box">
@@ -35,18 +36,34 @@ export default {
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
         // setTimeout(() => {
-          
+
         // }, timeout);
         API.getTable({ _id: this.$route.params.tabkey }, (message) => {
+          this.tableId = this.$route.params.tabkey
           if (message.success) {
             // this.addTab({ type: 'data', topic: message.info.name, key: message.info._id })
             callback({ type: 'data', topic: message.info.name, key: message.info._id })
             this.tableName = message.info.name
             this.tableData = message.info.data
+            // let that = this
+            // setTimeout(function() {
+              
+            //   that.$refs.table.loadData(message.info.data)
+            // }, 1000);
+            // console.log(this.tableData,message.info.data);
           }
         })
+        this.saveTip = ''
       }
     })
+    this.autoSave = setInterval(() => {
+      // 每1分钟自动保存一次
+      this.saveTableData()
+    }, 1000 * 60)
+  },
+  deactivated() {
+    this.saveTableData()
+    clearInterval(this.autoSave)
   },
   mounted() {
     // API.getTable({ _id: this.$route.params.tabkey }, (message) => {
@@ -68,8 +85,11 @@ export default {
   },
   data() {
     return {
+      tableId: '',
       tableName: '新建数据源',
       tableData: [],
+      autoSave: undefined,
+      saveTip: '',
     }
   },
   watch: {
@@ -82,10 +102,17 @@ export default {
       // TODO 可以添加【导出前设置导出的文件名】功能
       XSheet.downloadFile(this.$refs.table.getData(), 'out.xlsx')
     },
-    saveTableData() {
+    saveTableData(isHand) {
       // 保存 tabledata 到数据库
-      API.saveTable({ _id: this.$route.params.tabkey, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
+      if(!this.$refs.table) return
+      console.log(this.$refs.table.getData());
+      API.saveTable({ _id: this.tableId, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
         console.log(message)
+        if (isHand) {
+          this.saveTip = '保存成功'
+        } else {
+          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+        }
       })
     },
     importData() {
@@ -114,6 +141,7 @@ export default {
   color: rgb(41, 41, 41);
   font-size: 20px;
   line-height: 35px;
+  cursor: default;
 }
 
 .menubar {
@@ -130,6 +158,13 @@ export default {
 }
 .menubar .menu:hover {
   background-color: rgba(233, 233, 233, 0.397);
+}
+.menubar .menu-tip {
+  padding-right: 5px;
+  color: rgb(141, 197, 212);
+  line-height: 30px;
+  font-size: 14px;
+  /* background-color: rgb(218, 218, 218); */
 }
 
 .sheet {

@@ -2,18 +2,18 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:49:29
  * @LastEditors: Cogic
- * @LastEditTime: 2022-02-14 16:49:58
+ * @LastEditTime: 2022-03-02 18:11:51
  * @Description: 
 -->
 <template>
-  <div id="stage">
+  <div id="stage" @keypress.enter="register">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"/>
+      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"  maxlength="20" placeholder="不超过 20 个字符"/>
     </div>
     <div id="password">
       <label for="">密码</label>
-      <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" />
+      <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" maxlength="25" placeholder="不超过 25 个字符"/>
     </div>
     <div id="repassword">
       <label for="">确认密码</label>

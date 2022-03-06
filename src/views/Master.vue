@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:29:44
+ * @LastEditTime: 2022-03-03 00:45:56
  * @Description: 
 -->
 <template>
@@ -21,10 +21,14 @@
       </div>
     </div>
     <div class="right-head">
-      <div id="portrait">
+      <div class="portrait">
         <span class="name">{{ username }}</span>
         <img :src="userPortrait" alt="portrait" />
         <div class="logout" @click="logout">退出登录</div>
+      </div>
+      <div class="fullscreen" @click="setFullScreen">
+        <span class="iconfont" v-if="!isFull">&#xe667;</span>
+        <span class="iconfont exit" v-else>&#xe6ce;</span>
       </div>
     </div>
   </header>
@@ -45,7 +49,7 @@ import API from '@/api'
 export default {
   beforeUpdate() {
     // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
-    if (this.currentTabKey === 'main' && ['Home','DataStore','ChartStore','PanelStore'].includes(this.$route.name)){
+    if (this.currentTabKey === 'main' && ['Home', 'DataStore', 'ChartStore', 'PanelStore'].includes(this.$route.name)) {
       this.currentMainTabPath = this.$route.path
     }
   },
@@ -58,6 +62,12 @@ export default {
         this.$router.replace('/sign')
       }
     })
+    // window.addEventListener('fullscreenchange', () => {
+    //   this.isFull = this.isFullScreen()
+    // })
+  },
+  unmounted() {
+    // window.removeEventListener('fullscreenchange')
   },
   data() {
     return {
@@ -67,6 +77,7 @@ export default {
       tabMap: new Map(),
       username: '用户名',
       userPortraitPath: 'portrait.png',
+      isFull: false,
     }
   },
   computed: {
@@ -80,7 +91,41 @@ export default {
       return require('@/assets/' + this.userPortraitPath)
     },
   },
+  watch: {
+    tabMap: {
+      handler(newValue) {
+        this.$store.commit('setTabMap', newValue)
+      },
+      deep: true,
+    },
+  },
   methods: {
+    isFullScreen() {
+      return document.fullscreenElement || document.mozFullScreenElement || document.msFullScreenElement || document.webkitFullscreenElement || null
+    },
+    setFullScreen() {
+      if (this.isFullScreen()) {
+        if (document.exitFullScreen) {
+          document.exitFullScreen()
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen()
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen()
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen()
+        }
+      } else {
+        if (document.body.requestFullscreen) {
+          document.body.requestFullscreen()
+        } else if (document.body.mozRequestFullScreen) {
+          document.body.mozRequestFullScreen()
+        } else if (document.body.webkitRequestFullscreen) {
+          ele.webkitRequestFullscreen()
+        } else if (document.body.msRequestFullscreen) {
+          document.body.msRequestFullscreen()
+        }
+      }
+    },
     logout() {
       API.userLogout((message) => {
         console.log(message)
@@ -158,22 +203,16 @@ header {
   width: 45px;
   height: 45px;
   padding: 5px;
-  vertical-align: middle;
-  /* background-color: aquamarine; */
 }
 .left-head .headline {
-  display: inline-block;
   line-height: 40px;
   padding: 5px 5px 0 5px;
   margin-right: 12px;
   color: rgb(58, 58, 58);
   font-size: 24px;
-  vertical-align: middle;
-  /* background-color: burlywood; */
 }
 .left-head .main-page {
   display: inline-block;
-  /* background-color: cadetblue; */
   cursor: pointer;
 }
 .left-head .main-page span {
@@ -198,7 +237,6 @@ header {
   align-items: center;
 
   flex-shrink: 0;
-  /* background-color: aqua; */
 }
 .right-head .name {
   margin: 0 10px;
@@ -206,6 +244,7 @@ header {
   vertical-align: middle;
   font-size: 14px;
   font-weight: bold;
+  cursor: default;
 }
 .right-head img {
   width: 40px;
@@ -215,13 +254,16 @@ header {
   border: 2px solid rgba(163, 163, 163, 0.52);
   border-radius: 50%;
 }
-.right-head:hover .logout {
+.right-head .portrait {
+  height: 100%;
+}
+.right-head .portrait:hover .logout {
   display: block;
 }
-.right-head .logout {
+.right-head .portrait .logout {
   display: none;
   position: absolute;
-  right: 10px;
+  right: 50px;
   margin-top: 2px;
   padding: 5px 10px;
   color: rgb(63, 63, 63);
@@ -231,10 +273,24 @@ header {
   border: 3px solid rgb(181, 181, 181);
   border-radius: 5px;
   cursor: pointer;
+  z-index: 260;
 }
-.right-head .logout:hover {
+.right-head .portrait .logout:hover {
   color: rgb(255, 255, 255);
   background-color: rgb(171, 84, 84);
+}
+
+.right-head .fullscreen span {
+  color: rgb(82, 126, 96);
+  font-size: 30px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.right-head .fullscreen span:hover {
+  color: rgb(91, 167, 202);
+}
+.right-head .fullscreen span.exit {
+  color: rgb(7, 190, 65);
 }
 
 header .center-head {

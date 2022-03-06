@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:44
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 12:27:47
+ * @LastEditTime: 2022-03-02 16:59:22
  * @Description: 
  */
 const express = require("express");
@@ -38,6 +38,12 @@ router
 .post('/panel/get-list',business.getPanelList)
 .post('/panel/get-one',business.getPanel)
 .post('/panel/delete-one',business.deletePanel)
+
+.post('/chart/get-shared',business.getSharedChart)
+.post('/panel/get-shared',business.getSharedPanel)
+// .post('/chart/set-shared',business.setSharedChart)
+// .post('/panel/set-shared',business.setSharedPanel)
+
 
 module.exports = router;
 

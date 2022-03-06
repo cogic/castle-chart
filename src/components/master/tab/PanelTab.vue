@@ -2,21 +2,24 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 05:45:41
+ * @LastEditTime: 2022-03-03 14:56:07
  * @Description: 
 -->
 <template>
   <div id="stage">
+    <share-window ref="popwin" v-show="isPop" />
+    <pop-box ref="PopBox" :trueFunc="clear" :info="'确定要清空画布吗?'" v-if="toShow" />
     <div class="head">
       <div class="name">{{ panelName }}</div>
       <div class="head-menu">
-        <div class="menu-item" @click="save">保存</div>
-        <div class="menu-item">预览</div>
-        <div class="menu-item">分享</div>
+        <div class="menu-tip">{{ saveTip }}</div>
+        <div class="menu-item" @click="save(true)">保存</div>
+        <div class="menu-item" @click="share">分享</div>
+        <div class="menu-item" @click="toShow = true">清空</div>
       </div>
     </div>
     <div class="content">
-      <div class="left-box">
+      <div class="left-box" v-show="leftShow">
         <div class="menu-top" v-show="!chartProjectBox">
           <div class="top-label">添加资源<span class="iconfont">&#xe651;</span></div>
           <div class="item-box">
@@ -50,7 +53,7 @@
           </div>
           <template v-for="sample in chartSamples">
             <div class="model-box" v-if="isCurrentSample(sample)">
-              <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, undefined, true), setSetBox(example.option)">
+              <div class="model-item" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
                 <div class="item-img">
                   <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
                   <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
@@ -73,6 +76,10 @@
           </div>
         </div>
       </div>
+      <div class="inout-button" @click="leftShow = !leftShow">
+        <span class="iconfont" v-if="leftShow">&#xe619;</span>
+        <span class="iconfont" v-else>&#xe61a;</span>
+      </div>
       <div class="center-box">
         <div class="center-inner">
           <div class="center-content" ref="panelBack" @click="setCurItemToBack">
@@ -80,7 +87,11 @@
           </div>
         </div>
       </div>
-      <div class="right-box">
+      <div class="inout-button" @click="rightShow = !rightShow">
+        <span class="iconfont" v-if="!rightShow">&#xe619;</span>
+        <span class="iconfont" v-else>&#xe61a;</span>
+      </div>
+      <div class="right-box" v-show="rightShow">
         <div class="option-menu">
           <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
           <div class="menu-item" v-show="getCurItem().type === 'chart'" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
@@ -89,7 +100,7 @@
           <div class="option-box" v-show="getCurItem().i === item.i">
             <div class="set-box" v-show="!isDataBox">
               <set-box v-if="item.type === 'chart'" :ref="'setBox' + item.i" :onSetChange="setChart"></set-box>
-              <div v-if="item.type === 'back'">
+              <div v-else-if="item.type === 'back'">
                 <div class="set-item">
                   <div class="name">背景</div>
                   <div class="setting">颜色<input type="color" v-model="panelBackColor" /></div>
@@ -99,18 +110,37 @@
                   <div class="setting">间距<input type="number" v-model="panelItemMargin" /></div>
                 </div>
               </div>
-              <div v-if="item.type === 'text'">
+              <div v-else-if="item.type === 'text'">
                 <div class="set-item">
                   <div class="name">文本</div>
                   <div class="setting">内容<input type="text" v-model="item.config.content" @input="textItemChange(item)" /></div>
-                  <div class="setting">字体<input type="text" v-model="item.config.fontFamily" @input="textItemChange(item)" /></div>
-                  <div class="setting">字体大小<input type="number" v-model="item.config.fontSize" @input="textItemChange(item)" /></div>
-                  <div class="setting">字体粗细<input type="text" v-model="item.config.fontWeight" @input="textItemChange(item)" /></div>
+                  <div class="setting">
+                    字体
+                    <!-- <input type="text" v-model="item.config.fontFamily" @input="textItemChange(item)" /> -->
+                    <select v-model="item.config.fontFamily" @input="textItemChange(item)">
+                      <template v-for="(fontFamily, index) in fontFamilys">
+                        <option :value="fontFamily">{{ fontFamily }}</option>
+                      </template>
+                    </select>
+                  </div>
+                  <div class="setting">
+                    字体大小
+                    <input type="number" v-model="item.config.fontSize" @input="textItemChange(item)" />
+                  </div>
+                  <div class="setting">
+                    字体粗细
+                    <!-- <input type="text" v-model="item.config.fontWeight" @input="textItemChange(item)" /> -->
+                    <select v-model="item.config.fontWeight" @input="textItemChange(item)">
+                      <template v-for="(fontWeight, index) in fontWeights">
+                        <option :value="fontWeight">{{ fontWeight }}</option>
+                      </template>
+                    </select>
+                  </div>
                   <div class="setting">文字颜色<input type="color" v-model="item.config.color" @input="textItemChange(item)" /></div>
                   <div class="setting">背景颜色<input type="color" v-model="item.config.backgroundColor" @input="textItemChange(item)" /></div>
                 </div>
               </div>
-              <div v-if="item.type === 'image'">image</div>
+              <div v-else-if="item.type === 'image'">image</div>
             </div>
             <div class="data-box" v-show="isDataBox && !dataSoruceBox">
               <div class="data-menu">
@@ -119,9 +149,10 @@
                 <!-- TODO URL导入待做 -->
                 <div class="menu-item" v-show="false">URL导入</div>
               </div>
-              <h-table :ref="'table' + item.i" :hookFunc="tableChange"></h-table>
-              <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
-              <div class="match-box" v-show="openMatch">match-box</div>
+              <h-table :ref="'table' + item.i" :hookFunc="tableChange" :item="item"></h-table>
+              <div class="data-match" @click="transData">转置数据</div>
+              <!-- <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
+              <div class="match-box" v-show="openMatch">match-box</div> -->
             </div>
             <div class="data-import" v-show="dataSoruceBox">
               <div class="return" @click="dataSoruceBox = false"><span class="iconfont">&#xe608;</span>取消</div>
@@ -144,15 +175,20 @@ import GLayout from '@/components/master/tab/GLayout.vue'
 import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 import SetBox from '@/components/master/tab/SetBox.vue'
+import ShareWindow from '@/components/ShareWindow.vue'
+import PopBox from '@/components/PopBox.vue'
+
 export default {
-  components: { GLayout, HTable, SetBox },
+  components: { GLayout, HTable, SetBox, ShareWindow, PopBox },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
+        this.$refs.GLayout.clearLayout() // 在加载数据前清除一下画布，消除keepalive的影响
         API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
           if (message.success) {
             callback({ type: 'panel', topic: message.info.name, key: message.info._id })
+            this.panelId = this.$route.params.tabkey
             this.panelName = message.info.name
             this.setLayout(message.info.layout, message.info.back)
             this.setCurItemToBack()
@@ -165,8 +201,20 @@ export default {
         this.chartProjectBox = false
         this.dataSoruceBox = false
         this.keepData = false
+        this.saveTip = ''
+        this.leftShow = true
+        this.rightShow = true
+        this.isPop = false
       }
     })
+    this.autoSave = setInterval(() => {
+      // 每1分钟自动保存一次
+      this.save()
+    }, 1000 * 60)
+  },
+  deactivated() {
+    this.save()
+    clearInterval(this.autoSave)
   },
   mounted() {
     // API.getPanel(this.$route.params.tabkey, (result) => {
@@ -185,6 +233,8 @@ export default {
   },
   data() {
     return {
+      fontWeights: ['normal', 'bold', 'bolder', 'lighter'],
+      fontFamilys: ['sans-serif', 'serif', 'monospace', 'Arial', 'Courier New', 'Microsoft YaHei', 'Cursive', 'Fantasy'],
       keepData: false,
       dataSoruceBox: false,
       dataProjects: [],
@@ -244,6 +294,7 @@ export default {
         },
       ],
 
+      panelId: '',
       panelName: '',
       sources: [
         {
@@ -264,11 +315,17 @@ export default {
           id: 'text',
           name: '文本',
         },
-        {
-          id: 'image',
-          name: '图片',
-        },
+        // {
+        //   id: 'image',
+        //   name: '图片',
+        // },
       ],
+      autoSave: undefined,
+      saveTip: '',
+      leftShow: true,
+      rightShow: true,
+      isPop: false,
+      toShow: false,
     }
   },
   props: {
@@ -280,8 +337,18 @@ export default {
     },
   },
   watch: {
+    leftShow() {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 0)
+    },
+    rightShow() {
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'))
+      }, 0)
+    },
     panelBackColor(newValue) {
-      this.$refs.panelBack.style.backgroundColor = newValue
+      // this.$refs.panelBack.style.backgroundColor = newValue
       this.$refs.GLayout.back.config.backgroundColor = newValue
     },
     panelItemMargin(newValue) {
@@ -300,6 +367,23 @@ export default {
     },
   },
   methods: {
+    transData() {
+      this.$refs['table' + this.getCurItem().i][0].transData()
+    },
+    share() {
+      this.save(true)
+      this.isPop = true
+      this.$refs.popwin.isShared = true
+      API.savePanel({ _id: this.panelId, isShared: true }, (message) => {
+        console.log(message)
+      })
+    },
+    setProj(tableData, option) {
+      this.clearChart()
+      this.setChart(tableData, option, true)
+      this.loadData(tableData, undefined, true)
+      this.setSetBox(option)
+    },
     textSetExample(config) {
       this.getCurItem().config = Object.assign(this.getCurItem().config, config)
       this.textItemChange(this.getCurItem())
@@ -318,32 +402,44 @@ export default {
     textItemChange(item) {
       this.$refs.GLayout.setTextItem(item)
     },
-    tableChange(data) {
+    tableChange(data, item) {
       setTimeout(() => {
-        this.setChart(data)
+        this.setChart(data, undefined, undefined, item)
+        // console.log(item, new Date().toLocaleTimeString())
       }, 0)
     },
-    setChart(data, option, flag) {
-      if (flag && this.keepData) {
-        data = this.$refs['table' + this.getCurItem().i][0].getData()
+    setChart(data, option, flag, item) {
+      if (!item) {
+        if (flag && this.keepData) {
+          data = this.$refs['table' + this.getCurItem().i][0].getData()
+        }
+        this.$refs.GLayout.setChart(data, option, this.getCurItem())
+      } else {
+        if (flag && this.keepData) {
+          data = this.$refs['table' + item.i][0].getData()
+        }
+        this.$refs.GLayout.setChart(data, option, item)
       }
-      this.$refs.GLayout.setChart(data, option)
     },
     clearChart() {
       this.$refs.GLayout.clearChart()
     },
-    loadData(data, itemI, flag) {
-      // console.log(this.$refs['table' + this.getCurItem().i][0]);
-      if (itemI) {
+    loadData(data, item, flag) {
+      if (item) {
         if (flag && this.keepData) {
-          data = this.$refs['table' + itemI][0].getData()
+          data = this.$refs['table' + item.i][0].getData()
         }
-        this.$refs['table' + itemI][0].loadData(data)
+        this.$refs['table' + item.i][0].loadData(data)
+        // setInterval(() => {
+
+        // this.tableChange(this.$refs['table' + item.i][0].getData(), item)
+        // }, 1000);
       } else {
         if (flag && this.keepData) {
           data = this.$refs['table' + this.getCurItem().i][0].getData()
         }
         this.$refs['table' + this.getCurItem().i][0].loadData(data)
+        // this.tableChange(this.$refs['table' + item.i][0].getData(), this.getCurItem())
       }
     },
     importData() {
@@ -365,9 +461,15 @@ export default {
       this.isDataBox = false
       this.curSampleName = null
     },
-    save() {
-      API.savePanel({ _id: this.$route.params.tabkey, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout }, (message) => {
+    save(isHand) {
+      if (!this.$refs.GLayout) return
+      API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout }, (message) => {
         console.log(message)
+        if (isHand) {
+          this.saveTip = '保存成功'
+        } else {
+          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+        }
       })
     },
     setConfig(item, key, value) {
@@ -380,7 +482,6 @@ export default {
       return this.$refs.GLayout ? this.$refs.GLayout.curItem : {}
     },
     setLayout(layout, back) {
-      console.log(layout)
       this.$refs.GLayout.setLayout(layout)
       this.$refs.GLayout.back = back
     },
@@ -389,12 +490,13 @@ export default {
     },
     addSource(sourceType, project) {
       if (sourceType === 'newChart') {
-        this.$refs.GLayout.addItem('chart', {})
-        setTimeout(() => {
-          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(this.chartSamples[0].examples[0].tableData, this.chartSamples[0].examples[0].option)
-          this.loadData(this.chartSamples[0].examples[0].tableData)
-          this.setSetBox(this.chartSamples[0].examples[0].option, this.getCurItem().i)
-          window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
+        let curItem = this.$refs.GLayout.addItem('chart', {})
+        let that = this
+        setTimeout(function () {
+          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
+          that.loadData(that.chartSamples[0].examples[0].tableData, curItem)
+          that.setSetBox(that.chartSamples[0].examples[0].option, curItem.i)
+          window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
         }, 0)
       } else if (sourceType === 'oldChart') {
         API.getChartList((message) => {
@@ -409,12 +511,13 @@ export default {
         })
         this.chartProjectBox = true
       } else if (sourceType === 'addOldChart') {
-        this.$refs.GLayout.addItem('chart', {})
-        setTimeout(() => {
-          this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].setOption(project.data, project.option)
-          this.loadData(project.data)
-          this.setSetBox(project.option, this.getCurItem().i)
-          window.addEventListener('resize', this.$refs.GLayout.$refs['chart' + this.getCurItem().i][0].chartResize)
+        let curItem = this.$refs.GLayout.addItem('chart', {})
+        let that = this
+        setTimeout(function () {
+          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(project.data, project.option)
+          that.loadData(project.data, curItem)
+          that.setSetBox(project.option, curItem.i)
+          window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
         }, 0)
       } else if (sourceType === 'text') {
         this.$refs.GLayout.addItem(sourceType, {
@@ -425,15 +528,6 @@ export default {
           color: '#000000',
           backgroundColor: '#ffffff',
         })
-        // console.log('ttttttttttttttttttttext')
-        // this.$refs.GLayout.layout[this.getCurItem().i].config = {
-        //   content: '文本内容',
-        //   fontFamily: 'sans-serif',
-        //   fontSize: 22,
-        //   fontWeight: 'bold',
-        //   color: '#000000',
-        //   backgroundColor: '#ffffff',
-        // }
       } else if (sourceType === 'image') {
         this.$refs.GLayout.addItem(sourceType, {})
       }
@@ -445,6 +539,10 @@ export default {
         this.$refs['setBox' + this.getCurItem().i][0].setSettings(option)
       }
     },
+    clear() {
+      this.$refs.GLayout.clearLayout()
+      this.save(true)
+    },
   },
 }
 </script>
@@ -452,6 +550,7 @@ export default {
 <style scoped>
 #stage {
   display: flex;
+  /* position: relative; 为分享页面PopWindow而设置，否则其height:100%是以Body为参照 */
   flex-direction: column;
   height: 100%;
 }
@@ -466,6 +565,7 @@ export default {
   color: rgb(41, 41, 41);
   font-size: 20px;
   line-height: 35px;
+  cursor: default;
 }
 .head .head-menu {
   display: flex;
@@ -481,6 +581,13 @@ export default {
 }
 .head .head-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.801);
+}
+.head .head-menu .menu-tip {
+  padding-right: 5px;
+  color: rgb(116, 138, 161);
+  line-height: 35px;
+  font-size: 14px;
+  background-color: rgb(218, 218, 218);
 }
 
 .content {
@@ -510,6 +617,7 @@ export default {
   line-height: 40px;
   background-color: rgb(25, 126, 166);
   border-radius: 20px;
+  cursor: default;
 }
 .content .left-box .top-label .iconfont {
   margin-left: 5px;
@@ -530,6 +638,10 @@ export default {
   line-height: 40px;
   background-color: rgb(149, 149, 149);
   border-radius: 20px;
+  cursor: pointer;
+}
+.content .left-box .menu-top .top-item:nth-child(1) {
+  cursor: default;
 }
 .content .left-box .menu-top:hover .top-item {
   display: block;
@@ -555,6 +667,7 @@ export default {
   line-height: 40px;
   background-color: rgb(137, 137, 137);
   border-radius: 20px;
+  cursor: pointer;
 }
 .content .left-box .menu-top .top-item .type-item:hover {
   color: rgb(41, 41, 41);
@@ -567,6 +680,7 @@ export default {
   text-align: center;
   line-height: 30px;
   background-color: rgb(97, 161, 103);
+  cursor: default;
 }
 .content .left-box .menu-label.return {
   line-height: 50px;
@@ -584,8 +698,11 @@ export default {
   background-color: rgb(192, 192, 192);
 }
 .content .left-box .menu-label.check input {
+  width: 20px;
+  height: 20px;
   margin-left: 5px;
   vertical-align: middle;
+  cursor: pointer;
 }
 .content .left-box .model-main {
   display: flex;
@@ -620,7 +737,7 @@ export default {
   height: 100%;
   padding: 10px 10px 0 10px;
   background-color: rgb(241, 241, 241);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .content .left-box .model-box .model-item {
   display: flex;
@@ -630,6 +747,9 @@ export default {
   border-radius: 5px;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
   cursor: pointer;
+}
+.content .left-box .model-box .model-item:hover {
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
 }
 .content .left-box .model-box .model-item .item-img {
   height: 80px;
@@ -695,7 +815,7 @@ export default {
   height: 100%;
   padding: 5px;
   background-color: rgb(241, 241, 241);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .set-box .set-item {
   margin: 0 0 5px 0;
@@ -777,31 +897,39 @@ export default {
   width: 100%;
 }
 .content .right-box .option-box .data-import .return {
+  color: rgb(65, 65, 65);
+  font-size: 20px;
   text-align: center;
   line-height: 50px;
-  font-size: 16px;
   background-color: rgb(144, 168, 151);
+  cursor: pointer;
 }
-.content .right-box .option-box .data-import .return .iconfont{
-  margin-right: 5px;
-  font-size: 20px;
+.content .right-box .option-box .data-import .return:hover {
+  background-color: rgb(67, 168, 97);
 }
 .content .right-box .option-box .data-import .confirm {
+  font-size: 20px;
   color: rgb(255, 255, 255);
   text-align: center;
   line-height: 50px;
   background-color: rgb(49, 133, 181);
+  cursor: pointer;
+}
+.content .right-box .option-box .data-import .confirm:hover {
+  background-color: rgb(75, 171, 226);
 }
 .content .right-box .option-box .data-import .title {
+  font-size: 24px;
   color: rgb(255, 255, 255);
   text-align: center;
-  line-height: 30px;
+  line-height: 35px;
   background-color: rgb(138, 138, 138);
+  cursor: default;
 }
 .content .right-box .option-box .data-import .source-box {
   flex-grow: 1;
   padding: 5px 5px 0 5px;
-  overflow-y: scroll;
+  overflow-y: auto;
   background-color: rgb(233, 233, 233);
 }
 .content .right-box .option-box .data-import .source-box .source-item {
@@ -812,13 +940,15 @@ export default {
   text-overflow: ellipsis;
   text-overflow: ellipsis;
   overflow: hidden;
-  word-break: keep-all;
+  /* word-break: keep-all; */
+  cursor: pointer;
 }
 .content .right-box .option-box .data-import .source-box .source-item:hover {
-  background-color: rgb(234, 246, 252);
+  outline: 2px solid rgb(196, 118, 17);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
 }
 .content .right-box .option-box .data-import .source-box .source-item.selected {
-  outline: 2px solid rgb(22, 115, 169);
+  background-color: rgb(231, 204, 127);
 }
 
 .content .center-box {
@@ -827,16 +957,35 @@ export default {
   overflow: hidden;
 }
 .content .center-box .center-inner {
+  position: relative;
   height: 100%;
   padding: 5px;
   background-color: rgb(44, 44, 44);
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 .content .center-box .center-content {
-  width: fit-content;
-  height: fit-content;
-  min-width: 100%;
-  min-height: 100%;
-  background-color: rgb(234, 234, 234);
+  /* position: relative; */
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.inout-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+}
+.inout-button:hover {
+  background-color: rgb(19, 160, 49);
+}
+.inout-button:hover .iconfont {
+  color: rgb(255, 255, 255);
+}
+.inout-button .iconfont {
+  color: rgb(9, 136, 57);
+  font-weight: bold;
+  font-size: 20px;
 }
 </style>

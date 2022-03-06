@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:18
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 19:20:53
+ * @LastEditTime: 2022-03-01 00:18:56
  * @Description: 
  */
 const MongoClient = require('mongodb').MongoClient
@@ -19,15 +19,14 @@ const dbName = 'castlechart'
 function connectDB(callback) {
   const client = new MongoClient(url, { useNewUrlParser: true })
   client.connect((err) => {
-    assert.equal(null, err)
-    // console.log('Connected')
-
-    const db = client.db(dbName)
-
-    callback(db, () => {
-      client.close()
+      assert.equal(null, err)
+      
+      const db = client.db(dbName)
+      
+      callback(db, () => {
+        client.close()
+      })
     })
-  })
 }
 
 /**

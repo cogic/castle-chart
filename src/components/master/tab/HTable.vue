@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-31 16:53:30
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-25 04:48:59
+ * @LastEditTime: 2022-03-03 09:32:15
  * @Description: 
 -->
 <template>
@@ -93,66 +93,112 @@ export default {
       type: Function,
       default: function () {},
     },
+    item: {
+      type: String,
+      default: undefined,
+    },
   },
   methods: {
+    transData() {
+      let data = this.getData()
+      let newData = []
+      let maxRow = 0
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].length > maxRow) {
+          maxRow = data[i].length
+        }
+      }
+      for (let i = 0; i < maxRow; i++) {
+        let temp = []
+        for (let j = 0; j < data.length; j++) {
+          temp.push(data[j][i])
+        }
+        newData.push(temp)
+      }
+      this.loadData(newData)
+      // return newData
+    },
     render() {
       this.hot.render()
     },
     addHook(callback) {
       this.hot.addHook('afterChange', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterCreateRow', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterCreateCol', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterRemoveRow', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterRemoveCol', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterColumnMove', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
       this.hot.addHook('afterRowMove', () => {
-        callback(this.getData())
+        callback(this.getData(), this.item)
       })
     },
     loadData(data) {
-      // FIXME 这里的 data 拷贝成 newData 时有点问题，应该是 data 有 proxy 代理的原因
-      // console.log(data);
-      // let data2 = data.slice()
-      // let newData = JSON.parse(JSON.stringify(data2))
-      let newData = []
-      data.forEach((el) => {
-        newData.push(el)
-      })
-      // let newData = data.slice()
-      // console.log(newData);
+      // let newData = []
+      // data.forEach((el) => {
+      //   newData.push(el)
+      // })
+      // console.log(data)
+      let newData = this.cloneData(data)
+      // let newData = this.getData(data)
       this.hot.loadData(newData.length < 1 ? [[]] : newData) // lodaData 的 参数不能为空数组[]，但可以为[[]]
     },
-    getData() {
-      const data = this.hot.getData()
+    getData(oriData) {
+      // let ran = Math.random()
+      // console.log(ran, oriData)
+
+      if (!oriData) {
+        oriData = this.hot.getData()
+      }
+      let data = this.cloneData(oriData)
       let trueRows = 0
       for (let i = data.length - 1; i >= 0; i--) {
+        // console.log(ran, data)
+        // console.log(ran, oriData)
         for (let j = data[i].length - 1; j >= 0; j--) {
-          if (data[i][j] != null && data[i][j] != '') {
+          if (data[i][j] && data[i][j] != null && data[i][j] != 'null' && data[i][j] != '') {
             if (trueRows === 0) {
               trueRows = i + 1
             }
             data[i].length = j + 1
+            data[i].splice(j + 1)
+            // console.log(j + 1)
             break
           }
           if (j === 0) {
             data[i].length = 0
+            data[i] = []
           }
         }
       }
+      // console.log(ran, data)
+      // console.log(trueRows)
       data.length = trueRows
-      return data
+      data.splice(trueRows)
+      // console.log(ran, data)
+      return this.cloneData(data)
+    },
+    cloneData(data) {
+      let newData = []
+      for (let i = 0; i < data.length; i++) {
+        let temp = []
+        for (let j = 0; j < data[i].length; j++) {
+          temp.push(data[i][j])
+        }
+        newData.push(temp)
+      }
+      return newData
     },
   },
 }

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-17 17:20:48
+ * @LastEditTime: 2022-03-01 20:45:04
  * @Description:
  */
 import { createRouter, createWebHistory } from 'vue-router'
@@ -19,6 +19,8 @@ const UserSign = () => import('@/views/UserSign.vue')
 const SignIn = () => import('@/components/sign/SignIn.vue')
 const SignUp = () => import('@/components/sign/SignUp.vue')
 const Test = () => import('./test.vue')
+const Preview = ()=> import('@/views/Preview.vue')
+
 const routes = [
   {
     path: '/test',
@@ -92,6 +94,11 @@ const routes = [
         component: SignUp,
       },
     ],
+  },
+  {
+    path: '/preview/:type/:viewid',
+    name:'Preview',
+    component: Preview,
   },
 ]
 
