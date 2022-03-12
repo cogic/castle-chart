@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 16:50:10
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 21:54:01
+ * @LastEditTime: 2022-03-12 10:49:12
  * @Description: 
 -->
 <template>
@@ -14,9 +14,15 @@ import StoreStage from '@/components/master/main/StoreStage.vue'
 import API from '@/api'
 export default {
   mounted() {
-    API.getChartList((message)=>{
+    API.getChartList((message) => {
       if (message.success) {
         this.stageConfig.files = message.info
+        // this.stageConfig.files.forEach((val) => {
+        //   API.getChartImg({ _id: val._id }, (message) => {
+        //     console.log('ok' + val._id)
+        //     val.src = 'data:image/jpg;base64,' + message.info.imgStr
+        //   })
+        // })
       }
     })
   },

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 14:40:12
+ * @LastEditTime: 2022-03-12 10:46:07
  * @Description:
  */
 import Network from '@/api/network'
@@ -12,7 +12,7 @@ import AMapLoader from '@amap/amap-jsapi-loader'
 // import offline from '@/api/offline'
 // export default offline
 
-const showLog = false
+const showLog = true
 
 function aLog(receive, back) {
   if (showLog) {
@@ -62,13 +62,13 @@ function newPanel(data, callback) {
   netPost('/panel/new-one', data, callback)
 }
 
-function getTableList(callback) {
+function getTableList(callback) {console.log('getTableListgetTableList');
   netPost('/table/get-list', undefined, callback)
 }
-function getChartList(callback) {
+function getChartList(callback) {console.log('getChartListgetChartList');
   netPost('/chart/get-list', undefined, callback)
 }
-function getPanelList(callback) {
+function getPanelList(callback) {console.log('getPanelListgetPanelList');
   netPost('/panel/get-list', undefined, callback)
 }
 
@@ -95,7 +95,9 @@ function getSharedChart(data, callback) {
 function getSharedPanel(data, callback) {
   netPost('/panel/get-shared', data, callback)
 }
-
+function getChartImg(data, callback) {
+  netPost('/chart/get-img', data, callback)
+}
 
 function deleteTable(data, callback) {
   netPost('/table/delete-one', data, callback)
@@ -151,4 +153,4 @@ function getGeoJson(adcode, callback) {
 //   netPost('/panel/set-shared', data, callback)
 // }
 
-export default {getSharedChart,getSharedPanel, getGeoJson, savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }
+export default {getChartImg, getSharedChart,getSharedPanel, getGeoJson, savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-02-26 14:42:20
+ * @LastEditTime: 2022-03-12 01:25:12
  * @Description:
  */
 import axios from 'axios'
@@ -22,7 +22,7 @@ function request(method, url, config = {}) {
   const instance = axios.create({
     baseURL,
     method,
-    timeout: 2000,
+    timeout: 10000,
   })
   config.url = url // url 需要放 config 里，放在上面的 create() 中则无效，原因不明确
   // 添加请求拦截器

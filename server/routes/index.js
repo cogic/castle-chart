@@ -2,17 +2,17 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:44
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-02 16:59:22
+ * @LastEditTime: 2022-03-08 01:30:45
  * @Description: 
  */
 const express = require("express");
-const cookieSession = require("cookie-session");
 
 const router = express.Router();
 const business = require("./bussiness");
 
 // 用 router 代替 app 进行路由配置
 router
+.post('/chart/get-img', business.getChartImg)
 .post('/test',business.test)
 .post('/user/regiser',business.userRegister)
 .post('/user/login',business.userLogin)

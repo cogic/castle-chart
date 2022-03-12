@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 00:45:56
+ * @LastEditTime: 2022-03-12 13:48:54
  * @Description: 
 -->
 <template>
@@ -10,23 +10,23 @@
     <div class="left-head">
       <img class="logo" src="@/assets/logo.png" alt="logo" />
       <h1 class="headline">CastleChart</h1>
-      <div :class="['main-page', { active: currentTabKey === 'main' }]" @click="tabSwitch({ key: 'main' })">
+      <div :class="['main-page', 'text-disable', { active: currentTabKey === 'main' }]" @click="tabSwitch({ key: 'main' })">
         <span class="iconfont">&#xe6bb;</span>
       </div>
     </div>
     <div class="center-head" id="tabbar" ref="tabbar">
-      <div :class="['tab', { active: currentTabKey === tab[1].key }]" v-for="(tab, index) in tabArr" :key="tab.tabKey" @click="tabSwitch(tab[1])">
+      <div :class="['tab', 'text-disable', { active: currentTabKey === tab[1].key }]" v-for="(tab, index) in tabArr" :key="tab.tabKey" @click="tabSwitch(tab[1])">
         <span class="topic">{{ tab[1].topic }}</span>
-        <span class="closebt iconfont" @click.stop="closeTab(tab[0], index)">&#xe611;</span>
+        <span class="closebt iconfont text-disable" @click.stop="closeTab(tab[0], index)">&#xe611;</span>
       </div>
     </div>
     <div class="right-head">
       <div class="portrait">
         <span class="name">{{ username }}</span>
         <img :src="userPortrait" alt="portrait" />
-        <div class="logout" @click="logout">退出登录</div>
+        <div class="logout text-disable" @click="logout">退出登录</div>
       </div>
-      <div class="fullscreen" @click="setFullScreen">
+      <div class="fullscreen text-disable" @click="setFullScreen">
         <span class="iconfont" v-if="!isFull">&#xe667;</span>
         <span class="iconfont exit" v-else>&#xe6ce;</span>
       </div>
@@ -34,6 +34,7 @@
   </header>
   <!-- <section> -->
   <!-- <main> -->
+  <!-- <router-view :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" ></router-view> -->
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
@@ -82,6 +83,10 @@ export default {
   },
   computed: {
     tabKey() {
+      // 项目的tab只需返回其fullPath，但主页tab会有内部的路由切换，若也直接返回fullPath的话会重复加载主页
+      if(this.$route.matched[1].name === 'MainPage') {
+        return 'MainPage'
+      }
       return this.$route.fullPath
     },
     tabArr() {
@@ -104,6 +109,7 @@ export default {
       return document.fullscreenElement || document.mozFullScreenElement || document.msFullScreenElement || document.webkitFullscreenElement || null
     },
     setFullScreen() {
+      this.isFull = !this.isFull
       if (this.isFullScreen()) {
         if (document.exitFullScreen) {
           document.exitFullScreen()
@@ -231,6 +237,9 @@ header {
 .left-head .main-page span:hover {
   background-color: rgb(82, 165, 185);
 }
+.left-head .main-page span:active {
+  background-color: rgb(48, 179, 212);
+}
 
 .right-head {
   display: flex;
@@ -279,6 +288,10 @@ header {
   color: rgb(255, 255, 255);
   background-color: rgb(171, 84, 84);
 }
+.right-head .portrait .logout:active {
+  color: rgb(255, 255, 255);
+  background-color: rgb(212, 138, 138);
+}
 
 .right-head .fullscreen span {
   color: rgb(82, 126, 96);
@@ -314,7 +327,7 @@ header .center-head {
   margin-right: 5px;
   padding: 0 10px;
   background-color: rgb(182, 182, 182);
-  border-radius: 5px 5px 0 0;
+  border-radius: 6px;
   cursor: pointer;
   overflow: hidden;
 }
@@ -323,6 +336,9 @@ header .center-head {
 }
 .center-head .tab.active {
   background-color: rgb(58, 167, 130);
+}
+.center-head .tab:active {
+  background-color: rgb(104, 202, 168);
 }
 .center-head .topic {
   color: rgb(51, 51, 51);
@@ -340,6 +356,9 @@ header .center-head {
 .center-head .closebt:hover {
   color: rgb(255, 255, 255);
   background-color: rgba(214, 9, 9, 0.692);
+}
+.center-head .closebt:active {
+  background-color: rgba(219, 133, 133, 0.692);
 }
 
 footer {

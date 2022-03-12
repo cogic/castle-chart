@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:18:57
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-01 09:40:39
+ * @LastEditTime: 2022-03-08 11:43:29
  * @Description: 
  */
 const express = require('express')
@@ -29,7 +29,7 @@ app.use(
 )
 
 // express 托管静态资源
-// app.use(express.static('public'))
+app.use(express.static('public'))
 
 // 设置 router
 app.use(router).listen(port, () => {

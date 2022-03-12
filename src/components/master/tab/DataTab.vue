@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:14:54
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 14:45:01
+ * @LastEditTime: 2022-03-07 17:56:01
  * @Description: 
 -->
 <template>
@@ -11,11 +11,11 @@
       <span class="title">{{ tableName }}</span>
     </div>
     <div class="menubar">
-      <div class="menu import" @click="importData">导入</div>
-      <div class="menu export" @click="downloadFile">导出</div>
+      <div class="menu import text-disable" @click="importData">导入</div>
+      <div class="menu export text-disable" @click="downloadFile">导出</div>
       <!-- <div class="menu export" @click="">撤销</div> -->
       <!-- <div class="menu export" @click="">重做</div> -->
-      <div class="menu save" @click="saveTableData(true)">保存</div>
+      <div class="menu save text-disable" @click="saveTableData(true)">保存</div>
       <div class="menu-tip">{{ saveTip }}</div>
     </div>
     <div class="sheet">
@@ -35,22 +35,12 @@ export default {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        // setTimeout(() => {
-
-        // }, timeout);
         API.getTable({ _id: this.$route.params.tabkey }, (message) => {
           this.tableId = this.$route.params.tabkey
           if (message.success) {
-            // this.addTab({ type: 'data', topic: message.info.name, key: message.info._id })
             callback({ type: 'data', topic: message.info.name, key: message.info._id })
             this.tableName = message.info.name
             this.tableData = message.info.data
-            // let that = this
-            // setTimeout(function() {
-              
-            //   that.$refs.table.loadData(message.info.data)
-            // }, 1000);
-            // console.log(this.tableData,message.info.data);
           }
         })
         this.saveTip = ''
@@ -105,7 +95,6 @@ export default {
     saveTableData(isHand) {
       // 保存 tabledata 到数据库
       if(!this.$refs.table) return
-      console.log(this.$refs.table.getData());
       API.saveTable({ _id: this.tableId, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
         console.log(message)
         if (isHand) {
@@ -158,6 +147,9 @@ export default {
 }
 .menubar .menu:hover {
   background-color: rgba(233, 233, 233, 0.397);
+}
+.menubar .menu:active {
+  background-color: rgba(22, 22, 22, 0.397);
 }
 .menubar .menu-tip {
   padding-right: 5px;

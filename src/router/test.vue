@@ -2,97 +2,42 @@
  * @Author: Cogic
  * @Date: 2022-01-17 17:19:58
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-02 23:16:08
+ * @LastEditTime: 2022-03-10 23:04:19
  * @Description: 
 -->
 <template>
-  <div id="popwin" @mousedown="close" v-if="isPopShow">
-    <div class="middle-box">
-      <div class="info-container">{{ info }}</div>
-      <div class="button-box">
-        <div class="button exit" id="exit" @click="close">取消</div>
-        <div class="button submit" @click="trueFunc">确认</div>
-      </div>
-    </div>
-  </div>
+<el-input  class="w-50 m-2" :placeholder="'asdads'" />
+<el-input v-model="input" placeholder="Please input" />
+<div v-for="set in item.sets">555</div>
 </template>
 
 <script>
+import API from "@/api";
 export default {
-  data() {
-    return {
-      isPopShow: true,
-      info: '信息信息',
+  data(){
+    return{
+      item:{
+        sets:[
+          {},{},{}
+        ]
+      },
+      input:'sdfsdfsdf'
     }
   },
-  props: {
-    trueFunc: {
-      default: function () {},
-      type: Function,
-    },
-  },
-  methods: {
-    close(e) {
-      if (e.target.id === 'popwin' || e.target.id === 'exit') {
-        this.isPopShow = false
-      }
-    },
-  },
+  methods:{
+    test(){
+      console.log('test')
+      API.getChartImg({_id:'6225fffce313c0da4324a62a'},(message)=>{
+        this.imgBase64 = message.info.imgStr
+        console.log(message.info.imgStr)
+        console.log(Buffer.isBuffer(new Buffer([0x48, 0x65, 0x6c, 0x6c, 0x6f])))
+        console.log(Buffer.isBuffer(message.info.imgStr))
+      })
+    }
+  }
 }
 </script>
 
 <style scoped>
-#popwin {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(122, 122, 122, 0.39);
-  z-index: 250;
-}
-.middle-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 400px;
-  height: 200px;
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.middle-box .info-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-  font-size: 25px;
-  color: rgb(46, 46, 46);
-  background-color: rgb(248, 248, 248);
-}
-.middle-box .button-box {
-  background-color: rgb(214, 188, 82);
-}
-.middle-box .button-box .button {
-  display: inline-block;
-  width: 50%;
-  color: rgb(255, 255, 255);
-  font-size: 20px;
-  line-height: 40px;
-  text-align: center;
-  cursor: pointer;
-}
-.middle-box .button-box .button.exit {
-  background-color: rgb(207, 134, 23);
-}
-.middle-box .button-box .button.exit:hover {
-  background-color: rgb(184, 93, 57);
-}
-.middle-box .button-box .button.submit {
-  background-color: rgb(99, 155, 201);
-}
-.middle-box .button-box .button.submit:hover {
-  background-color: rgb(75, 113, 194);
-}
+
 </style>

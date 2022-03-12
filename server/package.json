@@ -6,9 +6,12 @@
     "start": "node ./app.js"
   },
   "dependencies": {
+    "art-template": "^4.13.2",
     "cookie-session": "^2.0.0",
     "echarts": "^4.3.0",
     "express": "^4.17.2",
-    "mongo": "^0.1.0"
+    "express-art-template": "^1.0.1",
+    "mongo": "^0.1.0",
+    "puppeteer": "^13.5.0"
   }
 }

@@ -2,11 +2,11 @@
  * @Author: Cogic
  * @Date: 2021-12-30 10:21:11
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 10:08:18
+ * @LastEditTime: 2022-03-11 23:21:37
  * @Description: 
 -->
 <template>
-  <div id="chart-box" ref="chartBox">555555</div>
+  <div id="chart-box" ref="chartBox"></div>
 </template>
 
 <script>
@@ -24,15 +24,9 @@ export default {
     }, 0)
     window.addEventListener('resize', this.chartResize)
   },
-  beforeUnmount(){
+  beforeUnmount() {
     window.removeEventListener('resize', this.chartResize)
   },
-  // activated() {
-  //   window.addEventListener('resize', this.chartResize)
-  // },
-  // deactivated() {
-  //   window.removeEventListener('resize', this.chartResize)
-  // },
   props: {
     data: {
       type: Array,
@@ -60,6 +54,9 @@ export default {
     }
   },
   methods: {
+    test() {
+      console.log(this.myChart.getOption())
+    },
     chartResize() {
       this.myChart.resize()
     },
@@ -67,7 +64,6 @@ export default {
       this.myChart.clear()
     },
     getOption() {
-      // console.log(this.myChart.getOption());
       return this.myChart.getOption()
     },
     setOption(data, option = {}) {
@@ -84,7 +80,7 @@ export default {
         one.data = []
         this.myChart.setOption({
           series: [one],
-        }, { replaceMerge: ['series'] })
+        })
       }
       if (preSeries[0] && ['line', 'bar'].includes(preSeries[0].type)) {
         let series = []
@@ -99,14 +95,25 @@ export default {
           one.data = data[i].slice(1)
           series.push(one)
         }
+        if (data.length - 1!=preSeries.length) {
+          // 当'line', 'bar'等图的seires数变化时，需要清除一下series
+          this.myChart.setOption(
+            {
+              series: undefined,
+            },
+            { replaceMerge: ['series'] }
+          )
+        }
         this.myChart.setOption({
           xAxis: {
-            name: data[0][0],
+            data: data[0].slice(1),
+          },
+          yAxis: {
             data: data[0].slice(1),
           },
           series,
-        }, { replaceMerge: ['xAxis', 'series'] })
-      } else if (preSeries[0] && ['pie', 'funnel','gauge','map'].includes(preSeries[0].type)) {
+        })
+      } else if (preSeries[0] && ['pie', 'funnel', 'gauge', 'map'].includes(preSeries[0].type)) {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
         for (let i = 1; i < data.length; i++) {
@@ -118,7 +125,7 @@ export default {
         one.data = newData
         this.myChart.setOption({
           series: [one],
-        }, { replaceMerge: ['xAxis', 'yAxis', 'series'] })
+        })
       } else if (preSeries[0] && preSeries[0].type === 'scatter') {
         let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
         let newData = []
@@ -128,11 +135,13 @@ export default {
         one.data = newData
         this.myChart.setOption({
           xAxis: {
-            name: data[0][0],
+            data: data[0].slice(1),
+          },
+          yAxis: {
             data: data[0].slice(1),
           },
           series: [one],
-        }, { replaceMerge: ['xAxis', 'series'] })
+        })
       }
     },
   },

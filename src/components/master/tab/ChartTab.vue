@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 13:33:43
+ * @LastEditTime: 2022-03-10 21:31:09
  * @Description: 
 -->
 <template>
@@ -12,21 +12,21 @@
       <div class="name">{{ chartName }}</div>
       <div class="head-menu">
         <div class="menu-tip">{{ saveTip }}</div>
-        <div class="menu-item" @click="save(true)">保存</div>
+        <div class="menu-item text-disable" @click="save(true)">保存</div>
         <!-- <div class="menu-item" @click="preview">预览</div> -->
-        <div class="menu-item" @click="share">分享</div>
+        <div class="menu-item text-disable" @click="share">分享</div>
       </div>
     </div>
     <div class="content">
       <div class="left-box" v-show="leftShow">
         <div class="model-menu">
           <div class="menu-label">图表类型</div>
-          <div class="menu-label check">保留数据<input type="checkbox" v-model="keepData" /></div>
-          <div class="menu-item" :class="{ current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
+          <div class="menu-label check"><div>保留数据</div><el-switch v-model="keepData" active-color="#3B8DD7" width="60"  active-text="是" inactive-text="否" inline-prompt/></div>
+          <div class="menu-item" :class="{ 'text-disable': true, current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="this.curSampleName = sample.name">{{ sample.name }}</div>
         </div>
         <template v-for="sample in chartSamples">
           <div class="model-box" v-if="isCurrentSample(sample)">
-            <div class="model-item" v-for="example in sample.examples" @click="clearChart(), setChart(example.tableData, example.option, true), loadData(example.tableData, true), setSetBox(example.option)">
+            <div class="model-item text-disable" v-for="example in sample.examples" @click="setChartByExample(example)">
               <div class="item-img">
                 <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
                 <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
@@ -42,7 +42,7 @@
           </div>
         </template>
       </div>
-      <div class="inout-button" @click="leftShow = !leftShow">
+      <div class="inout-button text-disable" @click="leftShow = !leftShow">
         <span class="iconfont" v-if="leftShow">&#xe619;</span>
         <span class="iconfont" v-else>&#xe61a;</span>
       </div>
@@ -57,8 +57,8 @@
       </div>
       <div class="right-box" v-show="rightShow">
         <div class="option-menu">
-          <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
-          <div class="menu-item" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
+          <div class="menu-item" :class="['text-disable', { current: !isDataBox }]" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
+          <div class="menu-item" :class="['text-disable', { current: isDataBox }]" @click="isDataBox = true">编辑数据</div>
         </div>
         <div class="option-box" ref="optionBox">
           <div class="set-box" v-show="!isDataBox">
@@ -66,23 +66,23 @@
           </div>
           <div class="data-box" v-show="isDataBox && !dataSoruceBox">
             <div class="data-menu">
-              <div class="menu-item" @click="importData">本地导入</div>
-              <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelect = {})">数据源导入</div>
+              <div class="menu-item text-disable" @click="importData">本地导入</div>
+              <div class="menu-item text-disable" @click=";(dataSoruceBox = true), (dataProjectSelect = {})">数据源导入</div>
               <!-- TODO URL导入待做 -->
-              <div class="menu-item" v-show="false">URL导入</div>
+              <div class="menu-item text-disable" v-show="false">URL导入</div>
             </div>
             <h-table ref="myTable" :hookFunc="tableChange"></h-table>
-            <div class="data-match" @click="transData">转置数据</div>
+            <div class="data-match text-disable" @click="transData">转置数据</div>
             <!-- <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
             <div class="match-box" v-show="openMatch">match-box</div> -->
           </div>
           <div class="data-import" v-show="dataSoruceBox">
-            <div class="return" @click="dataSoruceBox = false">取消</div>
+            <div class="return text-disable" @click="dataSoruceBox = false">取消</div>
             <div class="title">数据源</div>
             <div class="source-box">
               <div :class="{ 'source-item': true, selected: project._id == dataProjectSelect._id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
             </div>
-            <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
+            <div :class="['confirm', 'text-disable', { disable: !dataProjectSelect._id }]" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
           </div>
         </div>
       </div>
@@ -95,11 +95,130 @@
 import API from '@/api'
 import EChart from '@/components/master/tab/EChart.vue'
 import HTable from '@/components/master/tab/HTable.vue'
-import XSheet from '@/assets/script/x-sheet'
 import SetBox from '@/components/master/tab/SetBox.vue'
 import ShareWindow from '@/components/ShareWindow.vue'
 export default {
   components: { EChart, HTable, SetBox, ShareWindow },
+  data() {
+    return {
+      keepData: false,
+      chartName: '',
+      chartSamples: [],
+      chartData: [],
+      chartOption: {},
+      chartId: '',
+      isDataBox: true,
+      curSampleName: '',
+      openMatch: false,
+      dataSoruceBox: false,
+      dataProjects: [],
+      dataProjectSelect: {},
+      autoSave: undefined,
+      saveTip: '',
+      leftShow: true,
+      rightShow: true,
+      isPop: false,
+    }
+  },
+  props: {
+    addTab: {
+      type: Function,
+    },
+    checkNewLoad: {
+      type: Function,
+    },
+  },
+  watch: {
+    openMatch() {
+      setTimeout(() => {
+        this.$refs.myTable.render()
+      }, 0)
+    },
+    dataSoruceBox(newValue) {
+      if (newValue) {
+        this.loadDataSource()
+      }
+    },
+  },
+  methods: {
+    setChartByExample(example) {
+      this.clearChart()
+      this.loadData(example.tableData, true)
+      this.$refs.setBox.setSettings(example.option)
+    },
+    transData() {
+      this.$refs.myTable.transData()
+    },
+    isCurrentSample(sample) {
+      if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
+        return true
+      } else {
+        return sample.name === this.curSampleName
+      }
+    },
+    loadDataSource() {
+      API.getTableList((message) => {
+        this.dataProjects = message.info
+      })
+      this.dataProjects = this.dataProjects.map((val) => {
+        API.getTable({ _id: val.id }, (message) => {
+          val.data = message.info.data
+        })
+        return val
+      })
+    },
+    tableChange(data) {
+      // 当数据表修改时触发已修改图表数据
+      setTimeout(() => {
+        this.setChart(data)
+      }, 0)
+    },
+    setChart(data, option = {}) {
+      this.$refs.myChart.setOption(data, option)
+    },
+    loadData(data, flag) {
+      if (flag && this.keepData) {
+        data = this.$refs.myTable.getData()
+      }
+      this.$refs.myTable.loadData(data)
+    },
+    clearChart() {
+      // 清除图表
+      this.$refs.myChart.clear()
+    },
+    importData() {
+      this.$refs.myTable.importData()
+    },
+    save(isHand) {
+      if (!this.$refs.myChart) return
+      API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption() }, (message) => {
+        console.log(message)
+        if (isHand) {
+          this.saveTip = '保存成功'
+        } else {
+          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+        }
+      })
+    },
+    share() {
+      this.save(true)
+      this.isPop = true
+      this.$refs.popwin.isShared = true
+      API.saveChart({ _id: this.chartId, isShared: true }, (message) => {
+        console.log(message)
+      })
+    },
+  },
+  mounted() {
+    API.getChartExamples((result) => {
+      // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
+      this.chartSamples = result
+      this.curSampleName = result[0].name
+    })
+  },
+  updated() {
+    this.$refs.myChart.chartResize()
+  },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
@@ -114,7 +233,6 @@ export default {
             this.chartData = message.info.data
             this.chartOption = message.info.option
             this.$refs.setBox.setSettings(message.info.option)
-            // this.setChart(result.fileData.data, result.fileData.option)
           }
         })
         this.isDataBox = false
@@ -138,145 +256,6 @@ export default {
   deactivated() {
     this.save()
     clearInterval(this.autoSave)
-  },
-  mounted() {
-    // API.getChart(this.$route.params.tabkey, (result) => {
-    //   if (result.success) {
-    //     this.addTab({ type: 'chart', topic: result.fileData.name, key: result.fileData.id })
-    //     // this.chartName = result.fileData.name
-    //     // this.loadData(result.fileData.data)
-    //     // this.setChart(result.fileData.data, result.fileData.option)
-    //   }
-    // })
-    API.getChartExamples((result) => {
-      // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
-      this.chartSamples = result
-      this.curSampleName = result[0].name
-    })
-  },
-  data() {
-    return {
-      keepData: false,
-      chartName: '',
-      chartSamples: [],
-      chartData: [],
-      chartOption: {},
-      chartId: '',
-      isDataBox: true,
-      curSampleName: '',
-      openMatch: false,
-      dataSoruceBox: false,
-      dataProjects: [],
-      dataProjectSelect: {},
-      autoSave: undefined,
-      saveTip: '',
-      leftShow: true,
-      rightShow: true,
-      isPop: false,
-    }
-  },
-  watch: {
-    openMatch() {
-      setTimeout(() => {
-        this.$refs.myTable.render()
-      }, 0)
-    },
-    dataSoruceBox(newValue) {
-      if (newValue) {
-        this.loadDataSource()
-      }
-    },
-  },
-  props: {
-    addTab: {
-      type: Function,
-    },
-    checkNewLoad: {
-      type: Function,
-    },
-  },
-  methods: {
-    transData(){
-      this.$refs.myTable.transData()
-    },
-    share() {
-      this.save(true)
-      this.isPop = true
-      this.$refs.popwin.isShared = true
-      API.saveChart({ _id: this.chartId, isShared: true }, (message) => {
-        console.log(message)
-      })
-    },
-    isCurrentSample(sample) {
-      if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
-        return true
-      } else {
-        return sample.name === this.curSampleName
-      }
-    },
-    loadDataSource() {
-      API.getTableList((message) => {
-        this.dataProjects = message.info
-      })
-      this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable({ _id: val.id }, (message) => {
-          val.data = message.info.data
-        })
-        return val
-      })
-    },
-    tableChange(data) {
-      setTimeout(() => {
-        this.setChart(data)
-      }, 0)
-    },
-    save(isHand) {
-      if (!this.$refs.myChart) return
-      API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption() }, (message) => {
-        console.log(message)
-        if (isHand) {
-          this.saveTip = '保存成功'
-        } else {
-          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
-        }
-      })
-    },
-    setCurSample(e, sampleName) {
-      // if (this.curSampleName === sampleName) {
-      //   this.curSampleName = null
-      // } else {
-      this.curSampleName = sampleName
-      // }
-    },
-    setChart(data, option = {}, flag) {
-      if (flag && this.keepData) {
-        data = this.$refs.myTable.getData()
-      }
-      this.$refs.myChart.setOption(data, option)
-    },
-    clearChart() {
-      this.$refs.myChart.clear()
-    },
-    loadData(data, flag) {
-      if (flag && this.keepData) {
-        data = this.$refs.myTable.getData()
-      } else {
-        // this.chartData = data
-      }
-      this.$refs.myTable.loadData(data)
-    },
-    importData() {
-      XSheet.importFile((tableData, tableName) => {
-        this.$refs.myTable.loadData(tableData)
-      })
-    },
-    setSetBox(option) {
-      this.$refs.setBox.setSettings(option)
-      // this.$refs.setBox.setSettings(this.$refs.myChart.getOption())
-    },
-  },
-  updated() {
-    this.$refs.myChart.chartResize()
   },
 }
 </script>
@@ -315,6 +294,9 @@ export default {
 }
 .head .head-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.801);
+}
+.head .head-menu .menu-item:active {
+  background-color: rgba(228, 228, 228, 0.801);
 }
 .head .head-menu .menu-tip {
   padding-right: 5px;
@@ -368,7 +350,6 @@ export default {
   cursor: pointer;
   border-left: 6px solid rgba(0, 0, 0, 0);
   border-right: 6px solid rgba(0, 0, 0, 0);
-  user-select: none;
 }
 .content .left-box .model-menu .menu-item:hover {
   background-color: rgb(248, 248, 248);
@@ -376,6 +357,9 @@ export default {
 .content .left-box .model-menu .menu-item.current {
   background-color: rgb(241, 241, 241);
   border-left-color: rgb(7, 107, 61);
+}
+.content .left-box .model-menu .menu-item:active {
+  background-color: rgb(194, 194, 194);
 }
 
 .content .left-box .model-box {
@@ -393,6 +377,9 @@ export default {
 }
 .content .left-box .model-box .model-item:hover {
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
+}
+.content .left-box .model-box .model-item:active {
+  box-shadow: 0px 0px 15px 0px rgba(7, 161, 27, 0.671);
 }
 .content .left-box .model-box .model-item .item-img {
   width: 100px;
@@ -441,16 +428,12 @@ export default {
   color: rgb(255, 255, 255);
   background-color: rgb(80, 136, 78);
 }
+.content .right-box .option-menu .menu-item:active {
+  background-color: rgb(116, 116, 116);
+}
 .content .right-box .option-box {
   display: flex;
   width: 300px;
-}
-.content .right-box .option-box .drag-bar {
-  background-color: beige;
-  cursor: ew-resize;
-}
-.content .right-box .option-box .drag-bar:hover {
-  background-color: rgb(187, 187, 141);
 }
 .content .right-box .option-box .set-box {
   width: 100%;
@@ -459,28 +442,7 @@ export default {
   background-color: rgb(241, 241, 241);
   overflow-y: auto;
 }
-/* .content .right-box .option-box .set-box .set-item {
-  margin: 0 0 5px 0;
-  padding: 0 5px 5px 5px;
-  background-color: rgb(255, 255, 255);
-  border-radius: 5px;
-}
-.content .right-box .option-box .set-box .set-item:hover {
-  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
-}
-.content .right-box .option-box .set-box .set-item .name {
-  color: rgb(68, 68, 68);
-  font-size: 16px;
-  text-align: center;
-  border-bottom: 1px solid rgb(151, 151, 151);
-}
-.content .right-box .option-box .set-box .set-item .setting {
-  margin: 2px 0;
-  padding: 2px 5px;
-  color: rgb(68, 68, 68);
-  font-size: 16px;
-  border-radius: 3px;
-} */
+
 .content .right-box .option-box .data-box {
   display: flex;
   flex-direction: column;
@@ -505,6 +467,9 @@ export default {
 .content .right-box .option-box .data-box .data-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.671);
 }
+.content .right-box .option-box .data-box .data-menu .menu-item:active {
+  background-color: rgba(197, 197, 197, 0.671);
+}
 .content .right-box .option-box .data-box .data-match {
   color: rgb(255, 255, 255);
   font-size: 20px;
@@ -515,6 +480,9 @@ export default {
 }
 .content .right-box .option-box .data-box .data-match:hover {
   background-color: rgb(214, 113, 54);
+}
+.content .right-box .option-box .data-box .data-match:active {
+  background-color: rgb(224, 162, 126);
 }
 
 .content .right-box .option-box .data-import {
@@ -533,6 +501,9 @@ export default {
 .content .right-box .option-box .data-import .return:hover {
   background-color: rgb(67, 168, 97);
 }
+.content .right-box .option-box .data-import .return:active {
+  background-color: rgb(103, 175, 125);
+}
 .content .right-box .option-box .data-import .confirm {
   font-size: 20px;
   color: rgb(255, 255, 255);
@@ -543,6 +514,13 @@ export default {
 }
 .content .right-box .option-box .data-import .confirm:hover {
   background-color: rgb(75, 171, 226);
+}
+.content .right-box .option-box .data-import .confirm:active {
+  background-color: rgb(99, 149, 179);
+}
+.content .right-box .option-box .data-import .confirm.disable {
+  background-color: rgb(211, 220, 221);
+  cursor: default;
 }
 .content .right-box .option-box .data-import .title {
   font-size: 24px;
@@ -570,11 +548,15 @@ export default {
   cursor: pointer;
 }
 .content .right-box .option-box .data-import .source-box .source-item:hover {
-  outline: 2px solid rgb(196, 118, 17);
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
+  background-color: rgb(231, 204, 127);
 }
 .content .right-box .option-box .data-import .source-box .source-item.selected {
+  outline: 2px solid rgb(196, 118, 17);
   background-color: rgb(231, 204, 127);
+}
+.content .right-box .option-box .data-import .source-box .source-item:active {
+  background-color: rgb(218, 171, 45);
 }
 
 .content .center-box {

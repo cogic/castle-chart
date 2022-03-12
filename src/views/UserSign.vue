@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:46:24
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-01 23:51:53
+ * @LastEditTime: 2022-03-09 15:33:46
  * @Description: 
 -->
 <template>
@@ -119,6 +119,10 @@ export default {
   background-color: rgb(255, 255, 255);
   border-radius: 10px;
 }
+.signbox:hover {
+  /* box-shadow: 0 0 10px 0 #666666; */
+  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+}
 .signbox nav {
   margin: 10px 5px;
 }
@@ -144,6 +148,9 @@ export default {
 .signbox nav > ul > li > a.router-link-active {
   color: rgb(250, 250, 250);
   background-color: rgb(138, 138, 138);
+}
+.signbox nav > ul > li > a:active {
+  background-color: rgb(173, 173, 173);
 }
 .signbox main {
   flex-grow: 1;

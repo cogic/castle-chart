@@ -2,16 +2,28 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-02 00:06:51
+ * @LastEditTime: 2022-03-12 11:55:06
  * @Description: 
 -->
 <template>
   <!-- TODO 这里的 router-view 要不要加 keep-alive 呢？ -->
   <router-view />
+  <!-- <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component"/>
+        </keep-alive>
+      </router-view> -->
 </template>
 
 <script>
-export default {}
+export default {
+  //  errorCaptured(err, vm, info) {
+  //   console.log(err)
+  //   console.log(vm)
+  //   console.log(info)
+  //   return false
+  // },
+}
 </script>
 
 <style>
@@ -37,7 +49,7 @@ export default {}
   border-radius: 5px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  border: 0px;
+  border-width: 0px;
   background-color: rgb(130, 130, 130);
 }
 *::-webkit-scrollbar-corner {
@@ -72,7 +84,10 @@ input {
   align-content: center;
   height: 100%;
 }
-.iconfont{
+/* .iconfont{
   user-select: none;
+} */
+.text-disable{
+  user-select: none;  
 }
 </style>

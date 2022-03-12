@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-03-02 03:43:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 03:28:37
+ * @LastEditTime: 2022-03-07 17:29:43
  * @Description: 
 -->
 <template>
@@ -158,6 +158,9 @@ export default {
 }
 .middle-box .link button:hover {
   background-color: rgb(50, 173, 204);
+}
+.middle-box .link button:active {
+  background-color: rgb(67, 129, 211);
 }
 .middle-box .copytip {
   position: absolute;

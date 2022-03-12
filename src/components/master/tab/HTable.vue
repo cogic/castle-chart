@@ -2,19 +2,25 @@
  * @Author: Cogic
  * @Date: 2021-12-31 16:53:30
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 09:32:15
+ * @LastEditTime: 2022-03-11 21:33:46
  * @Description: 
 -->
 <template>
-  <div class="table-main" ref="tableMain"></div>
+  <hot-table class="table-main" ref="hotTableComponent" :settings="hotSettings"></hot-table>
 </template>
 
 <script>
-import Handsontable from 'handsontable'
-import 'handsontable/dist/handsontable.full.css'
+import XSheet from '@/assets/script/x-sheet'
+
+import { HotTable } from '@handsontable/vue3'
+import { registerAllModules } from 'handsontable/registry'
+registerAllModules()
+
 export default {
-  mounted() {
-    const container = this.$refs.tableMain
+  components: {
+    HotTable,
+  },
+  created() {
     const menuConfig = {
       items: {
         undo: {
@@ -55,7 +61,7 @@ export default {
         },
       },
     }
-    this.hot = new Handsontable(container, {
+    this.hotSettings = {
       minRows: this.rows,
       minCols: this.cols,
       startRows: this.rows,
@@ -72,12 +78,18 @@ export default {
       width: '100%',
       height: '100%',
       licenseKey: 'non-commercial-and-evaluation',
-    })
-    this.addHook(this.hookFunc)
+    }
+  },
+  mounted() {
+    this.hot = this.$refs.hotTableComponent.hotInstance
+    if (this.hookFunc) {
+      this.addHook(this.hookFunc)
+    }
   },
   data() {
     return {
       hot: {},
+      hotSettings: {},
     }
   },
   props: {
@@ -91,7 +103,7 @@ export default {
     },
     hookFunc: {
       type: Function,
-      default: function () {},
+      default: undefined,
     },
     item: {
       type: String,
@@ -99,7 +111,16 @@ export default {
     },
   },
   methods: {
+    test() {
+      console.log(this.hot.getDataAtCol(0), this.hot.getDataAtRow(0))
+    },
+    importData() {
+      XSheet.importFile((tableData, tableName) => {
+        this.loadData(tableData)
+      })
+    },
     transData() {
+      // 转置数据，矩阵的转置
       let data = this.getData()
       let newData = []
       let maxRow = 0
@@ -116,80 +137,45 @@ export default {
         newData.push(temp)
       }
       this.loadData(newData)
-      // return newData
     },
     render() {
       this.hot.render()
     },
     addHook(callback) {
-      this.hot.addHook('afterChange', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterCreateRow', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterCreateCol', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterRemoveRow', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterRemoveCol', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterColumnMove', () => {
-        callback(this.getData(), this.item)
-      })
-      this.hot.addHook('afterRowMove', () => {
-        callback(this.getData(), this.item)
+      // 监听表格内容的变化并执行方法
+      const hooks = ['afterChange', 'afterCreateRow', 'afterCreateCol', 'afterRemoveRow', 'afterRemoveCol', 'afterColumnMove', 'afterRowMove']
+      hooks.forEach((hk) => {
+        this.hot.addHook(hk, () => {
+          callback(this.getData(), this.item)
+        })
       })
     },
-    loadData(data) {
-      // let newData = []
-      // data.forEach((el) => {
-      //   newData.push(el)
-      // })
-      // console.log(data)
-      let newData = this.cloneData(data)
-      // let newData = this.getData(data)
-      this.hot.loadData(newData.length < 1 ? [[]] : newData) // lodaData 的 参数不能为空数组[]，但可以为[[]]
+    loadData(newData) {
+      this.hot.loadData(newData.length < 1 ? [[]] : this.cloneArray(newData)) // lodaData 的 参数不能为空数组[]，但可以为[[]]
     },
-    getData(oriData) {
-      // let ran = Math.random()
-      // console.log(ran, oriData)
-
-      if (!oriData) {
-        oriData = this.hot.getData()
+    getData(data) {
+      // 去除 data 中无用的行或列
+      if (!data) {
+        data = this.hot.getData()
       }
-      let data = this.cloneData(oriData)
-      let trueRows = 0
+      let trueRows = -1,
+        trueCols = -1
       for (let i = data.length - 1; i >= 0; i--) {
-        // console.log(ran, data)
-        // console.log(ran, oriData)
         for (let j = data[i].length - 1; j >= 0; j--) {
-          if (data[i][j] && data[i][j] != null && data[i][j] != 'null' && data[i][j] != '') {
-            if (trueRows === 0) {
-              trueRows = i + 1
+          if (data[i][j] && data[i][j] != null && data[i][j] != '') {
+            if (trueRows === -1) {
+              trueRows = i
             }
-            data[i].length = j + 1
-            data[i].splice(j + 1)
-            // console.log(j + 1)
+            if (trueCols < j) {
+              trueCols = j
+            }
             break
-          }
-          if (j === 0) {
-            data[i].length = 0
-            data[i] = []
           }
         }
       }
-      // console.log(ran, data)
-      // console.log(trueRows)
-      data.length = trueRows
-      data.splice(trueRows)
-      // console.log(ran, data)
-      return this.cloneData(data)
+      return trueRows === -1 ? [[]] : this.hot.getData(trueRows, trueCols)
     },
-    cloneData(data) {
+    cloneArray(data){
       let newData = []
       for (let i = 0; i < data.length; i++) {
         let temp = []
@@ -199,11 +185,12 @@ export default {
         newData.push(temp)
       }
       return newData
-    },
+    }
   },
 }
 </script>
 
+<style src="handsontable/dist/handsontable.full.css"></style>
 <style scoped>
 @import url('~@/assets/style/h-table.css');
 

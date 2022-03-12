@@ -84,12 +84,6 @@
           "tooltip": {
             "trigger": "axis"
           },
-          "grid": {
-            "left": "3%",
-            "right": "4%",
-            "bottom": "3%",
-            "containLabel": true
-          },
           "xAxis": {
             "type": "category",
             "boundaryGap": false
@@ -128,17 +122,6 @@
                 "backgroundColor": "#6a7985"
               }
             }
-          },
-          "toolbox": {
-            "feature": {
-              "saveAsImage": {}
-            }
-          },
-          "grid": {
-            "left": "3%",
-            "right": "4%",
-            "bottom": "3%",
-            "containLabel": true
           },
           "xAxis": [
             {
@@ -180,7 +163,7 @@
             "type": "category"
           },
           "yAxis": {
-            "type": "value" 
+            "type": "value"
           },
           "series": [
             {
@@ -391,7 +374,6 @@
             {
               "name": "Nightingale Chart",
               "type": "pie",
-              "radius": [50, 250],
               "center": ["50%", "50%"],
               "roseType": "area",
               "itemStyle": {
@@ -771,7 +753,7 @@
           ["新疆", 1],
           ["江苏", 100],
           ["浙江", 90],
-          ["江西",88],
+          ["江西", 88],
           ["湖北", 120],
           ["广西", 1],
           ["甘肃", 100],
@@ -803,6 +785,7 @@
             "left": "left",
             "top": "bottom",
             "text": ["高", "低"],
+            
             "calculable": true
           },
           "xAxis": {
@@ -862,26 +845,12 @@
         ],
         "option": {
           "visualMap": {
-            "target": {
-              "inRange": {
-                "color": ["#d6ffd9", "#61e05d", "#069743"]
-              },
-              "outOfRange": {
-                "color": ["rgba(0,0,0,0)"],
-                "opacity": [0, 0]
-              }
+            "inRange": {
+              "color": ["#d6ffd9", "#61e05d", "#069743"]
             },
-            "controller": {
-              "inRange": {
-                "color": ["#d6ffd9", "#61e05d", "#069743"],
-                "symbol": ["roundRect"],
-                "symbolSize": [20, 20]
-              },
-              "outOfRange": {
-                "color": ["#aaa"],
-                "symbol": ["roundRect"],
-                "symbolSize": [20, 20]
-              }
+            "outOfRange": {
+              "color": ["rgba(0,0,0,0)"],
+              "opacity": [0, 0]
             }
           },
           "backgroundColor": "black",

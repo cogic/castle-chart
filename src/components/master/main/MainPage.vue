@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 21:11:03
  * @LastEditors: Cogic
- * @LastEditTime: 2022-02-23 14:49:44
+ * @LastEditTime: 2022-03-12 13:44:37
  * @Description: 
 -->
 <template>
@@ -10,14 +10,15 @@
     <nav>
       <ul>
         <li v-for="tab in mainTabs">
-          <a :class="{ current: isCurrent(tab.to) }" @click="routerTo(tab.to)">{{ tab.topic }}</a>
+          <a :class="{ 'text-disable': true, current: isCurrent(tab.to) }" @click="routerTo(tab.to)">{{ tab.topic }}</a>
         </li>
       </ul>
     </nav>
     <div class="content">
+      <!-- <router-view></router-view> -->
       <router-view v-slot="{ Component }">
         <keep-alive>
-          <component :is="Component" @new-tab="$emit('newTab', $event)" />
+          <component :is="Component" @new-tab="$emit('newTab', $event)" :key="tabKey" />
         </keep-alive>
       </router-view>
     </div>
@@ -47,6 +48,11 @@ export default {
         },
       ],
     }
+  },
+  computed: {
+    tabKey() {
+      return this.$route.fullPath
+    },
   },
   methods: {
     isCurrent(to) {
@@ -83,7 +89,6 @@ nav a {
   font-size: 15px;
   background-color: rgb(228, 235, 236);
   border-radius: 10px;
-  transition: background-color 0.5s;
   cursor: pointer;
 }
 nav a:hover {
@@ -92,6 +97,9 @@ nav a:hover {
 nav a.current {
   color: rgb(255, 255, 255);
   background-color: rgb(94, 156, 160);
+}
+nav a:active {
+  background-color: rgb(110, 185, 190);
 }
 
 .content {

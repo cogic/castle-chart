@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-01-17 16:47:47
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 03:25:03
+ * @LastEditTime: 2022-03-07 15:19:29
  * @Description: 
 -->
 <template>
@@ -31,7 +31,7 @@
         <div class="item-content" v-else-if="item.type === 'image'">图片</div>
         <div v-else>NULL</div>
         <!-- <span class="text">{{ itemTitle(item) }}</span> -->
-        <span class="remove no-drag" v-show="isRemovable" @click.stop="removeItem($event, item.i)" @mousedown.stop=""><span class="iconfont">&#xe673;</span></span>
+        <span class="remove no-drag text-disable" v-show="isRemovable" @click.stop="removeItem($event, item.i)" @mousedown.stop=""><span class="iconfont">&#xe673;</span></span>
       </grid-item>
     </grid-layout>
   </div>

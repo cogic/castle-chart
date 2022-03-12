@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 14:56:07
+ * @LastEditTime: 2022-03-10 21:35:22
  * @Description: 
 -->
 <template>
@@ -13,33 +13,33 @@
       <div class="name">{{ panelName }}</div>
       <div class="head-menu">
         <div class="menu-tip">{{ saveTip }}</div>
-        <div class="menu-item" @click="save(true)">保存</div>
-        <div class="menu-item" @click="share">分享</div>
-        <div class="menu-item" @click="toShow = true">清空</div>
+        <div class="menu-item text-disable" @click="save(true)">保存</div>
+        <div class="menu-item text-disable" @click="share">分享</div>
+        <div class="menu-item text-disable" @click="toShow = true">清空</div>
       </div>
     </div>
     <div class="content">
       <div class="left-box" v-show="leftShow">
         <div class="menu-top" v-show="!chartProjectBox">
-          <div class="top-label">添加资源<span class="iconfont">&#xe651;</span></div>
+          <div class="top-label text-disable">添加资源<span class="iconfont">&#xe651;</span></div>
           <div class="item-box">
-            <div class="top-item" v-for="source in sources" @click="addSource(source.id)">
+            <div class="top-item text-disable" v-for="source in sources" @click="addSource(source.id)">
               {{ source.name }}
               <div class="type-box" v-show="source.id === 'chart'">
-                <div class="type-item" v-for="type in source.types" @click.stop="addSource(type.id)">{{ type.name }}</div>
+                <div class="type-item text-disable" v-for="type in source.types" @click.stop="addSource(type.id)">{{ type.name }}</div>
               </div>
             </div>
           </div>
         </div>
         <div class="menu-label" v-show="getCurItem().type === 'chart' && !chartProjectBox">图表类型</div>
-        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据<input type="checkbox" v-model="keepData" /></div>
+        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据&nbsp;<el-switch v-model="keepData" active-color="#3B8DD7" width="50"  active-text="是" inactive-text="否" inline-prompt/></div>
         <div class="menu-label" v-show="getCurItem().type === 'text' && !chartProjectBox">文本样式</div>
         <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div>
-        <div class="menu-label return" v-show="chartProjectBox" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
+        <div class="menu-label return text-disable" v-show="chartProjectBox" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
         <div class="menu-label" v-show="chartProjectBox">图表项目</div>
         <div class="model-main" v-show="chartProjectBox">
           <div class="model-box">
-            <div class="model-item" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
+            <div class="model-item text-disable" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
               <div class="item-img">
                 <img src="@/assets/image/图表.png" alt="" />
               </div>
@@ -49,11 +49,11 @@
         </div>
         <div class="model-main" v-show="getCurItem().type === 'chart' && !chartProjectBox">
           <div class="model-menu">
-            <div class="menu-item" :class="{ current: isCurrentSample(sample) }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
+            <div class="menu-item text-disable" :class="{ current: isCurrentSample(sample) }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
           </div>
           <template v-for="sample in chartSamples">
             <div class="model-box" v-if="isCurrentSample(sample)">
-              <div class="model-item" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
+              <div class="model-item text-disable" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
                 <div class="item-img">
                   <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
                   <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
@@ -69,14 +69,14 @@
         </div>
         <div class="model-main" v-if="getCurItem().type === 'text' && !chartProjectBox">
           <div class="model-box">
-            <div class="model-item" v-for="example in textExamples" @click="textSetExample(example.config)">
+            <div class="model-item text-disable" v-for="example in textExamples" @click="textSetExample(example.config)">
               <div class="item-img text" :style="example.config">Text 文本</div>
               <div class="item-name">{{ example.name }}</div>
             </div>
           </div>
         </div>
       </div>
-      <div class="inout-button" @click="leftShow = !leftShow">
+      <div class="inout-button text-disable" @click="leftShow = !leftShow">
         <span class="iconfont" v-if="leftShow">&#xe619;</span>
         <span class="iconfont" v-else>&#xe61a;</span>
       </div>
@@ -87,14 +87,14 @@
           </div>
         </div>
       </div>
-      <div class="inout-button" @click="rightShow = !rightShow">
+      <div class="inout-button text-disable" @click="rightShow = !rightShow">
         <span class="iconfont" v-if="!rightShow">&#xe619;</span>
         <span class="iconfont" v-else>&#xe61a;</span>
       </div>
       <div class="right-box" v-show="rightShow">
         <div class="option-menu">
-          <div class="menu-item" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
-          <div class="menu-item" v-show="getCurItem().type === 'chart'" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
+          <div class="menu-item text-disable" :class="{ current: !isDataBox }" @click=";(isDataBox = false), (dataSoruceBox = false)">设置项</div>
+          <div class="menu-item text-disable" v-show="getCurItem().type === 'chart'" :class="{ current: isDataBox }" @click="isDataBox = true">编辑数据</div>
         </div>
         <template v-for="item in getLayout()" :key="item.i">
           <div class="option-box" v-show="getCurItem().i === item.i">
@@ -144,23 +144,23 @@
             </div>
             <div class="data-box" v-show="isDataBox && !dataSoruceBox">
               <div class="data-menu">
-                <div class="menu-item" @click="importData">本地导入</div>
-                <div class="menu-item" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
+                <div class="menu-item text-disable" @click="importData">本地导入</div>
+                <div class="menu-item text-disable" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
                 <!-- TODO URL导入待做 -->
-                <div class="menu-item" v-show="false">URL导入</div>
+                <div class="menu-item text-disable" v-show="false">URL导入</div>
               </div>
               <h-table :ref="'table' + item.i" :hookFunc="tableChange" :item="item"></h-table>
-              <div class="data-match" @click="transData">转置数据</div>
+              <div class="data-match text-disable" @click="transData">转置数据</div>
               <!-- <div class="data-match" @click="openMatch = !openMatch">数据匹配</div>
               <div class="match-box" v-show="openMatch">match-box</div> -->
             </div>
             <div class="data-import" v-show="dataSoruceBox">
-              <div class="return" @click="dataSoruceBox = false"><span class="iconfont">&#xe608;</span>取消</div>
+              <div class="return text-disable" text-disable @click="dataSoruceBox = false"><span class="iconfont">&#xe608;</span>取消</div>
               <div class="title">数据源</div>
               <div class="source-box">
-                <div :class="{ 'source-item': true, selected: project._id == dataProjectSelect._id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
+                <div :class="{ 'text-disable': true, 'source-item': true, selected: project._id == dataProjectSelect._id }" v-for="project in dataProjects" @click="dataProjectSelect = project">{{ project.name }}</div>
               </div>
-              <div class="confirm" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
+              <div :class="['confirm', 'text-disable', { disable: !dataProjectSelect._id }]" @click="loadData(dataProjectSelect.data), (dataSoruceBox = false)">确认导入</div>
             </div>
           </div>
         </template>
@@ -217,15 +217,6 @@ export default {
     clearInterval(this.autoSave)
   },
   mounted() {
-    // API.getPanel(this.$route.params.tabkey, (result) => {
-    //   if (result.success) {
-    //     this.addTab({ type: 'panel', topic: result.fileData.name, key: result.fileData.id })
-    //     // this.panelBackColor = result.fileData.back.config.backgroundColor
-    //     // this.panelName = result.fileData.name
-    //     // this.setLayout(result.fileData.layout, result.fileData.back)
-    //     // this.setCurItemToBack()
-    //   }
-    // })
     API.getChartExamples((result) => {
       this.chartSamples = result
       this.curSampleName = null
@@ -430,16 +421,11 @@ export default {
           data = this.$refs['table' + item.i][0].getData()
         }
         this.$refs['table' + item.i][0].loadData(data)
-        // setInterval(() => {
-
-        // this.tableChange(this.$refs['table' + item.i][0].getData(), item)
-        // }, 1000);
       } else {
         if (flag && this.keepData) {
           data = this.$refs['table' + this.getCurItem().i][0].getData()
         }
         this.$refs['table' + this.getCurItem().i][0].loadData(data)
-        // this.tableChange(this.$refs['table' + item.i][0].getData(), this.getCurItem())
       }
     },
     importData() {
@@ -493,9 +479,9 @@ export default {
         let curItem = this.$refs.GLayout.addItem('chart', {})
         let that = this
         setTimeout(function () {
-          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
+          // that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
           that.loadData(that.chartSamples[0].examples[0].tableData, curItem)
-          that.setSetBox(that.chartSamples[0].examples[0].option, curItem.i)
+          that.setSetBox(that.chartSamples[0].examples[0].option, curItem)
           window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
         }, 0)
       } else if (sourceType === 'oldChart') {
@@ -514,9 +500,9 @@ export default {
         let curItem = this.$refs.GLayout.addItem('chart', {})
         let that = this
         setTimeout(function () {
-          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(project.data, project.option)
+          // that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(project.data, project.option)
           that.loadData(project.data, curItem)
-          that.setSetBox(project.option, curItem.i)
+          that.setSetBox(project.option, curItem)
           window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
         }, 0)
       } else if (sourceType === 'text') {
@@ -532,9 +518,9 @@ export default {
         this.$refs.GLayout.addItem(sourceType, {})
       }
     },
-    setSetBox(option, itemI) {
-      if (itemI) {
-        this.$refs['setBox' + itemI][0].setSettings(option)
+    setSetBox(option, item) {
+      if (item) {
+        this.$refs['setBox' + item.i][0].setSettings(option,item)
       } else {
         this.$refs['setBox' + this.getCurItem().i][0].setSettings(option)
       }
@@ -582,6 +568,9 @@ export default {
 .head .head-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.801);
 }
+.head .head-menu .menu-item:active {
+  background-color: rgba(228, 228, 228, 0.801);
+}
 .head .head-menu .menu-tip {
   padding-right: 5px;
   color: rgb(116, 138, 161);
@@ -619,6 +608,9 @@ export default {
   border-radius: 20px;
   cursor: default;
 }
+.content .left-box .menu-top:hover .top-label {
+  background-color: rgb(95, 175, 199);
+}
 .content .left-box .top-label .iconfont {
   margin-left: 5px;
 }
@@ -631,6 +623,7 @@ export default {
 }
 .content .left-box .menu-top .top-item {
   display: none;
+  height: 40px;
   margin: 5px 0;
   color: rgb(253, 253, 253);
   font-size: 16px;
@@ -639,14 +632,30 @@ export default {
   background-color: rgb(149, 149, 149);
   border-radius: 20px;
   cursor: pointer;
+  transition: height 1s;
 }
 .content .left-box .menu-top .top-item:nth-child(1) {
   cursor: default;
 }
+@keyframes fra1 {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 40px;
+  }
+}
 .content .left-box .menu-top:hover .top-item {
   display: block;
+  animation: fra1 0.3s;
 }
 .content .left-box .menu-top .top-item:hover {
+  background-color: rgb(35, 152, 199);
+}
+.content .left-box .menu-top .top-item:active {
+  background-color: rgb(176, 209, 223);
+}
+.content .left-box .menu-top .top-item:nth-child(1):active {
   background-color: rgb(35, 152, 199);
 }
 .content .left-box .menu-top .top-item .type-box {
@@ -656,10 +665,21 @@ export default {
   left: 0px;
   width: 100%;
   padding: 0 10px;
+  opacity: 50%;
+}
+@keyframes fra2 {
+  0% {
+    opacity: 50%;
+  }
+  100% {
+    opacity: 100%;
+  }
 }
 .content .left-box .menu-top .top-item:nth-of-type(1):hover .type-box {
   display: flex;
   justify-content: space-between;
+  opacity: 100%;
+  animation: fra2 0.3s;
 }
 .content .left-box .menu-top .top-item .type-item {
   display: inline-block;
@@ -672,6 +692,10 @@ export default {
 .content .left-box .menu-top .top-item .type-item:hover {
   color: rgb(41, 41, 41);
   background-color: rgb(255, 255, 255);
+}
+.content .left-box .menu-top .top-item .type-item:active {
+  color: rgb(41, 41, 41);
+  background-color: rgb(159, 225, 241);
 }
 
 .content .left-box .menu-label {
@@ -721,7 +745,6 @@ export default {
   cursor: pointer;
   border-left: 6px solid rgba(0, 0, 0, 0);
   border-right: 6px solid rgba(0, 0, 0, 0);
-  user-select: none;
 }
 .content .left-box .model-menu .menu-item:hover {
   background-color: rgb(248, 248, 248);
@@ -729,6 +752,9 @@ export default {
 .content .left-box .model-menu .menu-item.current {
   background-color: rgb(241, 241, 241);
   border-left-color: rgb(7, 107, 61);
+}
+.content .left-box .model-menu .menu-item:active {
+  background-color: rgb(194, 194, 194);
 }
 
 .content .left-box .model-box {
@@ -750,6 +776,9 @@ export default {
 }
 .content .left-box .model-box .model-item:hover {
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
+}
+.content .left-box .model-box .model-item:active {
+  box-shadow: 0px 0px 15px 0px rgba(7, 161, 27, 0.671);
 }
 .content .left-box .model-box .model-item .item-img {
   height: 80px;
@@ -799,17 +828,14 @@ export default {
   color: rgb(255, 255, 255);
   background-color: rgb(80, 136, 78);
 }
+.content .right-box .option-menu .menu-item:active {
+  background-color: rgb(116, 116, 116);
+}
 .content .right-box .option-box {
   width: 300px;
   display: flex;
 }
-.content .right-box .option-box .drag-bar {
-  background-color: beige;
-  cursor: ew-resize;
-}
-.content .right-box .option-box .drag-bar:hover {
-  background-color: rgb(187, 187, 141);
-}
+
 .content .right-box .option-box .set-box {
   width: 100%;
   height: 100%;
@@ -879,6 +905,9 @@ export default {
 .content .right-box .option-box .data-box .data-menu .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.671);
 }
+.content .right-box .option-box .data-box .data-menu .menu-item:active {
+  background-color: rgba(197, 197, 197, 0.671);
+}
 .content .right-box .option-box .data-box .data-match {
   color: rgb(255, 255, 255);
   font-size: 20px;
@@ -889,6 +918,9 @@ export default {
 }
 .content .right-box .option-box .data-box .data-match:hover {
   background-color: rgb(214, 113, 54);
+}
+.content .right-box .option-box .data-box .data-match:active {
+  background-color: rgb(224, 162, 126);
 }
 
 .content .right-box .option-box .data-import {
@@ -907,6 +939,9 @@ export default {
 .content .right-box .option-box .data-import .return:hover {
   background-color: rgb(67, 168, 97);
 }
+.content .right-box .option-box .data-import .return:active {
+  background-color: rgb(103, 175, 125);
+}
 .content .right-box .option-box .data-import .confirm {
   font-size: 20px;
   color: rgb(255, 255, 255);
@@ -917,6 +952,13 @@ export default {
 }
 .content .right-box .option-box .data-import .confirm:hover {
   background-color: rgb(75, 171, 226);
+}
+.content .right-box .option-box .data-import .confirm:active {
+  background-color: rgb(99, 149, 179);
+}
+.content .right-box .option-box .data-import .confirm.disable {
+  background-color: rgb(211, 220, 221);
+  cursor: default;
 }
 .content .right-box .option-box .data-import .title {
   font-size: 24px;
@@ -944,11 +986,15 @@ export default {
   cursor: pointer;
 }
 .content .right-box .option-box .data-import .source-box .source-item:hover {
-  outline: 2px solid rgb(196, 118, 17);
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
+  background-color: rgb(231, 204, 127);
 }
 .content .right-box .option-box .data-import .source-box .source-item.selected {
+  outline: 2px solid rgb(196, 118, 17);
   background-color: rgb(231, 204, 127);
+}
+.content .right-box .option-box .data-import .source-box .source-item:active {
+  background-color: rgb(218, 171, 45);
 }
 
 .content .center-box {

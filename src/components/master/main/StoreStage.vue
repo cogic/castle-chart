@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 16:15:53
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 00:58:00
+ * @LastEditTime: 2022-03-12 15:41:24
  * @Description: 
 -->
 <template>
@@ -10,24 +10,26 @@
   <div id="stage" @mousedown="endRename">
     <div class="title" :style="titleStyle">{{ stageConfig.title }}</div>
     <div class="toolbar">
-      <div :class="{ tool: true, able: true }" v-if="toolShow('build')" @click.prevent="$emit('newTab', buildTabConfig)">新建</div>
-      <div :class="{ tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('edit')" @click.prevent="edit">打开</div>
-      <div :class="{ tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('rename')" @click.prevent="rename">重命名</div>
+      <div :class="{ 'text-disable': true, tool: true, able: true }" v-if="toolShow('build')" @click.prevent="$emit('newTab', buildTabConfig)">新建</div>
+      <div :class="{ 'text-disable': true, tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('edit')" @click.prevent="edit">打开</div>
+      <div :class="{ 'text-disable': true, tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('rename')" @click.prevent="rename">重命名</div>
       <!-- <div class="tool copy" v-if="toolShow('copy')">复制</div> -->
-      <div :class="{ tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('delete')" @click.prevent="toDelete">删除</div>
+      <div :class="{ 'text-disable': true, tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('delete')" @click.prevent="toDelete">删除</div>
       <!-- <div class="tool sort" v-if="toolShow('sort')">排序</div> -->
-      <div :class="{ tool: true, able: true }" @click="isImageView = !isImageView" v-if="toolShow('view')">切换视图</div>
+      <div :class="{ 'text-disable': true, tool: true, able: true }" @click="isImageView = !isImageView" v-if="toolShow('view')">切换视图</div>
     </div>
     <div :class="{ store: true, store2: !isImageView }">
       <div v-for="file in stageConfig.files" :key="file._id" @click="selectedFile = file" @dblclick.stop.prevent="$emit('newTab', fileTabConfig(file))">
         <div :class="{ file: isImageView, file2: !isImageView, selected: selectedFile && selectedFile._id === file._id }" v-if="isDeleteId !== file._id">
           <div class="fileview">
             <img src="@/assets/image/表格.png" alt="" v-if="stageConfig.type === 'data'" />
-            <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" />
+            <img src="@/assets/image/图表.png" :id="'chart' + file._id" @load.once="setChartImg($event, file._id)" onerror="" alt="chart" v-else-if="stageConfig.type === 'chart'" />
+            <!-- <img src="@/assets/image/图表.png" :id="'chart'+file._id" :onload="setChartBase64(file._id)"  onerror="" alt="chart" v-else-if="stageConfig.type === 'chart'" /> -->
+            <!-- <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" /> -->
             <img src="@/assets/image/仪表板.png" alt="" v-else-if="stageConfig.type === 'panel'" />
           </div>
           <div class="filename" @dblclick.stop.prevent="rename">
-            <input v-model="file.name" readonly :id="file._id" maxlength="30"/>
+            <input v-model="file.name" readonly :id="file._id" maxlength="30" />
           </div>
         </div>
       </div>
@@ -91,6 +93,11 @@ export default {
   },
   methods: {
     test() {},
+    setChartImg(e, fileId) {
+      API.getChartImg({ _id: fileId, path: 'http://localhost:8080/preview-clean/chart/' }, (message) => {
+        e.path[0].setAttribute('src', message.info.path)
+      })
+    },
     endRename(e) {
       if (!this.selectedFile._id || !document.getElementById(this.selectedFile._id) || document.getElementById(this.selectedFile._id).readOnly === true) return
       if (e.target != document.getElementById(this.selectedFile._id)) {
@@ -313,6 +320,9 @@ export default {
 .toolbar .tool.able:hover {
   background-color: rgb(175, 175, 175);
 }
+.toolbar .tool.able:active {
+  background-color: rgb(119, 119, 119);
+}
 
 .store {
   display: flex;
@@ -345,15 +355,21 @@ export default {
 .store .file:hover {
   box-shadow: 0px 0px 10px -5px #000000;
 }
+.store .file:active {
+  box-shadow: 0px 0px 20px -5px #62a3bd;
+}
 .store .file .fileview {
+  height: 60px;
   text-align: center;
   background-color: rgb(243, 243, 243);
   border-radius: 10px 10px 0 0;
+  overflow: hidden;
 }
 .store .file .fileview img {
-  width: 50px;
-  height: 50px;
-  margin-top: 10px;
+  /* width: 50px; */
+  /* height: 50px; */
+  width: 100%;
+  /* margin-top: 10px; */
 }
 .store .file .filename {
   border-radius: 0 0 10px 10px;
@@ -387,6 +403,9 @@ export default {
 }
 .store .file2:hover {
   box-shadow: 0px 0px 10px -5px #000000;
+}
+.store .file2:active {
+  box-shadow: 0px 0px 20px -5px #62a3bd;
 }
 .store .file2 .fileview {
   /* text-align: center; */

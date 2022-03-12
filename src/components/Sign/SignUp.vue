@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:49:29
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-02 18:11:51
+ * @LastEditTime: 2022-03-07 20:46:23
  * @Description: 
 -->
 <template>
@@ -24,7 +24,7 @@
       <input type="text" v-model="safecode" @input="fixText"  @click="this.mesg = ''"/>
       <safe-code class="codebox" ref="codebox" />
     </div>
-    <div id="register" @click="register">注册</div>
+    <div id="register" class="text-disable" @click="register">注册</div>
     <div id="mesg">{{ mesg }}</div>
   </div>
 </template>
@@ -129,6 +129,10 @@ export default {
   background-color: rgb(255, 255, 255);
   border-radius: 0 10px 10px 0;
 }
+#stage input:focus {
+  background-color: rgb(244, 253, 255);
+  box-shadow: inset 0px 0px 3px 0px rgba(8, 123, 218, 0.726);
+}
 #safecode input {
   width: 40%;
   border-radius: 0;
@@ -149,6 +153,9 @@ export default {
 }
 #register:hover {
   background-color: rgb(10, 177, 35);
+}
+#register:active {
+  background-color: rgb(107, 192, 120);
 }
 #mesg {
   color: rgb(229, 73, 73);
