@@ -2,13 +2,13 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 13:48:54
+ * @LastEditTime: 2022-03-12 21:10:09
  * @Description: 
 -->
 <template>
   <header>
     <div class="left-head">
-      <img class="logo" src="@/assets/logo.png" alt="logo" />
+      <img class="logo" src="@/assets/logo.png" alt="logo" @click="toManagement" />
       <h1 class="headline">CastleChart</h1>
       <div :class="['main-page', 'text-disable', { active: currentTabKey === 'main' }]" @click="tabSwitch({ key: 'main' })">
         <span class="iconfont">&#xe6bb;</span>
@@ -54,21 +54,14 @@ export default {
       this.currentMainTabPath = this.$route.path
     }
   },
-  beforeMount() {
+  beforeCreate() {
     API.checkLogin((message) => {
       if (message.success) {
         this.username = message.info.username
-        // this.userPortraitPath = message.info.portrait
       } else {
         this.$router.replace('/sign')
       }
     })
-    // window.addEventListener('fullscreenchange', () => {
-    //   this.isFull = this.isFullScreen()
-    // })
-  },
-  unmounted() {
-    // window.removeEventListener('fullscreenchange')
   },
   data() {
     return {
@@ -84,7 +77,7 @@ export default {
   computed: {
     tabKey() {
       // 项目的tab只需返回其fullPath，但主页tab会有内部的路由切换，若也直接返回fullPath的话会重复加载主页
-      if(this.$route.matched[1].name === 'MainPage') {
+      if (this.$route.matched[1].name === 'MainPage') {
         return 'MainPage'
       }
       return this.$route.fullPath
@@ -105,6 +98,14 @@ export default {
     },
   },
   methods: {
+    toManagement() {
+      console.log(window.location.origin)
+      API.checkAdmin((message) => {
+        if (message.success) {
+          window.open(window.location.origin + '/management', '_blank ')
+        }
+      })
+    },
     isFullScreen() {
       return document.fullscreenElement || document.mozFullScreenElement || document.msFullScreenElement || document.webkitFullscreenElement || null
     },
