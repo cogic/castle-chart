@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-07 23:23:38
+ * @LastEditTime: 2022-03-12 20:27:44
  * @Description:
  */
 import { createRouter, createWebHistory } from 'vue-router'
@@ -19,13 +19,18 @@ const UserSign = () => import('@/views/UserSign.vue')
 const SignIn = () => import('@/components/sign/SignIn.vue')
 const SignUp = () => import('@/components/sign/SignUp.vue')
 const Test = () => import('./test.vue')
-const Preview = ()=> import('@/views/Preview.vue')
-const PreviewClean = ()=> import('@/views/PreviewClean.vue')
+const Preview = () => import('@/views/Preview.vue')
+const PreviewClean = () => import('@/views/PreviewClean.vue')
+const Management = () => import('@/views/Management.vue')
 
 const routes = [
   {
     path: '/test',
     component: Test,
+  },
+  {
+    path: '/management',
+    component: Management,
   },
   {
     path: '/',
@@ -98,12 +103,12 @@ const routes = [
   },
   {
     path: '/preview/:type/:viewid',
-    name:'Preview',
+    name: 'Preview',
     component: Preview,
   },
   {
     path: '/preview-clean/:type/:viewid',
-    name:'PreviewClean',
+    name: 'PreviewClean',
     component: PreviewClean,
   },
 ]

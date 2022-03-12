@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-10 21:35:22
+ * @LastEditTime: 2022-03-12 17:33:48
  * @Description: 
 -->
 <template>
@@ -32,7 +32,7 @@
           </div>
         </div>
         <div class="menu-label" v-show="getCurItem().type === 'chart' && !chartProjectBox">图表类型</div>
-        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据&nbsp;<el-switch v-model="keepData" active-color="#3B8DD7" width="50"  active-text="是" inactive-text="否" inline-prompt/></div>
+        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据&nbsp;<el-switch v-model="keepData" active-color="#3B8DD7" width="50" active-text="是" inactive-text="否" inline-prompt /></div>
         <div class="menu-label" v-show="getCurItem().type === 'text' && !chartProjectBox">文本样式</div>
         <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div>
         <div class="menu-label return text-disable" v-show="chartProjectBox" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
@@ -41,7 +41,8 @@
           <div class="model-box">
             <div class="model-item text-disable" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
               <div class="item-img">
-                <img src="@/assets/image/图表.png" alt="" />
+                <!-- <img src="@/assets/image/图表.png" alt="" /> -->
+                <img class="project" :src="project.imgSrc" alt="img" />
               </div>
               <div class="item-name">{{ project.name }}</div>
             </div>
@@ -449,13 +450,20 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.GLayout) return
-      API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout }, (message) => {
-        console.log(message)
-        if (isHand) {
-          this.saveTip = '保存成功'
-        } else {
-          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+      API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
+        console.log(result)
+        if (!result.success) {
+          console.log('getPanelImg error')
+          return
         }
+        API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: result.info.path }, (message) => {
+          console.log(message)
+          if (isHand) {
+            this.saveTip = '保存成功'
+          } else {
+            this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+          }
+        })
       })
     },
     setConfig(item, key, value) {
@@ -520,7 +528,7 @@ export default {
     },
     setSetBox(option, item) {
       if (item) {
-        this.$refs['setBox' + item.i][0].setSettings(option,item)
+        this.$refs['setBox' + item.i][0].setSettings(option, item)
       } else {
         this.$refs['setBox' + this.getCurItem().i][0].setSettings(option)
       }
@@ -785,11 +793,16 @@ export default {
   flex-grow: 1;
   text-align: center;
   border-radius: 5px 5px 0 0;
+  overflow: hidden;
 }
 .content .left-box .model-box .model-item .item-img img {
   width: 60px;
   height: 60px;
   margin-top: 10px;
+}
+.content .left-box .model-box .model-item .item-img img.project{
+  width: 100%;
+  height: unset;
 }
 .content .left-box .model-box .model-item .item-img.text {
   line-height: 80px;

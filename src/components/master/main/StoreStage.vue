@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 16:15:53
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 15:41:24
+ * @LastEditTime: 2022-03-12 18:05:46
  * @Description: 
 -->
 <template>
@@ -22,11 +22,10 @@
       <div v-for="file in stageConfig.files" :key="file._id" @click="selectedFile = file" @dblclick.stop.prevent="$emit('newTab', fileTabConfig(file))">
         <div :class="{ file: isImageView, file2: !isImageView, selected: selectedFile && selectedFile._id === file._id }" v-if="isDeleteId !== file._id">
           <div class="fileview">
-            <img src="@/assets/image/表格.png" alt="" v-if="stageConfig.type === 'data'" />
-            <img src="@/assets/image/图表.png" :id="'chart' + file._id" @load.once="setChartImg($event, file._id)" onerror="" alt="chart" v-else-if="stageConfig.type === 'chart'" />
-            <!-- <img src="@/assets/image/图表.png" :id="'chart'+file._id" :onload="setChartBase64(file._id)"  onerror="" alt="chart" v-else-if="stageConfig.type === 'chart'" /> -->
-            <!-- <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" /> -->
-            <img src="@/assets/image/仪表板.png" alt="" v-else-if="stageConfig.type === 'panel'" />
+            <!-- <img src="@/assets/image/表格.png" alt="" v-if="stageConfig.type === 'data'" />
+            <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" />
+            <img src="@/assets/image/仪表板.png" alt="" v-else-if="stageConfig.type === 'panel'" /> -->
+            <img :src="file.imgSrc" alt="img" @error.once="onerror($event,stageConfig.type)" />
           </div>
           <div class="filename" @dblclick.stop.prevent="rename">
             <input v-model="file.name" readonly :id="file._id" maxlength="30" />
@@ -93,6 +92,15 @@ export default {
   },
   methods: {
     test() {},
+    onerror(e,type){
+      if(type === 'data'){
+        e.path[0].setAttribute('src',require('@/assets/image/表格.png'))
+      } else if(type === 'chart'){
+        e.path[0].setAttribute('src',require('@/assets/image/图表.png'))
+      }else if(type === 'panel'){
+        e.path[0].setAttribute('src',require('@/assets/image/仪表板.png'))
+      }
+    },
     setChartImg(e, fileId) {
       API.getChartImg({ _id: fileId, path: 'http://localhost:8080/preview-clean/chart/' }, (message) => {
         e.path[0].setAttribute('src', message.info.path)
@@ -154,11 +162,6 @@ export default {
       this.trueFunc = this.deleteFile
     },
     deleteFile() {
-      // if (!this.selectedFile._id) return
-      // if (this.$store.state.tabMap && this.$store.state.tabMap.has(this.selectedFile._id)) {
-      //   alert('无法删除已打开的项目')
-      //   return
-      // }
       this.isDeleteId = this.selectedFile._id
       if (this.stageConfig.type === 'data' && this.selectedFile._id) {
         API.deleteTable({ _id: this.selectedFile._id }, (message) => {
@@ -197,6 +200,7 @@ export default {
         let defaultTable = {
           name: '新建数据源',
           data: [],
+          imgSrc: '@/assets/image/表格.png',
         }
         API.newTable(defaultTable, (message) => {
           if (message.success) {
@@ -217,7 +221,7 @@ export default {
           name: '新建图表',
           data: [],
           option: {},
-          // isShared: false,
+          imgSrc: '@/assets/image/图表.png',
         }
         API.newChart(defaultChart, (message) => {
           if (message.success) {
@@ -245,7 +249,7 @@ export default {
               itemMargin: 5,
             },
           },
-          // isShared: false,
+          imgSrc: '@/assets/image/仪表板.png',
         }
         API.newPanel(defaultPanel, (message) => {
           if (message.success) {
@@ -409,13 +413,17 @@ export default {
 }
 .store .file2 .fileview {
   /* text-align: center; */
+  width: 60px;
+  height: 40px;
   background-color: rgb(238, 238, 238);
   border-radius: 6px 0 0 6px;
+  overflow: hidden;
 }
 .store .file2 .fileview img {
-  width: 40px;
-  height: 40px;
-  padding: 5px;
+  width: 60px;
+  /* height: 40px; */
+  /* height: unset; */
+  /* padding: 5px; */
   /* margin-top: 10px; */
 }
 .store .file2 .filename {

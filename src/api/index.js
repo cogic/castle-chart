@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 10:46:07
+ * @LastEditTime: 2022-03-12 21:05:54
  * @Description:
  */
 import Network from '@/api/network'
@@ -39,6 +39,9 @@ function netPost(url, data, callback) {
   }
 }
 
+function checkAdmin(callback) {
+  netPost('/admin/check', undefined, callback)
+}
 function userRegister(data, callback) {
   netPost('/user/regiser', data, callback)
 }
@@ -62,26 +65,21 @@ function newPanel(data, callback) {
   netPost('/panel/new-one', data, callback)
 }
 
-function getTableList(callback) {console.log('getTableListgetTableList');
+function getTableList(callback) {
+  console.log('getTableListgetTableList')
   netPost('/table/get-list', undefined, callback)
 }
-function getChartList(callback) {console.log('getChartListgetChartList');
+function getChartList(callback) {
+  console.log('getChartListgetChartList')
   netPost('/chart/get-list', undefined, callback)
 }
-function getPanelList(callback) {console.log('getPanelListgetPanelList');
+function getPanelList(callback) {
+  console.log('getPanelListgetPanelList')
   netPost('/panel/get-list', undefined, callback)
 }
 
 function getTable(data, callback) {
-  // if (data === 'builddata') {
-  //   let result
-  //   result.fileData.id = 'builddata'
-  //   result.fileData.name = '新建数据源'
-  //   result.fileData.data = []
-
-  // } else {
   netPost('/table/get-one', data, callback)
-  // }
 }
 function getChart(data, callback) {
   netPost('/chart/get-one', data, callback)
@@ -97,6 +95,9 @@ function getSharedPanel(data, callback) {
 }
 function getChartImg(data, callback) {
   netPost('/chart/get-img', data, callback)
+}
+function getPanelImg(data, callback) {
+  netPost('/panel/get-img', data, callback)
 }
 
 function deleteTable(data, callback) {
@@ -128,22 +129,22 @@ function getChartExamples(callback) {
 
 function getGeoJson(adcode, callback) {
   AMapLoader.load({
-    key:'b2c9e324ab22fdad78f5fbbe76b0e410',
-    version:'2.0',
+    key: 'b2c9e324ab22fdad78f5fbbe76b0e410',
+    version: '2.0',
     AMapUI: {
-        version: '1.1',
-        plugins:['overlay/SimpleMarker']
-    }
-}).then((AMap)=>{
-  AMapUI.loadUI(["geo/DistrictExplorer"], function (DistrictExplorer) {
-    new DistrictExplorer().loadAreaNode(adcode, function (error, areaNode) {
-      let subFeatures = areaNode.getSubFeatures();
-      let geoJson = { type: "FeatureCollection", features: subFeatures };
-      aLog(adcode, geoJson)
-      callback(geoJson)
-    });
-  });
-})
+      version: '1.1',
+      plugins: ['overlay/SimpleMarker'],
+    },
+  }).then((AMap) => {
+    AMapUI.loadUI(['geo/DistrictExplorer'], function (DistrictExplorer) {
+      new DistrictExplorer().loadAreaNode(adcode, function (error, areaNode) {
+        let subFeatures = areaNode.getSubFeatures()
+        let geoJson = { type: 'FeatureCollection', features: subFeatures }
+        aLog(adcode, geoJson)
+        callback(geoJson)
+      })
+    })
+  })
 }
 
 // function setSharedChart(data){
@@ -153,4 +154,31 @@ function getGeoJson(adcode, callback) {
 //   netPost('/panel/set-shared', data, callback)
 // }
 
-export default {getChartImg, getSharedChart,getSharedPanel, getGeoJson, savePanel, saveChart, saveTable, userRegister, userLogin, checkLogin, userLogout, newPanel, newChart, newTable, getTableList, getTable, deletePanel, deleteChart, deleteTable, getChartList, getChart, getChartExamples, getPanelList, getPanel }
+export default {
+  checkAdmin,
+  getChartImg,
+  getPanelImg,
+  getSharedChart,
+  getSharedPanel,
+  getGeoJson,
+  savePanel,
+  saveChart,
+  saveTable,
+  userRegister,
+  userLogin,
+  checkLogin,
+  userLogout,
+  newPanel,
+  newChart,
+  newTable,
+  getTableList,
+  getTable,
+  deletePanel,
+  deleteChart,
+  deleteTable,
+  getChartList,
+  getChart,
+  getChartExamples,
+  getPanelList,
+  getPanel,
+}

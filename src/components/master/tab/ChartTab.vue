@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-10 21:31:09
+ * @LastEditTime: 2022-03-12 16:50:58
  * @Description: 
 -->
 <template>
@@ -21,7 +21,10 @@
       <div class="left-box" v-show="leftShow">
         <div class="model-menu">
           <div class="menu-label">图表类型</div>
-          <div class="menu-label check"><div>保留数据</div><el-switch v-model="keepData" active-color="#3B8DD7" width="60"  active-text="是" inactive-text="否" inline-prompt/></div>
+          <div class="menu-label check">
+            <div>保留数据</div>
+            <el-switch v-model="keepData" active-color="#3B8DD7" width="60" active-text="是" inactive-text="否" inline-prompt />
+          </div>
           <div class="menu-item" :class="{ 'text-disable': true, current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="this.curSampleName = sample.name">{{ sample.name }}</div>
         </div>
         <template v-for="sample in chartSamples">
@@ -191,13 +194,20 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.myChart) return
-      API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption() }, (message) => {
-        console.log(message)
-        if (isHand) {
-          this.saveTip = '保存成功'
-        } else {
-          this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+      API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
+        console.log(result)
+        if (!result.success) {
+          console.log('getChartImg error')
+          return
         }
+        API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: result.info.path }, (message) => {
+          console.log(message)
+          if (isHand) {
+            this.saveTip = '保存成功'
+          } else {
+            this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+          }
+        })
       })
     },
     share() {
