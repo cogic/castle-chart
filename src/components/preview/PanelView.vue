@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-02-28 22:58:58
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-03 00:31:52
+ * @LastEditTime: 2022-03-23 17:22:15
  * @Description: 
 -->
 <template>
@@ -12,12 +12,11 @@
 </template>
 
 <script>
-import API from '@/api'
 import GLayout from '@/components/master/tab/GLayout.vue'
 export default {
   components: { GLayout },
   mounted() {
-    API.getSharedPanel({ _id: this.$route.params.viewid }, (message) => {
+    this.$API.getSharedPanel({ _id: this.$route.params.viewid }, (message) => {
       if (message.success) {
         this.setLayout(message.info.layout, message.info.back)
         this.panelBackColor = message.info.back.config.backgroundColor

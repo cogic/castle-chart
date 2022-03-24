@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import API from '@/api'
 import SafeCode from '@/components/sign/SafeCode.vue'
 export default {
   components: { SafeCode },
@@ -68,7 +67,7 @@ export default {
         this.$refs.codebox.refreshCode()
         this.mesg = '验证码错误!'
       } else {
-        API.userRegister(
+        this.$API.userRegister(
           {
             username: this.username,
             password: this.password,

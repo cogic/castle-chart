@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:49:44
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 13:37:24
+ * @LastEditTime: 2022-03-23 17:19:28
  * @Description: 
 -->
 <template>
@@ -12,11 +12,7 @@
 </template>
 
 <script>
-export default {
-  mounted(){
-    console.log('HHHHHHHHHHHHoOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMEEEEEEEEEEEE');
-  }
-}
+export default {}
 </script>
 
 <style scoped>

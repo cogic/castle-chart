@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-30 10:21:11
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-11 23:21:37
+ * @LastEditTime: 2022-03-23 22:06:28
  * @Description: 
 -->
 <template>
@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import * as echarts from 'echarts'
+// import * as echarts from 'echarts'
+import echarts from '@/assets/script/myEcharts'
 import 'echarts-countries-js/echarts-countries-js/china'
 import { markRaw } from '@vue/reactivity'
 export default {

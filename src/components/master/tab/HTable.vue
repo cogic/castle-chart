@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-31 16:53:30
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-11 21:33:46
+ * @LastEditTime: 2022-03-24 00:02:40
  * @Description: 
 -->
 <template>
@@ -11,11 +11,79 @@
 
 <script>
 import XSheet from '@/assets/script/x-sheet'
-
 import { HotTable } from '@handsontable/vue3'
-import { registerAllModules } from 'handsontable/registry'
-registerAllModules()
-
+// import { registerAllModules } from 'handsontable/registry'
+// registerAllModules()
+import {
+  AutoColumnSize,
+  AutoRowSize,
+  // Autofill,
+  // BasePlugin,
+  // BindRowsWithHeaders,
+  // CollapsibleColumns,
+  // ColumnSorting,
+  // ColumnSummary,
+  // Comments,
+  ContextMenu,
+  CopyPaste,
+  // CustomBorders,
+  // DragToScroll,
+  // DropdownMenu,
+  // ExportFile,
+  // Filters,
+  // Formulas,
+  // HiddenColumns,
+  // HiddenRows,
+  // ManualColumnFreeze,
+  ManualColumnMove,
+  ManualColumnResize,
+  ManualRowMove,
+  ManualRowResize,
+  // MergeCells,
+  // MultiColumnSorting,
+  // MultipleSelectionHandles,
+  // NestedHeaders,
+  // NestedRows,
+  // PersistentState,
+  // Search,
+  // TouchScroll,
+  // TrimRows,
+  UndoRedo,
+  registerPlugin,
+} from 'handsontable/plugins';
+registerPlugin(AutoColumnSize);
+// registerPlugin(Autofill);
+registerPlugin(AutoRowSize);
+// registerPlugin(BindRowsWithHeaders);
+// registerPlugin(CollapsibleColumns);
+// registerPlugin(ColumnSorting);
+// registerPlugin(ColumnSummary);
+// registerPlugin(Comments);
+registerPlugin(ContextMenu);
+registerPlugin(CopyPaste);
+// registerPlugin(CustomBorders);
+// registerPlugin(DragToScroll);
+// registerPlugin(DropdownMenu);
+// registerPlugin(ExportFile);
+// registerPlugin(Filters);
+// registerPlugin(Formulas);
+// registerPlugin(HiddenColumns);
+// registerPlugin(HiddenRows);
+// registerPlugin(ManualColumnFreeze);
+registerPlugin(ManualColumnMove);
+registerPlugin(ManualColumnResize);
+registerPlugin(ManualRowMove);
+registerPlugin(ManualRowResize);
+// registerPlugin(MergeCells);
+// registerPlugin(MultiColumnSorting);
+// registerPlugin(MultipleSelectionHandles);
+// registerPlugin(NestedHeaders);
+// registerPlugin(NestedRows);
+// registerPlugin(PersistentState);
+// registerPlugin(Search);
+// registerPlugin(TouchScroll);
+// registerPlugin(TrimRows);
+registerPlugin(UndoRedo);
 export default {
   components: {
     HotTable,
@@ -151,7 +219,7 @@ export default {
       })
     },
     loadData(newData) {
-      this.hot.loadData(newData.length < 1 ? [[]] : this.cloneArray(newData)) // lodaData 的 参数不能为空数组[]，但可以为[[]]
+      this.hot.loadData(!newData || newData.length < 1 ? [[]] : this.cloneArray(newData)) // lodaData 的 参数不能为空数组[]，但可以为[[]]
     },
     getData(data) {
       // 去除 data 中无用的行或列

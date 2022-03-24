@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-03-02 03:43:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-07 17:29:43
+ * @LastEditTime: 2022-03-23 17:39:18
  * @Description: 
 -->
 <template>
@@ -22,9 +22,7 @@
   </div>
 </template>
 
-<script>
-import API from '@/api'
-
+<script> 
 export default {
   data() {
     return {
@@ -35,11 +33,11 @@ export default {
   watch: {
     isShared(newValue) {
       if (this.$route.name === 'ChartTab') {
-        API.saveChart({ _id: this.$parent.chartId, isShared: newValue }, (message) => {
+        this.$API.saveChart({ _id: this.$parent.chartId, isShared: newValue }, (message) => {
           console.log(message)
         })
       } else if (this.$route.name === 'PanelTab') {
-        API.savePanel({ _id: this.$parent.panelId, isShared: newValue }, (message) => {
+        this.$API.savePanel({ _id: this.$parent.panelId, isShared: newValue }, (message) => {
           console.log(message)
         })
       }

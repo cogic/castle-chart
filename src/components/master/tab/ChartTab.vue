@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 16:50:58
+ * @LastEditTime: 2022-03-23 23:07:48
  * @Description: 
 -->
 <template>
@@ -31,14 +31,15 @@
           <div class="model-box" v-if="isCurrentSample(sample)">
             <div class="model-item text-disable" v-for="example in sample.examples" @click="setChartByExample(example)">
               <div class="item-img">
-                <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
+                <!-- <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
                 <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
                 <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
                 <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
                 <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
                 <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
                 <img src="@/assets/image/地图.png" alt="" v-show="sample.name === '地图'" />
-                <img src="@/assets/image/仪表盘.png" alt="" v-show="sample.name === '仪表盘'" />
+                <img src="@/assets/image/仪表盘.png" alt="" v-show="sample.name === '仪表盘'" /> -->
+                <img :src="example.imgSrc" alt=""/>
               </div>
               <div class="item-name">{{ example.name }}</div>
             </div>
@@ -50,7 +51,7 @@
         <span class="iconfont" v-else>&#xe61a;</span>
       </div>
       <div class="center-box">
-        <div class="center-content">
+        <div class="center-content" id="chartp">
           <e-chart ref="myChart" :data="chartData" :option="chartOption"></e-chart>
         </div>
       </div>
@@ -95,13 +96,13 @@
 
 <script>
 // TODO 切换图表时询问是否保留数据
-import API from '@/api'
 import EChart from '@/components/master/tab/EChart.vue'
-import HTable from '@/components/master/tab/HTable.vue'
+// import HTable from '@/components/master/tab/HTable.vue'
 import SetBox from '@/components/master/tab/SetBox.vue'
 import ShareWindow from '@/components/ShareWindow.vue'
+import html2canvas from 'html2canvas'
 export default {
-  components: { EChart, HTable, SetBox, ShareWindow },
+  components: { EChart, SetBox, ShareWindow },
   data() {
     return {
       keepData: false,
@@ -160,11 +161,11 @@ export default {
       }
     },
     loadDataSource() {
-      API.getTableList((message) => {
+      this.$.getTableList((message) => {
         this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable({ _id: val.id }, (message) => {
+        this.$API.getTable({ _id: val.id }, (message) => {
           val.data = message.info.data
         })
         return val
@@ -194,13 +195,15 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.myChart) return
-      API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
-        console.log(result)
-        if (!result.success) {
-          console.log('getChartImg error')
-          return
-        }
-        API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: result.info.path }, (message) => {
+      html2canvas(document.getElementById('chartp')).then((canvas) => {
+        let imgSrc = canvas.toDataURL('image/png', 1)
+      // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
+      //   console.log(result)
+      //   if (!result.success) {
+      //     console.log('getChartImg error')
+      //     return
+      //   }
+        this.$API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: imgSrc }, (message) => {
           console.log(message)
           if (isHand) {
             this.saveTip = '保存成功'
@@ -214,16 +217,18 @@ export default {
       this.save(true)
       this.isPop = true
       this.$refs.popwin.isShared = true
-      API.saveChart({ _id: this.chartId, isShared: true }, (message) => {
+      this.$API.saveChart({ _id: this.chartId, isShared: true }, (message) => {
         console.log(message)
       })
     },
   },
   mounted() {
-    API.getChartExamples((result) => {
-      // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
-      this.chartSamples = result
-      this.curSampleName = result[0].name
+    // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
+    this.$API.getSampleList((message) => {
+      if(message.success){
+        this.chartSamples = message.info
+      this.curSampleName = message.info[0].name
+      }
     })
   },
   updated() {
@@ -234,7 +239,7 @@ export default {
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
         this.clearChart() // 在加载数据前清除一下画布，消除keepalive的影响
-        API.getChart({ _id: this.$route.params.tabkey }, (message) => {
+        this.$API.getChart({ _id: this.$route.params.tabkey }, (message) => {
           if (message.success) {
             callback({ type: 'chart', topic: message.info.name, key: message.info._id })
             this.chartId = this.$route.params.tabkey
@@ -397,11 +402,12 @@ export default {
   flex-grow: 1;
   text-align: center;
   border-radius: 5px 5px 0 0;
+  overflow: hidden;
 }
 .content .left-box .model-box .model-item .item-img img {
-  width: 60px;
-  height: 60px;
-  margin-top: 10px;
+  width: 100px;
+  /* height: 80px; */
+  /* margin-top: 10px; */
 }
 .content .left-box .model-box .model-item .item-name {
   width: 100px;

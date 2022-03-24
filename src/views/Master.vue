@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 15:14:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 21:10:09
+ * @LastEditTime: 2022-03-23 17:02:39
  * @Description: 
 -->
 <template>
@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import API from '@/api'
+// import API from '@/api'
 export default {
   beforeUpdate() {
     // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
@@ -55,7 +55,7 @@ export default {
     }
   },
   beforeCreate() {
-    API.checkLogin((message) => {
+    this.$API.checkLogin((message) => {
       if (message.success) {
         this.username = message.info.username
       } else {
@@ -100,7 +100,7 @@ export default {
   methods: {
     toManagement() {
       console.log(window.location.origin)
-      API.checkAdmin((message) => {
+      this.$API.checkAdmin((message) => {
         if (message.success) {
           window.open(window.location.origin + '/management', '_blank ')
         }
@@ -134,7 +134,7 @@ export default {
       }
     },
     logout() {
-      API.userLogout((message) => {
+      this.$API.userLogout((message) => {
         console.log(message)
         if (message.success) {
           this.$router.replace('/sign')

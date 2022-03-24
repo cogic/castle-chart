@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-22 11:48:59
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-09 15:37:09
+ * @LastEditTime: 2022-03-23 17:22:27
  * @Description: 
 -->
 <template>
@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import API from '@/api'
 import SafeCode from '@/components/sign/SafeCode.vue'
 export default {
   components: { SafeCode },
@@ -60,7 +59,7 @@ export default {
         this.$refs.codebox.refreshCode()
         this.mesg = '验证码错误!'
       } else {
-        API.userLogin(
+        this.$API.userLogin(
           {
             username: this.username,
             password: this.password,

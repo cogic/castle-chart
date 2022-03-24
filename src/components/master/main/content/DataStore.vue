@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 16:48:31
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 13:01:04
+ * @LastEditTime: 2022-03-23 17:19:11
  * @Description: 
 -->
 <template>
@@ -11,11 +11,9 @@
 
 <script>
 import StoreStage from '@/components/master/main/StoreStage.vue'
-import API from '@/api'
 export default {
   mounted() {
-    console.log('mmmmmmmmmmmmoountDatasoure');
-    API.getTableList((message)=>{
+    this.$API.getTableList((message)=>{
       if (message.success) {
         this.stageConfig.files = message.info
       }

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 16:15:53
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 18:05:46
+ * @LastEditTime: 2022-03-23 17:04:07
  * @Description: 
 -->
 <template>
@@ -17,15 +17,16 @@
       <div :class="{ 'text-disable': true, tool: true, able: selectedFile && selectedFile._id }" v-if="toolShow('delete')" @click.prevent="toDelete">删除</div>
       <!-- <div class="tool sort" v-if="toolShow('sort')">排序</div> -->
       <div :class="{ 'text-disable': true, tool: true, able: true }" @click="isImageView = !isImageView" v-if="toolShow('view')">切换视图</div>
+      <div :class="{ 'text-disable': true, tool: true, able: true }" @click="flush">刷新</div>
     </div>
     <div :class="{ store: true, store2: !isImageView }">
-      <div v-for="file in stageConfig.files" :key="file._id" @click="selectedFile = file" @dblclick.stop.prevent="$emit('newTab', fileTabConfig(file))">
+      <div v-for="file in stageConfig.files" @click="selectedFile = file" @dblclick.stop.prevent="$emit('newTab', fileTabConfig(file))">
         <div :class="{ file: isImageView, file2: !isImageView, selected: selectedFile && selectedFile._id === file._id }" v-if="isDeleteId !== file._id">
           <div class="fileview">
             <!-- <img src="@/assets/image/表格.png" alt="" v-if="stageConfig.type === 'data'" />
             <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" />
             <img src="@/assets/image/仪表板.png" alt="" v-else-if="stageConfig.type === 'panel'" /> -->
-            <img :src="file.imgSrc" alt="img" @error.once="onerror($event,stageConfig.type)" />
+            <img :src="file.imgSrc" alt="img" @error.once="onerror($event, stageConfig.type)" />
           </div>
           <div class="filename" @dblclick.stop.prevent="rename">
             <input v-model="file.name" readonly :id="file._id" maxlength="30" />
@@ -37,9 +38,7 @@
 </template>
 
 <script>
-import API from '@/api'
 import PopBox from '@/components/PopBox.vue'
-
 export default {
   components: { PopBox },
   activated() {
@@ -62,15 +61,15 @@ export default {
         document.getElementById(oldV._id).readOnly = true
         document.getElementById(oldV._id).className = ''
         if (this.stageConfig.type === 'data') {
-          API.saveTable({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
+          this.$API.saveTable({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
             console.log(message)
           })
         } else if (this.stageConfig.type === 'chart') {
-          API.saveChart({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
+          this.$API.saveChart({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
             console.log(message)
           })
         } else if (this.stageConfig.type === 'panel') {
-          API.savePanel({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
+          this.$API.savePanel({ _id: oldV._id, name: document.getElementById(oldV._id).value }, (message) => {
             console.log(message)
           })
         }
@@ -91,36 +90,57 @@ export default {
     },
   },
   methods: {
-    test() {},
-    onerror(e,type){
-      if(type === 'data'){
-        e.path[0].setAttribute('src',require('@/assets/image/表格.png'))
-      } else if(type === 'chart'){
-        e.path[0].setAttribute('src',require('@/assets/image/图表.png'))
-      }else if(type === 'panel'){
-        e.path[0].setAttribute('src',require('@/assets/image/仪表板.png'))
+    flush() {
+      this.$parent.stageConfig.files = []
+      if (this.stageConfig.type === 'data') {
+        this.$API.getTableList((message) => {
+          if (message.success) {
+            this.$parent.stageConfig.files = message.info
+          }
+        })
+      } else if (this.stageConfig.type === 'chart') {
+        this.$API.getChartList((message) => {
+          if (message.success) {
+            this.$parent.stageConfig.files = message.info
+          }
+        })
+      } else if (this.stageConfig.type === 'panel') {
+        this.$API.getPanelList((message) => {
+          if (message.success) {
+            this.$parent.stageConfig.files = message.info
+          }
+        })
       }
     },
-    setChartImg(e, fileId) {
-      API.getChartImg({ _id: fileId, path: 'http://localhost:8080/preview-clean/chart/' }, (message) => {
-        e.path[0].setAttribute('src', message.info.path)
-      })
+    onerror(e, type) {
+      if (type === 'data') {
+        e.path[0].setAttribute('src', require('@/assets/image/表格.png'))
+      } else if (type === 'chart') {
+        e.path[0].setAttribute('src', require('@/assets/image/图表.png'))
+      } else if (type === 'panel') {
+        e.path[0].setAttribute('src', require('@/assets/image/仪表板.png'))
+      }
     },
+    // setChartImg(e, fileId) {
+    //   API.getChartImg({ _id: fileId, path: 'http://localhost:8080/preview-clean/chart/' }, (message) => {
+    //     e.path[0].setAttribute('src', message.info.path)
+    //   })
+    // },
     endRename(e) {
-      if (!this.selectedFile._id || !document.getElementById(this.selectedFile._id) || document.getElementById(this.selectedFile._id).readOnly === true) return
+      if (!this.selectedFile || !this.selectedFile._id || !document.getElementById(this.selectedFile._id) || document.getElementById(this.selectedFile._id).readOnly === true) return
       if (e.target != document.getElementById(this.selectedFile._id)) {
         document.getElementById(this.selectedFile._id).readOnly = true
         document.getElementById(this.selectedFile._id).className = ''
         if (this.stageConfig.type === 'data') {
-          API.saveTable({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
+          this.$API.saveTable({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
             console.log(message)
           })
         } else if (this.stageConfig.type === 'chart') {
-          API.saveChart({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
+          this.$API.saveChart({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
             console.log(message)
           })
         } else if (this.stageConfig.type === 'panel') {
-          API.savePanel({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
+          this.$API.savePanel({ _id: this.selectedFile._id, name: document.getElementById(this.selectedFile._id).value }, (message) => {
             console.log(message)
           })
         }
@@ -164,30 +184,30 @@ export default {
     deleteFile() {
       this.isDeleteId = this.selectedFile._id
       if (this.stageConfig.type === 'data' && this.selectedFile._id) {
-        API.deleteTable({ _id: this.selectedFile._id }, (message) => {
+        this.$API.deleteTable({ _id: this.selectedFile._id }, (message) => {
           console.log(message)
           this.selectedFile = {}
-          API.getTableList((message) => {
+          this.$API.getTableList((message) => {
             if (message.success) {
               this.$parent.stageConfig.files = message.info
             }
           })
         })
       } else if (this.stageConfig.type === 'chart' && this.selectedFile._id) {
-        API.deleteChart({ _id: this.selectedFile._id }, (message) => {
+        this.$API.deleteChart({ _id: this.selectedFile._id }, (message) => {
           console.log(message)
           this.selectedFile = {}
-          API.getChartList((message) => {
+          this.$API.getChartList((message) => {
             if (message.success) {
               this.$parent.stageConfig.files = message.info
             }
           })
         })
       } else if (this.stageConfig.type === 'panel' && this.selectedFile._id) {
-        API.deletePanel({ _id: this.selectedFile._id }, (message) => {
+        this.$API.deletePanel({ _id: this.selectedFile._id }, (message) => {
           console.log(message)
           this.selectedFile = {}
-          API.getPanelList((message) => {
+          this.$API.getPanelList((message) => {
             if (message.success) {
               this.$parent.stageConfig.files = message.info
             }
@@ -202,14 +222,14 @@ export default {
           data: [],
           imgSrc: '@/assets/image/表格.png',
         }
-        API.newTable(defaultTable, (message) => {
+        this.$API.newTable(defaultTable, (message) => {
           if (message.success) {
             callback({
               type: this.stageConfig.type,
               topic: defaultTable.name,
               key: message.info,
             })
-            API.getTableList((message) => {
+            this.$API.getTableList((message) => {
               if (message.success) {
                 this.$parent.stageConfig.files = message.info
               }
@@ -223,14 +243,14 @@ export default {
           option: {},
           imgSrc: '@/assets/image/图表.png',
         }
-        API.newChart(defaultChart, (message) => {
+        this.$API.newChart(defaultChart, (message) => {
           if (message.success) {
             callback({
               type: this.stageConfig.type,
               topic: defaultChart.name,
               key: message.info,
             })
-            API.getChartList((message) => {
+            this.$API.getChartList((message) => {
               if (message.success) {
                 this.$parent.stageConfig.files = message.info
               }
@@ -251,14 +271,14 @@ export default {
           },
           imgSrc: '@/assets/image/仪表板.png',
         }
-        API.newPanel(defaultPanel, (message) => {
+        this.$API.newPanel(defaultPanel, (message) => {
           if (message.success) {
             callback({
               type: this.stageConfig.type,
               topic: defaultPanel.name,
               key: message.info,
             })
-            API.getPanelList((message) => {
+            this.$API.getPanelList((message) => {
               if (message.success) {
                 this.$parent.stageConfig.files = message.info
               }
@@ -347,7 +367,7 @@ export default {
   flex-direction: column;
 
   width: 100px;
-  /* height: 100px; */
+  height: 100px;
   margin: 5px;
   border-radius: 10px;
   box-shadow: 0px 0px 10px -8px #000000;
@@ -363,16 +383,18 @@ export default {
   box-shadow: 0px 0px 20px -5px #62a3bd;
 }
 .store .file .fileview {
-  height: 60px;
+  flex-grow: 1;
+  /* height: 160px; */
   text-align: center;
   background-color: rgb(243, 243, 243);
   border-radius: 10px 10px 0 0;
   overflow: hidden;
 }
 .store .file .fileview img {
-  /* width: 50px; */
-  /* height: 50px; */
-  width: 100%;
+  max-width: 100px;
+  /* margin-top: -30px; */
+  min-height: 70px;
+  /* width: 100%; */
   /* margin-top: 10px; */
 }
 .store .file .filename {

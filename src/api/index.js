@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 21:44:00
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 21:05:54
+ * @LastEditTime: 2022-03-14 10:36:43
  * @Description:
  */
 import Network from '@/api/network'
@@ -39,6 +39,22 @@ function netPost(url, data, callback) {
   }
 }
 
+function newSample(data, callback) {
+  netPost('/sample/new-one', data, callback)
+}
+function saveSample(data, callback) {
+  netPost('/sample/set-one', data, callback)
+}
+function deleteSample(data, callback) {
+  netPost('/sample/delete-one', data, callback)
+}
+function getSampleListDefault(callback){
+  netPost('/sample/get-default', undefined, callback)
+}
+function getSampleList(callback){
+  netPost('/sample/get-list', undefined, callback)
+}
+
 function checkAdmin(callback) {
   netPost('/admin/check', undefined, callback)
 }
@@ -66,15 +82,12 @@ function newPanel(data, callback) {
 }
 
 function getTableList(callback) {
-  console.log('getTableListgetTableList')
   netPost('/table/get-list', undefined, callback)
 }
 function getChartList(callback) {
-  console.log('getChartListgetChartList')
   netPost('/chart/get-list', undefined, callback)
 }
 function getPanelList(callback) {
-  console.log('getPanelListgetPanelList')
   netPost('/panel/get-list', undefined, callback)
 }
 
@@ -155,6 +168,11 @@ function getGeoJson(adcode, callback) {
 // }
 
 export default {
+  newSample,
+  saveSample,
+  deleteSample,
+  getSampleListDefault,
+  getSampleList,
   checkAdmin,
   getChartImg,
   getPanelImg,

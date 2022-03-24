@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-01-17 16:47:47
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-07 15:19:29
+ * @LastEditTime: 2022-03-23 17:21:13
  * @Description: 
 -->
 <template>
@@ -25,12 +25,10 @@
         :i="item.i"
         drag-ignore-from=".no-drag"
       >
-        <!-- <div>edit remove</div> -->
         <div class="item-content" v-if="item.type === 'chart'"><e-chart :ref="'chart' + item.i" :data="item.config.data" :option="item.config.option"></e-chart></div>
         <div class="item-content text" v-else-if="item.type === 'text'" :id="'textParent' + item.i"><h1 :id="'text' + item.i"></h1></div>
         <div class="item-content" v-else-if="item.type === 'image'">图片</div>
         <div v-else>NULL</div>
-        <!-- <span class="text">{{ itemTitle(item) }}</span> -->
         <span class="remove no-drag text-disable" v-show="isRemovable" @click.stop="removeItem($event, item.i)" @mousedown.stop=""><span class="iconfont">&#xe673;</span></span>
       </grid-item>
     </grid-layout>

@@ -2,10 +2,10 @@
  * @Author: Cogic
  * @Date: 2022-01-01 15:27:47
  * @LastEditors: Cogic
- * @LastEditTime: 2022-01-01 15:54:54
+ * @LastEditTime: 2022-03-23 22:59:24
  * @Description:
  */
-import XLSX from 'xlsx'
+ import * as XLSX from 'xlsx/xlsx.mjs';
 
 function importFile(callback) {
   // TODO 此处的导入功能是直接复制官方样例后修改的，具体的一些细节没有深究，后续需要再处理一下

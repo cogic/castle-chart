@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 17:33:48
+ * @LastEditTime: 2022-03-24 00:17:52
  * @Description: 
 -->
 <template>
@@ -56,12 +56,13 @@
             <div class="model-box" v-if="isCurrentSample(sample)">
               <div class="model-item text-disable" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
                 <div class="item-img">
-                  <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
+                  <!-- <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
                   <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
                   <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
                   <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
                   <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
-                  <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
+                  <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" /> -->
+                <img :src="example.imgSrc" alt=""/>
                 </div>
                 <div class="item-name">{{ example.name }}</div>
               </div>
@@ -83,7 +84,7 @@
       </div>
       <div class="center-box">
         <div class="center-inner">
-          <div class="center-content" ref="panelBack" @click="setCurItemToBack">
+          <div class="center-content" ref="panelBack" @click="setCurItemToBack" id="chartp">
             <g-layout ref="GLayout"></g-layout>
           </div>
         </div>
@@ -171,22 +172,21 @@
 </template>
 
 <script>
-import API from '@/api'
 import GLayout from '@/components/master/tab/GLayout.vue'
-import HTable from '@/components/master/tab/HTable.vue'
+// import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 import SetBox from '@/components/master/tab/SetBox.vue'
 import ShareWindow from '@/components/ShareWindow.vue'
 import PopBox from '@/components/PopBox.vue'
-
+import html2canvas from 'html2canvas'
 export default {
-  components: { GLayout, HTable, SetBox, ShareWindow, PopBox },
+  components: { GLayout, SetBox, ShareWindow, PopBox },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
         this.$refs.GLayout.clearLayout() // 在加载数据前清除一下画布，消除keepalive的影响
-        API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
+        this.$API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
           if (message.success) {
             callback({ type: 'panel', topic: message.info.name, key: message.info._id })
             this.panelId = this.$route.params.tabkey
@@ -218,9 +218,15 @@ export default {
     clearInterval(this.autoSave)
   },
   mounted() {
-    API.getChartExamples((result) => {
-      this.chartSamples = result
-      this.curSampleName = null
+    // API.getChartExamples((result) => {
+    //   this.chartSamples = result
+    //   this.curSampleName = null
+    // })
+    this.$API.getSampleList((message) => {
+      if (message.success) {
+        this.chartSamples = message.info
+        this.curSampleName = null
+      }
     })
   },
   data() {
@@ -340,7 +346,6 @@ export default {
       }, 0)
     },
     panelBackColor(newValue) {
-      // this.$refs.panelBack.style.backgroundColor = newValue
       this.$refs.GLayout.back.config.backgroundColor = newValue
     },
     panelItemMargin(newValue) {
@@ -366,7 +371,7 @@ export default {
       this.save(true)
       this.isPop = true
       this.$refs.popwin.isShared = true
-      API.savePanel({ _id: this.panelId, isShared: true }, (message) => {
+      this.$API.savePanel({ _id: this.panelId, isShared: true }, (message) => {
         console.log(message)
       })
     },
@@ -381,11 +386,11 @@ export default {
       this.textItemChange(this.getCurItem())
     },
     loadDataSource() {
-      API.getTableList((message) => {
+      this.$API.getTableList((message) => {
         this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
-        API.getTable({ _id: val.id }, (message) => {
+        this.$API.getTable({ _id: val.id }, (message) => {
           val.data = message.info.data
         })
         return val
@@ -450,13 +455,15 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.GLayout) return
-      API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
-        console.log(result)
-        if (!result.success) {
-          console.log('getPanelImg error')
-          return
-        }
-        API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: result.info.path }, (message) => {
+      html2canvas(document.getElementById('chartp')).then((canvas) => {
+        let imgSrc = canvas.toDataURL('image/png', 1)
+      // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
+      //   console.log(result)
+      //   if (!result.success) {
+      //     console.log('getPanelImg error')
+      //     return
+      //   }
+        this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: imgSrc }, (message) => {
           console.log(message)
           if (isHand) {
             this.saveTip = '保存成功'
@@ -493,11 +500,11 @@ export default {
           window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
         }, 0)
       } else if (sourceType === 'oldChart') {
-        API.getChartList((message) => {
+        this.$API.getChartList((message) => {
           this.chartProjects = message.info
         })
         this.chartProjects = this.chartProjects.map((val) => {
-          API.getChart({ _id: val.id }, (message) => {
+          this.$API.getChart({ _id: val.id }, (message) => {
             val.tableData = message.info.data
             val.option = message.info.option
           })
@@ -796,11 +803,11 @@ export default {
   overflow: hidden;
 }
 .content .left-box .model-box .model-item .item-img img {
-  width: 60px;
-  height: 60px;
-  margin-top: 10px;
+  width: 100px;
+  /* height: 80px; */
+  /* margin-top: 10px; */
 }
-.content .left-box .model-box .model-item .item-img img.project{
+.content .left-box .model-box .model-item .item-img img.project {
   width: 100%;
   height: unset;
 }

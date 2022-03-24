@@ -2,14 +2,14 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:52
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 20:49:14
+ * @LastEditTime: 2022-03-14 11:39:53
  * @Description:
  */
 const database = require('../models/database')
-const template = require('art-template')
+// const template = require('art-template')
 const ObjectId = require('mongodb').ObjectId
 const puppeteer = require('puppeteer')
-template.defaults.root = './'
+// template.defaults.root = './'
 
 function nowDate() {
   return new Date()
@@ -40,11 +40,13 @@ function nowDate() {
 //  }).then((brs)=>{
 //    browser = brs
 //  })
-async function getImg(url, path) {
+async function getImg(url, path, callback) {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   await page.goto(url, { waitUntil: 'networkidle2' })
-  await page.screenshot({ path: path, quality: 10, fullPage: true })
+  // let code = await page.screenshot({ path: path, quality: 10, fullPage: true, encoding: 'base64' })
+  let code = await page.screenshot({quality: 10,type:'jpeg', fullPage: true, encoding: 'base64' })
+  await callback('data:image/png;base64,' + code)
   await page.close()
   await browser.close()
 }
@@ -76,6 +78,91 @@ function receive(req, callback, funcName) {
 }
 function loginInfo(req) {
   return req.session.sevalue
+}
+
+
+function newSample(req, res) {
+  receive(
+    req,
+    (obj) => {
+      database.insertDoc('sample', { creatorId: loginInfo(req).id,lastModifierId:loginInfo(req).id, name: obj.name,type:obj.type, tableData: obj.tableData,option:obj.option, imgSrc: obj.imgSrc, createTime: nowDate(), updateTime: nowDate() }, (result) => {
+        endText(res, new Message(true, 10, result.insertedId), 'newSample')
+      })
+    },
+    'newSample'
+  )
+}
+function setSample(req, res) {
+  receive(
+    req,
+    (obj) => {
+      let newObj = { updateTime: nowDate() ,lastModifierId:loginInfo(req).id}
+      if (obj.name) {
+        newObj.name = obj.name
+      }
+      if (obj.tableData) {
+        newObj.tableData = obj.tableData
+      }
+      if (obj.option) {
+        newObj.option = obj.option
+      }
+      if (obj.imgSrc) {
+        newObj.imgSrc = obj.imgSrc
+      }
+      if (obj.type) {
+        newObj.type = obj.type
+      }
+      // getImg(obj.path + obj._id, 'public/img/panel' + obj._id + '.jpeg',(imgcode)=>{
+      //   database.updateDoc('sample', { _id: new ObjectId(obj._id)}, { imgSrc: imgcode }, (result) => {
+      //   })
+      // })
+      database.updateDoc('sample', { _id: new ObjectId(obj._id) }, newObj, (result) => {
+        endText(res, new Message(true, 10, '更新Sample图表成功'), 'setSample')
+      })
+    },
+    'setSample'
+  )
+}
+function deleteSample(req, res) {
+  receive(
+    req,
+    (obj) => {
+      database.deleteDoc('sample', { _id: new ObjectId(obj._id)}, (result) => {
+        endText(res, new Message(true, 10, '删除Sample图表成功'), 'deleteSample')
+      })
+    },
+    'deleteSample'
+  )
+}
+function getSampleListDefault(req, res) {
+  database.findDoc('sample', {}, (docs) => {
+    endText(res, new Message(true, 10, docs), 'getSampleListDefault')
+  })
+}
+function getSampleList(req, res) {
+  let sample = []
+  database.findDoc('sample', { type: 'line' }, (docs) => {
+    sample.push({ name: '折线图', examples: docs })
+    database.findDoc('sample', { type: 'bar' }, (docs) => {
+      sample.push({ name: '柱状图', examples: docs })
+      database.findDoc('sample', { type: 'pie' }, (docs) => {
+        sample.push({ name: '饼图', examples: docs })
+        database.findDoc('sample', { type: 'gauge' }, (docs) => {
+          sample.push({ name: '仪表盘', examples: docs })
+          database.findDoc('sample', { type: 'scatter' }, (docs) => {
+            sample.push({ name: '散点图', examples: docs })
+            database.findDoc('sample', { type: 'funnel' }, (docs) => {
+              sample.push({ name: '漏斗图', examples: docs })
+              database.findDoc('sample', { type: 'map' }, (docs) => {
+                sample.push({ name: '地图', examples: docs })
+                endText(res, new Message(true, 10, sample), 'getSampleList')
+              })
+            })
+          })
+        })
+      })
+    })
+  })
 }
 
 function checkAdmin(req, res) {
@@ -230,7 +317,10 @@ function getChartImg(req, res) {
     (obj) => {
       database.findDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (docs) => {
         if (docs.length !== 0) {
-          getImg(obj.path + obj._id, 'public/img/chart' + obj._id + '.jpeg')
+          getImg(obj.path + obj._id, 'public/img/chart' + obj._id + '.jpeg', (imgcode) => {
+            database.updateDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, { imgSrc: imgcode }, (result) => {
+            })
+          })
           endText(res, new Message(true, 10, { path: '//localhost:3030/img/' + 'chart' + obj._id + '.jpeg' }), 'getChartImg')
         } else {
           endText(res, new Message(false, 40, '图表不存在'), 'getChartImg')
@@ -248,7 +338,10 @@ function getPanelImg(req, res) {
         if (docs.length === 0) {
           endText(res, new Message(false, 40, '仪表板不存在'), 'getPanelImg')
         } else {
-          getImg(obj.path + obj._id, 'public/img/panel' + obj._id + '.jpeg')
+          getImg(obj.path + obj._id, 'public/img/panel' + obj._id + '.jpeg',(imgcode)=>{
+            database.updateDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, { imgSrc: imgcode }, (result) => {
+            })
+          })
           endText(res, new Message(true, 10, { path: '//localhost:3030/img/' + 'panel' + obj._id + '.jpeg' }), 'getPanelImg')
         }
       })
@@ -424,6 +517,11 @@ function test(req, res) {
 }
 
 module.exports = {
+  newSample,
+  setSample,
+  deleteSample,
+  getSampleListDefault,
+  getSampleList,
   checkAdmin,
   getChartImg,
   getPanelImg,

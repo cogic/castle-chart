@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-23 21:11:03
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 13:44:37
+ * @LastEditTime: 2022-03-23 17:19:52
  * @Description: 
 -->
 <template>
@@ -15,7 +15,6 @@
       </ul>
     </nav>
     <div class="content">
-      <!-- <router-view></router-view> -->
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" @new-tab="$emit('newTab', $event)" :key="tabKey" />

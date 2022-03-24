@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import API from '@/api'
+// import API from '@/api'
 export default {
   data() {
     return {
@@ -54,7 +54,7 @@ export default {
     }
   },
   beforeCreate() {
-    API.checkLogin((result) => {
+    this.$API.checkLogin((result) => {
       if (result.success) {
         this.$router.replace('/')
       }

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-01-17 17:19:58
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-10 23:04:19
+ * @LastEditTime: 2022-03-23 17:07:10
  * @Description: 
 -->
 <template>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import API from "@/api";
+// import API from "@/api";
 export default {
   data(){
     return{
@@ -27,7 +27,7 @@ export default {
   methods:{
     test(){
       console.log('test')
-      API.getChartImg({_id:'6225fffce313c0da4324a62a'},(message)=>{
+      this.$API.getChartImg({_id:'6225fffce313c0da4324a62a'},(message)=>{
         this.imgBase64 = message.info.imgStr
         console.log(message.info.imgStr)
         console.log(Buffer.isBuffer(new Buffer([0x48, 0x65, 0x6c, 0x6c, 0x6f])))

@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:14:54
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-07 17:56:01
+ * @LastEditTime: 2022-03-23 23:07:24
  * @Description: 
 -->
 <template>
@@ -27,15 +27,14 @@
 </template>
 
 <script>
-import HTable from '@/components/master/tab/HTable.vue'
-import API from '@/api'
+// import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 export default {
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
       if (flag) {
-        API.getTable({ _id: this.$route.params.tabkey }, (message) => {
+        this.$API.getTable({ _id: this.$route.params.tabkey }, (message) => {
           this.tableId = this.$route.params.tabkey
           if (message.success) {
             callback({ type: 'data', topic: message.info.name, key: message.info._id })
@@ -55,16 +54,7 @@ export default {
     this.saveTableData()
     clearInterval(this.autoSave)
   },
-  mounted() {
-    // API.getTable({ _id: this.$route.params.tabkey }, (message) => {
-    //   if (message.success) {
-    //     this.addTab({ type: 'data', topic: message.info.name, key: message.info._id })
-    //     this.tableName = message.info.name
-    //     this.tableData = message.info.data
-    //   }
-    // })
-  },
-  components: { HTable },
+  // components: { HTable },
   props: {
     addTab: {
       type: Function,
@@ -95,7 +85,7 @@ export default {
     saveTableData(isHand) {
       // 保存 tabledata 到数据库
       if(!this.$refs.table) return
-      API.saveTable({ _id: this.tableId, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
+      this.$API.saveTable({ _id: this.tableId, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
         console.log(message)
         if (isHand) {
           this.saveTip = '保存成功'

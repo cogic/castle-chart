@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-01-23 00:15:49
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 00:19:50
+ * @LastEditTime: 2022-03-23 17:22:07
  * @Description: 
 -->
 <template>
@@ -62,8 +62,8 @@
 </template>
 
 <script>
-import * as echarts from 'echarts'
-
+// import * as echarts from 'echarts'
+import echarts from '@/assets/script/myEcharts'
 export default {
   mounted() {
     this.defaultSettings = JSON.parse(JSON.stringify(this.settings))

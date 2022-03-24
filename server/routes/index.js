@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:19:44
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 20:49:07
+ * @LastEditTime: 2022-03-14 10:38:19
  * @Description: 
  */
 const express = require("express");
@@ -12,6 +12,11 @@ const business = require("./bussiness");
 
 // 用 router 代替 app 进行路由配置
 router
+.post('/sample/new-one',business.newSample)
+.post('/sample/set-one',business.setSample)
+.post('/sample/delete-one',business.deleteSample)
+.post('/sample/get-default',business.getSampleListDefault)
+.post('/sample/get-list',business.getSampleList)
 .post('/admin/check', business.checkAdmin)
 .post('/chart/get-img', business.getChartImg)
 .post('/panel/get-img', business.getPanelImg)
