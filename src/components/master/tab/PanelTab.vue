@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:51
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 00:17:52
+ * @LastEditTime: 2022-03-24 16:17:32
  * @Description: 
 -->
 <template>
@@ -62,7 +62,7 @@
                   <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
                   <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
                   <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" /> -->
-                <img :src="example.imgSrc" alt=""/>
+                  <img :src="example.imgSrc" alt="" />
                 </div>
                 <div class="item-name">{{ example.name }}</div>
               </div>
@@ -173,14 +173,14 @@
 
 <script>
 import GLayout from '@/components/master/tab/GLayout.vue'
-// import HTable from '@/components/master/tab/HTable.vue'
+import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 import SetBox from '@/components/master/tab/SetBox.vue'
 import ShareWindow from '@/components/ShareWindow.vue'
 import PopBox from '@/components/PopBox.vue'
 import html2canvas from 'html2canvas'
 export default {
-  components: { GLayout, SetBox, ShareWindow, PopBox },
+  components: { GLayout, HTable, SetBox, ShareWindow, PopBox },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
@@ -457,12 +457,12 @@ export default {
       if (!this.$refs.GLayout) return
       html2canvas(document.getElementById('chartp')).then((canvas) => {
         let imgSrc = canvas.toDataURL('image/png', 1)
-      // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
-      //   console.log(result)
-      //   if (!result.success) {
-      //     console.log('getPanelImg error')
-      //     return
-      //   }
+        // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
+        //   console.log(result)
+        //   if (!result.success) {
+        //     console.log('getPanelImg error')
+        //     return
+        //   }
         this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: imgSrc }, (message) => {
           console.log(message)
           if (isHand) {

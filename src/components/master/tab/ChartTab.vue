@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:15:41
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 23:07:48
+ * @LastEditTime: 2022-03-24 16:17:17
  * @Description: 
 -->
 <template>
@@ -39,7 +39,7 @@
                 <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
                 <img src="@/assets/image/地图.png" alt="" v-show="sample.name === '地图'" />
                 <img src="@/assets/image/仪表盘.png" alt="" v-show="sample.name === '仪表盘'" /> -->
-                <img :src="example.imgSrc" alt=""/>
+                <img :src="example.imgSrc" alt="" />
               </div>
               <div class="item-name">{{ example.name }}</div>
             </div>
@@ -97,12 +97,12 @@
 <script>
 // TODO 切换图表时询问是否保留数据
 import EChart from '@/components/master/tab/EChart.vue'
-// import HTable from '@/components/master/tab/HTable.vue'
+import HTable from '@/components/master/tab/HTable.vue'
 import SetBox from '@/components/master/tab/SetBox.vue'
 import ShareWindow from '@/components/ShareWindow.vue'
 import html2canvas from 'html2canvas'
 export default {
-  components: { EChart, SetBox, ShareWindow },
+  components: { EChart, HTable, SetBox, ShareWindow },
   data() {
     return {
       keepData: false,
@@ -197,12 +197,12 @@ export default {
       if (!this.$refs.myChart) return
       html2canvas(document.getElementById('chartp')).then((canvas) => {
         let imgSrc = canvas.toDataURL('image/png', 1)
-      // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
-      //   console.log(result)
-      //   if (!result.success) {
-      //     console.log('getChartImg error')
-      //     return
-      //   }
+        // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
+        //   console.log(result)
+        //   if (!result.success) {
+        //     console.log('getChartImg error')
+        //     return
+        //   }
         this.$API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: imgSrc }, (message) => {
           console.log(message)
           if (isHand) {
@@ -225,9 +225,9 @@ export default {
   mounted() {
     // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
     this.$API.getSampleList((message) => {
-      if(message.success){
+      if (message.success) {
         this.chartSamples = message.info
-      this.curSampleName = message.info[0].name
+        this.curSampleName = message.info[0].name
       }
     })
   },

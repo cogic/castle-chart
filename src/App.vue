@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-21 13:58:35
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 23:04:45
+ * @LastEditTime: 2022-03-24 16:16:16
  * @Description: 
 -->
 <template>
@@ -16,9 +16,7 @@
 </template>
 
 <script>
-import HTable from '@/components/master/tab/HTable.vue'
 export default {
-  components:{HTable}
   //  errorCaptured(err, vm, info) {
   //   console.log(err)
   //   console.log(vm)

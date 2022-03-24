@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2021-12-24 21:14:54
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 23:07:24
+ * @LastEditTime: 2022-03-24 16:17:57
  * @Description: 
 -->
 <template>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-// import HTable from '@/components/master/tab/HTable.vue'
+import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 export default {
   activated() {
@@ -54,7 +54,7 @@ export default {
     this.saveTableData()
     clearInterval(this.autoSave)
   },
-  // components: { HTable },
+  components: { HTable },
   props: {
     addTab: {
       type: Function,
@@ -84,7 +84,7 @@ export default {
     },
     saveTableData(isHand) {
       // 保存 tabledata 到数据库
-      if(!this.$refs.table) return
+      if (!this.$refs.table) return
       this.$API.saveTable({ _id: this.tableId, name: this.tableName, data: this.$refs.table.getData() }, (message) => {
         console.log(message)
         if (isHand) {

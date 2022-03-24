@@ -2,7 +2,7 @@
  * @Author: Cogic
  * @Date: 2022-03-12 18:41:02
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 23:08:01
+ * @LastEditTime: 2022-03-24 16:17:43
  * @Description: 
 -->
 <template>
@@ -61,13 +61,13 @@
 // import API from '@/api'
 import CodeBox from '@/components/CodeBox.vue'
 import EChart from '@/components/master/tab/EChart.vue'
-// import HTable from '@/components/master/tab/HTable.vue'
+import HTable from '@/components/master/tab/HTable.vue'
 // import * as echarts from 'echarts'
 import echarts from '@/assets/script/myEcharts'
 import html2canvas from 'html2canvas'
 
 export default {
-  components: { CodeBox, EChart },
+  components: { CodeBox, EChart, HTable },
   beforeCreate() {
     this.$.checkAdmin((message) => {
       if (message.success) {

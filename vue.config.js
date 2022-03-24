@@ -2,29 +2,29 @@
  * @Author: Cogic
  * @Date: 2021-12-21 14:32:27
  * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 10:57:36
+ * @LastEditTime: 2022-03-24 16:54:02
  * @Description: 
  */
 
-// const AutoImport = require('unplugin-auto-import/webpack')
-// const Components = require('unplugin-vue-components/webpack')
-// const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+//  const AutoImport = require('unplugin-auto-import/webpack')
+//  const Components = require('unplugin-vue-components/webpack')
+//  const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
 // import AutoImport from 'unplugin-auto-import/webpack';
 // import Components from 'unplugin-vue-components/webpack';
 // import { ElementPlusResolver} from 'unplugin-vue-components/resolvers';
 
 module.exports = {
-  // configureWebpack: {
-  //   plugins: [
-  //     AutoImport({
-  //       resolvers: [ElementPlusResolver()],
-  //     }),
-  //     Components({
-  //       resolvers: [ElementPlusResolver()],
-  //     }),
-  //   ],
-  // },
+  configureWebpack: {
+    // plugins: [
+    //   AutoImport({
+    //     resolvers: [ElementPlusResolver()],
+    //   }),
+    //   Components({
+    //     resolvers: [ElementPlusResolver()],
+    //   }),
+    // ],
+  },
   devServer: {
     // open: true,
     // host: 'localhost',
