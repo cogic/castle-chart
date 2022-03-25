@@ -5,7 +5,7 @@
       <div class="name">{{ chartName }}</div>
       <div class="head-menu">
         <div class="menu-tip">{{ saveTip }}</div>
-        <div class="menu-item text-disable" @click="save(true)">保存</div>
+        <div class="menu-item text-disable" @click="save(true, true)">保存</div>
         <!-- <div class="menu-item" @click="preview">预览</div> -->
         <div class="menu-item text-disable" @click="share">分享</div>
       </div>
@@ -180,7 +180,7 @@ export default {
     })
     this.autoSave = setInterval(() => {
       // 每1分钟自动保存一次
-      this.save()
+      this.save(false, true)
     }, 1000 * 60)
   },
   deactivated() {
@@ -236,10 +236,10 @@ export default {
     importData() {
       this.$refs.myTable.importData()
     },
-    save(isHand) {
+    save(isHand, isCur) {
       if (!this.$refs.myChart) return
-      let $chartp = document.getElementById('chartp')
-      if ($chartp) {
+      if (isCur === true) {
+        let $chartp = document.getElementById('chartp')
         html2canvas($chartp).then((canvas) => {
           let imgSrc = canvas.toDataURL('image/png', 1)
           // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {

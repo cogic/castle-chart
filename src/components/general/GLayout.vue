@@ -110,6 +110,7 @@ export default {
         if (el.type === 'chart') {
           setTimeout(() => {
             this.$parent.loadData(el.config.data, el)
+            this.$parent.setSetBox(el.config.option, el)
             window.addEventListener('resize', this.$refs['chart' + el.i][0].chartResize)
             window.dispatchEvent(new Event('resize'))
           }, 0)
@@ -183,7 +184,6 @@ export default {
           this.setTextItem(item)
         }, 0)
       }
-      // console.log('11111' + new Date().toLocaleTimeString())
       return item
     },
     removeItem(e, val) {

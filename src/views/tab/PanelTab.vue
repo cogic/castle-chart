@@ -6,7 +6,7 @@
       <div class="name">{{ panelName }}</div>
       <div class="head-menu">
         <div class="menu-tip">{{ saveTip }}</div>
-        <div class="menu-item text-disable" @click="save(true)">保存</div>
+        <div class="menu-item text-disable" @click="save(true, true)">保存</div>
         <div class="menu-item text-disable" @click="share">分享</div>
         <div class="menu-item text-disable" @click="toShow = true">清空</div>
       </div>
@@ -349,7 +349,7 @@ export default {
     })
     this.autoSave = setInterval(() => {
       // 每1分钟自动保存一次
-      this.save()
+      this.save(false, true)
     }, 1000 * 60)
   },
   deactivated() {
@@ -446,10 +446,10 @@ export default {
       this.isDataBox = false
       this.curSampleName = null
     },
-    save(isHand) {
+    save(isHand, isCur) {
       if (!this.$refs.GLayout) return
-      let $chartp = document.getElementById('chartp')
-      if ($chartp) {
+      if (isCur === true) {
+        let $chartp = document.getElementById('chartp')
         html2canvas($chartp).then((canvas) => {
           let imgSrc = canvas.toDataURL('image/png', 1)
           // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
@@ -499,7 +499,7 @@ export default {
         let curItem = this.$refs.GLayout.addItem('chart', {})
         let that = this
         setTimeout(function () {
-          // that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
+          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
           that.loadData(that.chartSamples[0].examples[0].tableData, curItem)
           that.setSetBox(that.chartSamples[0].examples[0].option, curItem)
           window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)

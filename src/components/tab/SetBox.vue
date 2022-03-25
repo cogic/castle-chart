@@ -1715,7 +1715,6 @@ export default {
       } else {
         this.cutSettings(tempSetting)
       }
-      // Object.assign(this.settings,tempSetting)
       this.settings = tempSetting
       this.setSetItems(this.settings)
     },
