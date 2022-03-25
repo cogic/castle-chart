@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-03-07 23:21:01
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 01:16:00
- * @Description: 
--->
 <template>
   <div id="view-container">
     <component :is="currentView"></component>

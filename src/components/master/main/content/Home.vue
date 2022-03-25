@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-21 14:49:44
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:19:28
- * @Description: 
--->
 <template>
   <div id="stage">
     <h1>Welcome to CastleChart!</h1>

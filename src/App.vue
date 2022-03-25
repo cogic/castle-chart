@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-21 13:58:35
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 16:16:16
- * @Description: 
--->
 <template>
   <!-- TODO 这里的 router-view 要不要加 keep-alive 呢？ -->
   <router-view />

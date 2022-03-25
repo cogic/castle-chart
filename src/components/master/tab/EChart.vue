@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-30 10:21:11
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 22:06:28
- * @Description: 
--->
 <template>
   <div id="chart-box" ref="chartBox"></div>
 </template>

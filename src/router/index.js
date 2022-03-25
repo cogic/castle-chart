@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 13:58:35
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 20:27:44
- * @Description:
- */
 import { createRouter, createWebHistory } from 'vue-router'
 const Master = () => import('@/views/Master.vue')
 const MainPage = () => import('@/components/master/main/MainPage.vue')

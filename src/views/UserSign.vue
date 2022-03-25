@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-22 11:46:24
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-09 15:33:46
- * @Description: 
--->
 <template>
   <div id="board">
     <div class="placard">

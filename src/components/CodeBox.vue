@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-03-12 22:18:26
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-14 13:37:16
- * @Description: 
--->
 <template>
   <div id="editor"></div>
 </template>

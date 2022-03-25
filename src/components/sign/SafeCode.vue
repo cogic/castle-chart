@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-23 09:55:01
- * @LastEditors: Cogic
- * @LastEditTime: 2022-02-27 10:36:48
- * @Description: 
--->
 <template>
   <canvas id="s-canvas" @click="refreshCode()" :width="contentWidth" :height="contentHeight"></canvas>
 </template>

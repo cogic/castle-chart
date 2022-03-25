@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 21:44:00
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-12 01:25:12
- * @Description:
- */
 import axios from 'axios'
 
 // const baseURL = '//localhost:3030/'

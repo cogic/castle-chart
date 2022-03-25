@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "report": "vue-cli-service build --report"
+    "report": "vue-cli-service build --report",
+    "npmi": "npm install"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",

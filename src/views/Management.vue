@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-03-12 18:41:02
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 16:17:43
- * @Description: 
--->
 <template>
   <div class="outer">
     <div class="headline">CastleChart&nbsp图表模板中心</div>

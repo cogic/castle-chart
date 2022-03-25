@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-02-28 22:58:58
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:22:15
- * @Description: 
--->
 <template>
   <div class="container-box">
     <g-layout ref="GLayout" :is-resizable="false" :is-draggable="false" :is-removable="false" :is-selectable="false"></g-layout>

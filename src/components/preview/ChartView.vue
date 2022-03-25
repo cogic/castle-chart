@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-02-28 22:58:48
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:22:12
- * @Description: 
--->
 <template>
   <e-chart ref="myChart" :data="chartData" :option="chartOption"></e-chart>
 </template>

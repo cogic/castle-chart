@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-24 21:15:51
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 16:17:32
- * @Description: 
--->
 <template>
   <div id="stage">
     <share-window ref="popwin" v-show="isPop" />
@@ -455,23 +448,35 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.GLayout) return
-      html2canvas(document.getElementById('chartp')).then((canvas) => {
-        let imgSrc = canvas.toDataURL('image/png', 1)
-        // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
-        //   console.log(result)
-        //   if (!result.success) {
-        //     console.log('getPanelImg error')
-        //     return
-        //   }
-        this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: imgSrc }, (message) => {
-          console.log(message)
-          if (isHand) {
-            this.saveTip = '保存成功'
-          } else {
-            this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
-          }
+      let $chartp = document.getElementById('chartp')
+      if ($chartp) {
+        html2canvas($chartp).then((canvas) => {
+          let imgSrc = canvas.toDataURL('image/png', 1)
+          // API.getPanelImg({ _id: this.panelId, path: 'http://localhost:8080/preview-clean/panel/' }, (result) => {
+          //   console.log(result)
+          //   if (!result.success) {
+          //     console.log('getPanelImg error')
+          //     return
+          //   }
+          this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout, imgSrc: imgSrc }, (message) => {
+            console.log(message)
+            if (isHand) {
+              this.saveTip = '保存成功'
+            } else {
+              this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+            }
+          })
         })
-      })
+      } else {
+        this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout}, (message) => {
+            console.log(message)
+            if (isHand) {
+              this.saveTip = '保存成功'
+            } else {
+              this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+            }
+          })
+      }
     },
     setConfig(item, key, value) {
       item.config[key] = value

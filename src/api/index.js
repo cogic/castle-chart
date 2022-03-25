@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 21:44:00
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-14 10:36:43
- * @Description:
- */
 import Network from '@/api/network'
 import AMapLoader from '@amap/amap-jsapi-loader'
 

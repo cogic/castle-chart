@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-22 11:48:59
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:22:27
- * @Description: 
--->
 <template>
   <div id="stage" @keypress.enter="login">
     <div id="username">

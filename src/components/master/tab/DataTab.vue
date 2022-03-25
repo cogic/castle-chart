@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-24 21:14:54
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 16:17:57
- * @Description: 
--->
 <template>
   <div id="stage">
     <div class="head">

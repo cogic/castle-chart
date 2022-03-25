@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-21 15:14:41
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:02:39
- * @Description: 
--->
 <template>
   <header>
     <div class="left-head">

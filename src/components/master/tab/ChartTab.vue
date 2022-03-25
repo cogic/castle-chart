@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-24 21:15:41
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 16:17:17
- * @Description: 
--->
 <template>
   <div id="stage">
     <share-window ref="popwin" v-show="isPop" />
@@ -195,15 +188,27 @@ export default {
     },
     save(isHand) {
       if (!this.$refs.myChart) return
-      html2canvas(document.getElementById('chartp')).then((canvas) => {
-        let imgSrc = canvas.toDataURL('image/png', 1)
-        // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
-        //   console.log(result)
-        //   if (!result.success) {
-        //     console.log('getChartImg error')
-        //     return
-        //   }
-        this.$API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: imgSrc }, (message) => {
+      let $chartp = document.getElementById('chartp')
+      if ($chartp) {
+        html2canvas($chartp).then((canvas) => {
+          let imgSrc = canvas.toDataURL('image/png', 1)
+          // API.getChartImg({ _id: this.chartId, path: 'http://localhost:8080/preview-clean/chart/' }, (result) => {
+          //   console.log(result)
+          //   if (!result.success) {
+          //     console.log('getChartImg error')
+          //     return
+          //   }
+          this.$API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption(), imgSrc: imgSrc }, (message) => {
+            console.log(message)
+            if (isHand) {
+              this.saveTip = '保存成功'
+            } else {
+              this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+            }
+          })
+        })
+      } else {
+        this.$API.saveChart({ _id: this.chartId, name: this.chartName, data: this.$refs.myTable.getData(), option: this.$refs.myChart.getOption() }, (message) => {
           console.log(message)
           if (isHand) {
             this.saveTip = '保存成功'
@@ -211,7 +216,7 @@ export default {
             this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
           }
         })
-      })
+      }
     },
     share() {
       this.save(true)

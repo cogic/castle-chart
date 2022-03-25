@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 14:19:52
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-14 11:39:53
- * @Description:
- */
 const database = require('../models/database')
 // const template = require('art-template')
 const ObjectId = require('mongodb').ObjectId

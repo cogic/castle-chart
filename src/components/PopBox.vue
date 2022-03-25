@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-03-02 22:25:02
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-07 17:27:04
- * @Description: 
--->
 <template>
   <div id="popwin" @mousedown="close">
     <div class="middle-box">

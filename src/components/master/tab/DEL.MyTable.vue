@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-27 00:30:04
- * @LastEditors: Cogic
- * @LastEditTime: 2021-12-31 17:07:42
- * @Description: 
--->
 <template>
     <table ref="table" @keydown="changeCurrent">
       <tr v-for="r in row">

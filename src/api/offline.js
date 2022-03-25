@@ -1,17 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2022-01-24 12:10:29
- * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 13:21:33
- * @Description:
- */
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 21:44:00
- * @LastEditors: Cogic
- * @LastEditTime: 2022-01-24 00:27:50
- * @Description:
- */
 import Network from '@/api/network'
 
 const showLog = false

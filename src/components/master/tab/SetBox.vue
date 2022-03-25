@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-01-23 00:15:49
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:22:07
- * @Description: 
--->
 <template>
   <template v-for="itemConfig in itemConfigs">
     <div class="set-item" v-if="itemConfig">

@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-21 16:50:26
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:19:34
- * @Description: 
--->
 <template>
   <store-stage :stageConfig="stageConfig"></store-stage>
 </template>

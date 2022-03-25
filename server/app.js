@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 14:18:57
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-08 11:43:29
- * @Description: 
- */
 const express = require('express')
 const cookieSession = require('cookie-session')
 const process = require('process')

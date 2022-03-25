@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-02-28 17:48:54
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-02 13:22:13
- * @Description: 
--->
 <template>
   <header>
     <img class="logo" src="@/assets/logo.png" alt="logo" />

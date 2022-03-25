@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 13:58:35
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 18:32:08
- * @Description:
- */
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'

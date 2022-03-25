@@ -1,10 +1,3 @@
-/**
- * @Author: Cogic
- * @Date: 2021-12-21 14:19:18
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-01 00:18:56
- * @Description: 
- */
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
 

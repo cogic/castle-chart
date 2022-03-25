@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-31 16:53:30
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-24 00:02:40
- * @Description: 
--->
 <template>
   <hot-table class="table-main" ref="hotTableComponent" :settings="hotSettings"></hot-table>
 </template>

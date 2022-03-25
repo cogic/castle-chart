@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-01-17 16:47:47
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:21:13
- * @Description: 
--->
 <template>
   <div id="layout-box" ref="layoutBox">
     <grid-layout id="GridLayout" :layout.sync="layout" :auto-size="autoSize" :margin="margin" :col-num="colNum" :row-height="rowHeight" :is-draggable="isDraggable" :is-resizable="isResizable" :vertical-compact="verticalCompact" :use-css-transforms="true">

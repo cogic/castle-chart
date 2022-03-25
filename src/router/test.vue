@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2022-01-17 17:19:58
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:07:10
- * @Description: 
--->
 <template>
 <el-input  class="w-50 m-2" :placeholder="'asdads'" />
 <el-input v-model="input" placeholder="Please input" />

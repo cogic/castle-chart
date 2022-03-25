@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-23 16:15:53
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:04:07
- * @Description: 
--->
 <template>
   <pop-box ref="PopBox" :trueFunc="trueFunc" :info="info" v-if="toShow" :isExitShow="isExitShow" />
   <div id="stage" @mousedown="endRename">

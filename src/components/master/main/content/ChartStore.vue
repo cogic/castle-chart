@@ -1,10 +1,3 @@
-<!--
- * @Author: Cogic
- * @Date: 2021-12-21 16:50:10
- * @LastEditors: Cogic
- * @LastEditTime: 2022-03-23 17:18:51
- * @Description: 
--->
 <template>
 <!-- <component is="StoreStage" :stageConfig="stageConfig" :key="randNum"></component> -->
   <store-stage :stageConfig="stageConfig"></store-stage>
