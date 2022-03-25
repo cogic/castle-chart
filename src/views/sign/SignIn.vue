@@ -61,7 +61,7 @@ export default {
             console.log(message)
             if (message.success) {
               this.mesg = '登录成功!'
-              this.$router.replace('/')
+              this.$router.replace({name:'Master'})
             } else if (message.code === 40) {
               this.mesg = '用户不存在!'
             } else if (message.code === 41) {

@@ -2,7 +2,7 @@
   <div id="board">
     <div class="placard">
       <div>
-        <img class="logo" src="@/assets/logo.png" alt="logo" />
+        <img class="logo" src="@/assets/image/logo.png" alt="logo" />
         <h1 class="headline">CastleChart</h1>
       </div>
       <!-- <footer>&copy;2021</footer> -->
@@ -29,7 +29,6 @@
 </template>
 
 <script>
-// import API from '@/api'
 export default {
   data() {
     return {
@@ -49,7 +48,7 @@ export default {
   beforeCreate() {
     this.$API.checkLogin((result) => {
       if (result.success) {
-        this.$router.replace('/')
+        this.$router.replace({name:'Master'})
       }
     })
   },

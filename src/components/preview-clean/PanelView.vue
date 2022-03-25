@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import GLayout from '@/components/master/tab/GLayout.vue'
+import GLayout from '@/components/general/GLayout.vue'
 export default {
   components: { GLayout },
   data() {

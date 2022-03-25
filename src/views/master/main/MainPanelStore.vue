@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import StoreStage from '@/components/master/main/StoreStage.vue'
+import StoreStage from '@/components/main/StoreStage.vue'
 export default {
   components: { StoreStage },
   data() {

@@ -16,9 +16,6 @@
       <div v-for="file in stageConfig.files" @click="selectedFile = file" @dblclick.stop.prevent="$emit('newTab', fileTabConfig(file))">
         <div :class="{ file: isImageView, file2: !isImageView, selected: selectedFile && selectedFile._id === file._id }" v-if="isDeleteId !== file._id">
           <div class="fileview">
-            <!-- <img src="@/assets/image/表格.png" alt="" v-if="stageConfig.type === 'data'" />
-            <img src="@/assets/image/图表.png" alt="" v-else-if="stageConfig.type === 'chart'" />
-            <img src="@/assets/image/仪表板.png" alt="" v-else-if="stageConfig.type === 'panel'" /> -->
             <img :src="file.imgSrc" alt="img" @error.once="onerror($event, stageConfig.type)" />
           </div>
           <div class="filename" @dblclick.stop.prevent="rename">
@@ -31,7 +28,7 @@
 </template>
 
 <script>
-import PopBox from '@/components/PopBox.vue'
+import PopBox from '@/components/general/PopBox.vue'
 export default {
   components: { PopBox },
   props: {
@@ -107,11 +104,11 @@ export default {
     },
     onerror(e, type) {
       if (type === 'data') {
-        e.path[0].setAttribute('src', require('@/assets/image/表格.png'))
+        e.path[0].setAttribute('src', require('@/assets/image/project-store/表格.png'))
       } else if (type === 'chart') {
-        e.path[0].setAttribute('src', require('@/assets/image/图表.png'))
+        e.path[0].setAttribute('src', require('@/assets/image/project-store/图表.png'))
       } else if (type === 'panel') {
-        e.path[0].setAttribute('src', require('@/assets/image/仪表板.png'))
+        e.path[0].setAttribute('src', require('@/assets/image/project-store/仪表板.png'))
       }
     },
     // setChartImg(e, fileId) {

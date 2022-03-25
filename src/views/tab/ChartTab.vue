@@ -89,10 +89,10 @@
 
 <script>
 // TODO 切换图表时询问是否保留数据
-import EChart from '@/components/master/tab/EChart.vue'
-import HTable from '@/components/master/tab/HTable.vue'
-import SetBox from '@/components/master/tab/SetBox.vue'
-import ShareWindow from '@/components/ShareWindow.vue'
+import EChart from '@/components/general/EChart.vue'
+import HTable from '@/components/general/HTable.vue'
+import SetBox from '@/components/tab/SetBox.vue'
+import ShareWindow from '@/components/tab/ShareWindow.vue'
 import html2canvas from 'html2canvas'
 export default {
   components: { EChart, HTable, SetBox, ShareWindow },

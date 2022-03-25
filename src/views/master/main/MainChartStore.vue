@@ -1,16 +1,17 @@
 <template>
+  <!-- <component is="StoreStage" :stageConfig="stageConfig" :key="randNum"></component> -->
   <store-stage :stageConfig="stageConfig"></store-stage>
 </template>
 
 <script>
-import StoreStage from '@/components/master/main/StoreStage.vue'
+import StoreStage from '@/components/main/StoreStage.vue'
 export default {
   components: { StoreStage },
   data() {
     return {
       stageConfig: {
-        type: 'data',
-        title: '我的数据源',
+        type: 'chart',
+        title: '我的图表',
         tools: {
           build: {
             show: true,
@@ -22,18 +23,27 @@ export default {
         files: [],
         style: {
           title: {
-            backgroundColor: 'rgb(226, 200, 152)',
+            backgroundColor: 'rgb(150, 207, 164)',
           },
         },
       },
     }
   },
   mounted() {
-    this.$API.getTableList((message) => {
+    this.$API.getChartList((message) => {
       if (message.success) {
         this.stageConfig.files = message.info
       }
     })
+  },
+  methods: {
+    test() {
+      this.$API.getChartList((message) => {
+        if (message.success) {
+          this.stageConfig.files = message.info
+        }
+      })
+    },
   },
 }
 </script>

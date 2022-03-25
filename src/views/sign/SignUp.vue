@@ -69,7 +69,7 @@ export default {
             console.log(message)
             if (message.success) {
               this.mesg = '注册成功!'
-              this.$router.replace('/')
+              this.$router.replace({name:'Master'})
             } else if (message.code === 40) {
               this.mesg = '用户名已存在!'
             } else {

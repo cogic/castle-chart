@@ -1,43 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-const Master = () => import('@/views/Master.vue')
-const MainPage = () => import('@/components/master/main/MainPage.vue')
-const Home = () => import('@/components/master/main/content/Home.vue')
-const DataStore = () => import('@/components/master/main/content/DataStore.vue')
-const ChartStore = () => import('@/components/master/main/content/ChartStore.vue')
-const PanelStore = () => import('@/components/master/main/content/PanelStore.vue')
-const DataTab = () => import('@/components/master/tab/DataTab.vue')
-const ChartTab = () => import('@/components/master/tab/ChartTab.vue')
-const PanelTab = () => import('@/components/master/tab/PanelTab.vue')
-const UserSign = () => import('@/views/UserSign.vue')
-const SignIn = () => import('@/components/sign/SignIn.vue')
-const SignUp = () => import('@/components/sign/SignUp.vue')
-const Test = () => import('./test.vue')
-const Preview = () => import('@/views/Preview.vue')
-const PreviewClean = () => import('@/views/PreviewClean.vue')
-const Management = () => import('@/views/Management.vue')
+const Master = () => import('@/views/master/Master.vue')
+const Main = () => import('@/views/master/main/Main.vue')
+const Home = () => import('@/views/master/main/MainHome.vue')
+const DataStore = () => import('@/views/master/main/MainDataStore.vue')
+const ChartStore = () => import('@/views/master/main/MainChartStore.vue')
+const PanelStore = () => import('@/views/master/main/MainPanelStore.vue')
+const DataTab = () => import('@/views/tab/DataTab.vue')
+const ChartTab = () => import('@/views/tab/ChartTab.vue')
+const PanelTab = () => import('@/views/tab/PanelTab.vue')
+const Sign = () => import('@/views/sign/Sign.vue')
+const SignIn = () => import('@/views/sign/SignIn.vue')
+const SignUp = () => import('@/views/sign/SignUp.vue')
+const Preview = () => import('@/views/preview/Preview.vue')
+const PreviewClean = () => import('@/views/preview/PreviewClean.vue')
+const Management = () => import('@/views/management/Management.vue')
 
 const routes = [
   {
-    path: '/test',
-    component: Test,
-  },
-  {
-    path: '/management',
-    component: Management,
-  },
-  {
     path: '/',
+    name:'Default',
     redirect: '/master',
   },
   {
+    path: '/management',
+    name:'Management',
+    component: Management,
+  },
+  {
     path: '/master',
+    name:'Master',
     component: Master,
     redirect: '/master/main',
     children: [
       {
         path: 'main',
-        name: 'MainPage',
-        component: MainPage,
+        name: 'Main',
+        component: Main,
         redirect: '/master/main/home',
         children: [
           {
@@ -81,15 +79,18 @@ const routes = [
   },
   {
     path: '/sign',
-    component: UserSign,
+    name:'Sign',
+    component: Sign,
     redirect: '/sign/in',
     children: [
       {
         path: 'in',
+        name:'SignIn',
         component: SignIn,
       },
       {
         path: 'up',
+        name:'SignUp',
         component: SignUp,
       },
     ],

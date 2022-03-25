@@ -1,6 +1,6 @@
 <template>
   <header>
-    <img class="logo" src="@/assets/logo.png" alt="logo" />
+    <img class="logo" src="@/assets/image/logo.png" alt="logo" />
     <h1 class="headline">CastleChart</h1>
   </header>
   <main>

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import EChart from '@/components/master/tab/EChart.vue'
+import EChart from '@/components/general/EChart.vue'
 export default {
   components: { EChart },
   data() {

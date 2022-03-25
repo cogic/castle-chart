@@ -165,12 +165,12 @@
 </template>
 
 <script>
-import GLayout from '@/components/master/tab/GLayout.vue'
-import HTable from '@/components/master/tab/HTable.vue'
+import GLayout from '@/components/general/GLayout.vue'
+import HTable from '@/components/general/HTable.vue'
+import SetBox from '@/components/tab/SetBox.vue'
+import ShareWindow from '@/components/tab/ShareWindow.vue'
+import PopBox from '@/components/general/PopBox.vue'
 import XSheet from '@/assets/script/x-sheet'
-import SetBox from '@/components/master/tab/SetBox.vue'
-import ShareWindow from '@/components/ShareWindow.vue'
-import PopBox from '@/components/PopBox.vue'
 import html2canvas from 'html2canvas'
 export default {
   components: { GLayout, HTable, SetBox, ShareWindow, PopBox },

@@ -51,11 +51,9 @@
 </template>
 
 <script>
-// import API from '@/api'
-import CodeBox from '@/components/CodeBox.vue'
-import EChart from '@/components/master/tab/EChart.vue'
-import HTable from '@/components/master/tab/HTable.vue'
-// import * as echarts from 'echarts'
+import CodeBox from '@/components/general/CodeBox.vue'
+import EChart from '@/components/general/EChart.vue'
+import HTable from '@/components/general/HTable.vue'
 import echarts from '@/assets/script/myEcharts'
 import html2canvas from 'html2canvas'
 
@@ -391,7 +389,7 @@ export default {
       if (message.success) {
         this.username = message.info.username
       } else {
-        this.$router.replace('/sign')
+        this.$router.replace({name:'Sign'})
       }
     })
   },

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import HTable from '@/components/master/tab/HTable.vue'
+import HTable from '@/components/general/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 export default {
   components: { HTable },

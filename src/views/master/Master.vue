@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="left-head">
-      <img class="logo" src="@/assets/logo.png" alt="logo" @click="toManagement" />
+      <img class="logo" src="@/assets/image/logo.png" alt="logo" @click="toManagement" />
       <h1 class="headline">CastleChart</h1>
       <div :class="['main-page', 'text-disable', { active: currentTabKey === 'main' }]" @click="tabSwitch({ key: 'main' })">
         <span class="iconfont">&#xe6bb;</span>
@@ -39,7 +39,6 @@
 </template>
 
 <script>
-// import API from '@/api'
 export default {
   data() {
     return {
@@ -48,7 +47,7 @@ export default {
       currentMainTabPath: '/master/main/home', // FIXME 这里默认设的是 home ，但是如果最初的不是 home，那么首次点击mainTab时切换回的也是 home，可改为生命周期中根据 $route 设置
       tabMap: new Map(),
       username: '用户名',
-      userPortraitPath: 'portrait.png',
+      userPortraitPath: 'image/portrait.png',
       isFull: false,
     }
   },
@@ -80,7 +79,7 @@ export default {
       if (message.success) {
         this.username = message.info.username
       } else {
-        this.$router.replace('/sign')
+        this.$router.replace({name:'Sign'})
       }
     })
   },
@@ -130,7 +129,7 @@ export default {
       this.$API.userLogout((message) => {
         console.log(message)
         if (message.success) {
-          this.$router.replace('/sign')
+          this.$router.replace({name:'Sign'})
         }
       })
     },
@@ -154,7 +153,7 @@ export default {
         tabConfig((config) => {
           this.currentTabKey = config.key
           if (config.key !== 'main') {
-            this.$router.replace('/master/tab/' + config.type + '/' + config.key)
+            this.$router.replace(`/master/tab/${config.type}/${config.key}`)
           } else {
             this.$router.replace(this.currentMainTabPath)
           }
@@ -162,7 +161,7 @@ export default {
       } else {
         this.currentTabKey = tabConfig.key
         if (tabConfig.key !== 'main') {
-          this.$router.replace('/master/tab/' + tabConfig.type + '/' + tabConfig.key)
+          this.$router.replace(`/master/tab/${tabConfig.type}/${tabConfig.key}`)
         } else {
           this.$router.replace(this.currentMainTabPath)
         }

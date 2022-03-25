@@ -30,7 +30,7 @@
 
 <script>
 import { GridLayout, GridItem } from 'vue-grid-layout'
-import EChart from '@/components/master/tab/EChart.vue'
+import EChart from '@/components/general/EChart.vue'
 export default {
   components: {
     GridLayout,
