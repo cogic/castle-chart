@@ -2,15 +2,15 @@
   <div id="stage" @keypress.enter="login">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"/>
+      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''" />
     </div>
     <div id="password">
       <label for="">密码</label>
       <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" />
     </div>
     <div id="safecode">
-      <label for="">验证码</label>   
-      <input type="text" v-model="safecode" @input="fixText" @click="this.mesg = ''"  />
+      <label for="">验证码</label>
+      <input type="text" v-model="safecode" @input="fixText" @click="this.mesg = ''" />
       <safe-code class="codebox" ref="codebox" />
     </div>
     <div id="login" class="text-disable" @click="login">登录</div>
@@ -22,9 +22,6 @@
 import SafeCode from '@/components/sign/SafeCode.vue'
 export default {
   components: { SafeCode },
-  activated() {
-    this.mesg = ''
-  },
   data() {
     return {
       username: '',
@@ -32,6 +29,9 @@ export default {
       safecode: '',
       mesg: '',
     }
+  },
+  activated() {
+    this.mesg = ''
   },
   methods: {
     // TODO 对输入长度、特殊字符等进行限制

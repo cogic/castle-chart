@@ -43,17 +43,17 @@ import {
   // TrimRows,
   UndoRedo,
   registerPlugin,
-} from 'handsontable/plugins';
-registerPlugin(AutoColumnSize);
+} from 'handsontable/plugins'
+registerPlugin(AutoColumnSize)
 // registerPlugin(Autofill);
-registerPlugin(AutoRowSize);
+registerPlugin(AutoRowSize)
 // registerPlugin(BindRowsWithHeaders);
 // registerPlugin(CollapsibleColumns);
 // registerPlugin(ColumnSorting);
 // registerPlugin(ColumnSummary);
 // registerPlugin(Comments);
-registerPlugin(ContextMenu);
-registerPlugin(CopyPaste);
+registerPlugin(ContextMenu)
+registerPlugin(CopyPaste)
 // registerPlugin(CustomBorders);
 // registerPlugin(DragToScroll);
 // registerPlugin(DropdownMenu);
@@ -63,10 +63,10 @@ registerPlugin(CopyPaste);
 // registerPlugin(HiddenColumns);
 // registerPlugin(HiddenRows);
 // registerPlugin(ManualColumnFreeze);
-registerPlugin(ManualColumnMove);
-registerPlugin(ManualColumnResize);
-registerPlugin(ManualRowMove);
-registerPlugin(ManualRowResize);
+registerPlugin(ManualColumnMove)
+registerPlugin(ManualColumnResize)
+registerPlugin(ManualRowMove)
+registerPlugin(ManualRowResize)
 // registerPlugin(MergeCells);
 // registerPlugin(MultiColumnSorting);
 // registerPlugin(MultipleSelectionHandles);
@@ -76,10 +76,34 @@ registerPlugin(ManualRowResize);
 // registerPlugin(Search);
 // registerPlugin(TouchScroll);
 // registerPlugin(TrimRows);
-registerPlugin(UndoRedo);
+registerPlugin(UndoRedo)
 export default {
   components: {
     HotTable,
+  },
+  props: {
+    rows: {
+      type: Number,
+      default: 28,
+    },
+    cols: {
+      type: Number,
+      default: 30,
+    },
+    hookFunc: {
+      type: Function,
+      default: undefined,
+    },
+    item: {
+      type: String,
+      default: undefined,
+    },
+  },
+  data() {
+    return {
+      hot: {},
+      hotSettings: {},
+    }
   },
   created() {
     const menuConfig = {
@@ -147,30 +171,6 @@ export default {
       this.addHook(this.hookFunc)
     }
   },
-  data() {
-    return {
-      hot: {},
-      hotSettings: {},
-    }
-  },
-  props: {
-    rows: {
-      type: Number,
-      default: 28,
-    },
-    cols: {
-      type: Number,
-      default: 30,
-    },
-    hookFunc: {
-      type: Function,
-      default: undefined,
-    },
-    item: {
-      type: String,
-      default: undefined,
-    },
-  },
   methods: {
     test() {
       console.log(this.hot.getDataAtCol(0), this.hot.getDataAtRow(0))
@@ -236,7 +236,7 @@ export default {
       }
       return trueRows === -1 ? [[]] : this.hot.getData(trueRows, trueCols)
     },
-    cloneArray(data){
+    cloneArray(data) {
       let newData = []
       for (let i = 0; i < data.length; i++) {
         let temp = []
@@ -246,7 +246,7 @@ export default {
         newData.push(temp)
       }
       return newData
-    }
+    },
   },
 }
 </script>

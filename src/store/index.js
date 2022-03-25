@@ -1,18 +1,16 @@
 import { createStore } from 'vuex'
 
 export default createStore({
-  state(){
+  state() {
     return {
-      tabMap: undefined
+      tabMap: undefined,
     }
   },
   mutations: {
-    setTabMap (state,payload) {
+    setTabMap(state, payload) {
       state.tabMap = payload
-    }
+    },
   },
-  actions: {
-  },
-  modules: {
-  }
+  actions: {},
+  modules: {},
 })

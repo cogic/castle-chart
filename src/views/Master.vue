@@ -41,21 +41,6 @@
 <script>
 // import API from '@/api'
 export default {
-  beforeUpdate() {
-    // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
-    if (this.currentTabKey === 'main' && ['Home', 'DataStore', 'ChartStore', 'PanelStore'].includes(this.$route.name)) {
-      this.currentMainTabPath = this.$route.path
-    }
-  },
-  beforeCreate() {
-    this.$API.checkLogin((message) => {
-      if (message.success) {
-        this.username = message.info.username
-      } else {
-        this.$router.replace('/sign')
-      }
-    })
-  },
   data() {
     return {
       testdata: 1,
@@ -89,6 +74,21 @@ export default {
       },
       deep: true,
     },
+  },
+  beforeCreate() {
+    this.$API.checkLogin((message) => {
+      if (message.success) {
+        this.username = message.info.username
+      } else {
+        this.$router.replace('/sign')
+      }
+    })
+  },
+  beforeUpdate() {
+    // FIXME 这是为了切换回mainTab时能记住原来是哪个tab，但感觉这不是很好实现方式，不过可能也只能这样吧
+    if (this.currentTabKey === 'main' && ['Home', 'DataStore', 'ChartStore', 'PanelStore'].includes(this.$route.name)) {
+      this.currentMainTabPath = this.$route.path
+    }
   },
   methods: {
     toManagement() {

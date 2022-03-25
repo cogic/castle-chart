@@ -23,6 +23,29 @@
 import HTable from '@/components/master/tab/HTable.vue'
 import XSheet from '@/assets/script/x-sheet'
 export default {
+  components: { HTable },
+  props: {
+    addTab: {
+      type: Function,
+    },
+    checkNewLoad: {
+      type: Function,
+    },
+  },
+  data() {
+    return {
+      tableId: '',
+      tableName: '新建数据源',
+      tableData: [],
+      autoSave: undefined,
+      saveTip: '',
+    }
+  },
+  watch: {
+    tableData(newData, oldData) {
+      this.$refs.table.loadData(newData)
+    },
+  },
   activated() {
     // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
     this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
@@ -46,29 +69,6 @@ export default {
   deactivated() {
     this.saveTableData()
     clearInterval(this.autoSave)
-  },
-  components: { HTable },
-  props: {
-    addTab: {
-      type: Function,
-    },
-    checkNewLoad: {
-      type: Function,
-    },
-  },
-  data() {
-    return {
-      tableId: '',
-      tableName: '新建数据源',
-      tableData: [],
-      autoSave: undefined,
-      saveTip: '',
-    }
-  },
-  watch: {
-    tableData(newData, oldData) {
-      this.$refs.table.loadData(newData)
-    },
   },
   methods: {
     downloadFile() {

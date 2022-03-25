@@ -61,21 +61,6 @@ import html2canvas from 'html2canvas'
 
 export default {
   components: { CodeBox, EChart, HTable },
-  beforeCreate() {
-    this.$.checkAdmin((message) => {
-      if (message.success) {
-        this.username = message.info.username
-      } else {
-        this.$router.replace('/sign')
-      }
-    })
-  },
-  mounted() {
-    this.defaultSettings = JSON.parse(JSON.stringify(this.settings))
-    this.$API.getSampleListDefault((message) => {
-      this.sampleCharts = message.info
-    })
-  },
   data() {
     return {
       newChartInfo: {
@@ -400,6 +385,21 @@ export default {
         map: ['legend', 'grid', 'xAxis', 'yAxis', 'polar', 'radar', 'axisPointer'],
       },
     }
+  },
+  beforeCreate() {
+    this.$.checkAdmin((message) => {
+      if (message.success) {
+        this.username = message.info.username
+      } else {
+        this.$router.replace('/sign')
+      }
+    })
+  },
+  mounted() {
+    this.defaultSettings = JSON.parse(JSON.stringify(this.settings))
+    this.$API.getSampleListDefault((message) => {
+      this.sampleCharts = message.info
+    })
   },
   methods: {
     flush() {

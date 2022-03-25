@@ -1,15 +1,21 @@
 <template>
-    <table ref="table" @keydown="changeCurrent">
-      <tr v-for="r in row">
-        <td :contenteditable="isContenteditable(r, c)" :class="[{ current: isCurrent(r, c) }, { index: !isContenteditable(r, c) }]" v-for="c in column" @mousedown="setCurrent(r, c)"></td>
-      </tr>
-    </table>
+  <table ref="table" @keydown="changeCurrent">
+    <tr v-for="r in row">
+      <td :contenteditable="isContenteditable(r, c)" :class="[{ current: isCurrent(r, c) }, { index: !isContenteditable(r, c) }]" v-for="c in column" @mousedown="setCurrent(r, c)"></td>
+    </tr>
+  </table>
 </template>
 
 <script>
 // FIXME 当导入的表过大时，对表的快速修改就会很卡，原因暂不明确
 // FIXME 在导入和保存等时，并没有把表删减到最小尺寸，只是保存时删掉了靠后的无用项，靠前的没删
 export default {
+  props: {
+    tableData: {
+      type: Object,
+      default: [],
+    },
+  },
   data() {
     return {
       row: 25,
@@ -19,12 +25,6 @@ export default {
       current: [0, 0],
       tableFlag: false,
     }
-  },
-  props: {
-    tableData: {
-      type: Object,
-      default: [],
-    },
   },
   watch: {
     tableData(newData, oldData) {
@@ -68,6 +68,15 @@ export default {
         }
       }, 0)
     },
+  },
+  mounted() {
+    // mount 后设置首行首列的索引
+    for (let i = 1; i < this.row; i++) {
+      this.setRowIndex(i + 1)
+    }
+    for (let i = 1; i < this.column; i++) {
+      this.setColumnIndex(i + 1)
+    }
   },
   methods: {
     clearTable() {
@@ -185,15 +194,6 @@ export default {
       }
       this.$refs.table.rows[0].cells[column - 1].innerHTML = code
     },
-  },
-  mounted() {
-    // mount 后设置首行首列的索引
-    for (let i = 1; i < this.row; i++) {
-      this.setRowIndex(i + 1)
-    }
-    for (let i = 1; i < this.column; i++) {
-      this.setColumnIndex(i + 1)
-    }
   },
 }
 </script>

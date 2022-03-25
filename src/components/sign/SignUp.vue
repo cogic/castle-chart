@@ -2,19 +2,19 @@
   <div id="stage" @keypress.enter="register">
     <div id="username">
       <label for="">用户名</label>
-      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''"  maxlength="20" placeholder="不超过 20 个字符"/>
+      <input type="text" v-model="username" @input="fixText" @click="this.mesg = ''" maxlength="20" placeholder="不超过 20 个字符" />
     </div>
     <div id="password">
       <label for="">密码</label>
-      <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" maxlength="25" placeholder="不超过 25 个字符"/>
+      <input type="password" v-model="password" @input="fixText" @click="this.mesg = ''" maxlength="25" placeholder="不超过 25 个字符" />
     </div>
     <div id="repassword">
       <label for="">确认密码</label>
-      <input type="password" v-model="repassword" @input="fixText"  @click="this.mesg = ''"/>
+      <input type="password" v-model="repassword" @input="fixText" @click="this.mesg = ''" />
     </div>
     <div id="safecode">
       <label for="">验证码</label>
-      <input type="text" v-model="safecode" @input="fixText"  @click="this.mesg = ''"/>
+      <input type="text" v-model="safecode" @input="fixText" @click="this.mesg = ''" />
       <safe-code class="codebox" ref="codebox" />
     </div>
     <div id="register" class="text-disable" @click="register">注册</div>
@@ -26,9 +26,6 @@
 import SafeCode from '@/components/sign/SafeCode.vue'
 export default {
   components: { SafeCode },
-  activated() {
-    this.mesg = ''
-  },
   data() {
     return {
       username: '',
@@ -36,6 +33,9 @@ export default {
       repassword: '',
       mesg: '',
     }
+  },
+  activated() {
+    this.mesg = ''
   },
   methods: {
     // TODO 对输入长度、特殊字符等进行限制

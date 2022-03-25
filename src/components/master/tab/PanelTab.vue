@@ -174,53 +174,13 @@ import PopBox from '@/components/PopBox.vue'
 import html2canvas from 'html2canvas'
 export default {
   components: { GLayout, HTable, SetBox, ShareWindow, PopBox },
-  activated() {
-    // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
-    this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
-      if (flag) {
-        this.$refs.GLayout.clearLayout() // 在加载数据前清除一下画布，消除keepalive的影响
-        this.$API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
-          if (message.success) {
-            callback({ type: 'panel', topic: message.info.name, key: message.info._id })
-            this.panelId = this.$route.params.tabkey
-            this.panelName = message.info.name
-            this.setLayout(message.info.layout, message.info.back)
-            this.setCurItemToBack()
-            this.panelBackColor = message.info.back.config.backgroundColor
-            this.panelItemMargin = message.info.back.config.itemMargin
-            // this.$refs.GLayout.index = message.fileData.layout.length
-          }
-        })
-        this.isDataBox = false
-        this.chartProjectBox = false
-        this.dataSoruceBox = false
-        this.keepData = false
-        this.saveTip = ''
-        this.leftShow = true
-        this.rightShow = true
-        this.isPop = false
-      }
-    })
-    this.autoSave = setInterval(() => {
-      // 每1分钟自动保存一次
-      this.save()
-    }, 1000 * 60)
-  },
-  deactivated() {
-    this.save()
-    clearInterval(this.autoSave)
-  },
-  mounted() {
-    // API.getChartExamples((result) => {
-    //   this.chartSamples = result
-    //   this.curSampleName = null
-    // })
-    this.$API.getSampleList((message) => {
-      if (message.success) {
-        this.chartSamples = message.info
-        this.curSampleName = null
-      }
-    })
+  props: {
+    addTab: {
+      type: Function,
+    },
+    checkNewLoad: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -319,14 +279,6 @@ export default {
       toShow: false,
     }
   },
-  props: {
-    addTab: {
-      type: Function,
-    },
-    checkNewLoad: {
-      type: Function,
-    },
-  },
   watch: {
     leftShow() {
       setTimeout(() => {
@@ -355,6 +307,54 @@ export default {
         this.loadDataSource()
       }
     },
+  },
+  mounted() {
+    // API.getChartExamples((result) => {
+    //   this.chartSamples = result
+    //   this.curSampleName = null
+    // })
+    this.$API.getSampleList((message) => {
+      if (message.success) {
+        this.chartSamples = message.info
+        this.curSampleName = null
+      }
+    })
+  },
+  activated() {
+    // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
+    this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
+      if (flag) {
+        this.$refs.GLayout.clearLayout() // 在加载数据前清除一下画布，消除keepalive的影响
+        this.$API.getPanel({ _id: this.$route.params.tabkey }, (message) => {
+          if (message.success) {
+            callback({ type: 'panel', topic: message.info.name, key: message.info._id })
+            this.panelId = this.$route.params.tabkey
+            this.panelName = message.info.name
+            this.setLayout(message.info.layout, message.info.back)
+            this.setCurItemToBack()
+            this.panelBackColor = message.info.back.config.backgroundColor
+            this.panelItemMargin = message.info.back.config.itemMargin
+            // this.$refs.GLayout.index = message.fileData.layout.length
+          }
+        })
+        this.isDataBox = false
+        this.chartProjectBox = false
+        this.dataSoruceBox = false
+        this.keepData = false
+        this.saveTip = ''
+        this.leftShow = true
+        this.rightShow = true
+        this.isPop = false
+      }
+    })
+    this.autoSave = setInterval(() => {
+      // 每1分钟自动保存一次
+      this.save()
+    }, 1000 * 60)
+  },
+  deactivated() {
+    this.save()
+    clearInterval(this.autoSave)
   },
   methods: {
     transData() {
@@ -468,14 +468,14 @@ export default {
           })
         })
       } else {
-        this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout}, (message) => {
-            console.log(message)
-            if (isHand) {
-              this.saveTip = '保存成功'
-            } else {
-              this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
-            }
-          })
+        this.$API.savePanel({ _id: this.panelId, name: this.panelName, back: this.$refs.GLayout.back, layout: this.$refs.GLayout.layout }, (message) => {
+          console.log(message)
+          if (isHand) {
+            this.saveTip = '保存成功'
+          } else {
+            this.saveTip = new Date().toLocaleTimeString('chinese', { hour12: false, hour: '2-digit', minute: '2-digit' }) + ' 已保存'
+          }
+        })
       }
     },
     setConfig(item, key, value) {

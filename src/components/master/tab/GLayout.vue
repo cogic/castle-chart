@@ -37,6 +37,24 @@ export default {
     GridItem,
     EChart,
   },
+  props: {
+    isResizable: {
+      type: Boolean,
+      default: true,
+    },
+    isDraggable: {
+      type: Boolean,
+      default: true,
+    },
+    isRemovable: {
+      type: Boolean,
+      default: true,
+    },
+    isSelectable: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       layout: [],
@@ -59,24 +77,6 @@ export default {
       autoSize: true,
       verticalCompact: true,
     }
-  },
-  props: {
-    isResizable: {
-      type: Boolean,
-      default: true,
-    },
-    isDraggable: {
-      type: Boolean,
-      default: true,
-    },
-    isRemovable: {
-      type: Boolean,
-      default: true,
-    },
-    isSelectable: {
-      type: Boolean,
-      default: true,
-    },
   },
   watch: {
     curItem(newValue, oldValue) {
@@ -113,8 +113,7 @@ export default {
             window.addEventListener('resize', this.$refs['chart' + el.i][0].chartResize)
             window.dispatchEvent(new Event('resize'))
           }, 0)
-        } 
-        else if (el.type === 'text') {
+        } else if (el.type === 'text') {
           setTimeout(() => {
             this.setTextItem(el)
           }, 0)
@@ -205,9 +204,6 @@ export default {
     //     }
     //   }
     // }
-  },
-  mounted() {
-    // this.index = this.layout.length
   },
 }
 </script>

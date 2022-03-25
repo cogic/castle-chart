@@ -58,8 +58,11 @@
 // import * as echarts from 'echarts'
 import echarts from '@/assets/script/myEcharts'
 export default {
-  mounted() {
-    this.defaultSettings = JSON.parse(JSON.stringify(this.settings))
+  props: {
+    onSetChange: {
+      type: Function,
+      default: undefined,
+    },
   },
   data() {
     return {
@@ -295,8 +298,8 @@ export default {
             type: 'continuous',
             text: ['High', 'Low'],
             textStyle: {},
-            itemWidth:20,
-            itemHeight:140,
+            itemWidth: 20,
+            itemHeight: 140,
             padding: 5,
             inRange: {
               color: ['#f6efa6', '#d88273', '#bf444c'],
@@ -414,12 +417,6 @@ export default {
       itemConfigs: [],
     }
   },
-  props: {
-    onSetChange: {
-      type: Function,
-      default: undefined,
-    },
-  },
   watch: {
     settings: {
       handler(newValue) {
@@ -427,6 +424,9 @@ export default {
       },
       deep: true,
     },
+  },
+  mounted() {
+    this.defaultSettings = JSON.parse(JSON.stringify(this.settings))
   },
   methods: {
     test() {

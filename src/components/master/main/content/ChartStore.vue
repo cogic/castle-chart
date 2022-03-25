@@ -1,18 +1,11 @@
 <template>
-<!-- <component is="StoreStage" :stageConfig="stageConfig" :key="randNum"></component> -->
+  <!-- <component is="StoreStage" :stageConfig="stageConfig" :key="randNum"></component> -->
   <store-stage :stageConfig="stageConfig"></store-stage>
 </template>
 
 <script>
 import StoreStage from '@/components/master/main/StoreStage.vue'
 export default {
-  mounted() {
-    this.$API.getChartList((message) => {
-      if (message.success) {
-        this.stageConfig.files = message.info
-      }
-    })
-  },
   components: { StoreStage },
   data() {
     return {
@@ -36,13 +29,20 @@ export default {
       },
     }
   },
-  methods: {
-    test(){
-      this.$API.getChartList((message) => {
+  mounted() {
+    this.$API.getChartList((message) => {
       if (message.success) {
         this.stageConfig.files = message.info
       }
     })
+  },
+  methods: {
+    test() {
+      this.$API.getChartList((message) => {
+        if (message.success) {
+          this.stageConfig.files = message.info
+        }
+      })
     },
   },
 }

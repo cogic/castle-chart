@@ -34,8 +34,11 @@
 import PopBox from '@/components/PopBox.vue'
 export default {
   components: { PopBox },
-  activated() {
-    this.selectedFile = {}
+  props: {
+    stageConfig: {
+      type: Object,
+      default: {},
+    },
   },
   data() {
     return {
@@ -47,6 +50,13 @@ export default {
       isExitShow: true,
       trueFunc: undefined,
     }
+  },
+  computed: {
+    titleStyle() {
+      if (this.stageConfig.style && this.stageConfig.style.title) {
+        return this.stageConfig.style.title
+      }
+    },
   },
   watch: {
     selectedFile(newV, oldV) {
@@ -69,18 +79,8 @@ export default {
       }
     },
   },
-  computed: {
-    titleStyle() {
-      if (this.stageConfig.style && this.stageConfig.style.title) {
-        return this.stageConfig.style.title
-      }
-    },
-  },
-  props: {
-    stageConfig: {
-      type: Object,
-      default: {},
-    },
+  activated() {
+    this.selectedFile = {}
   },
   methods: {
     flush() {

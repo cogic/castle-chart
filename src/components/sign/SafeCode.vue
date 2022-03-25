@@ -3,12 +3,6 @@
 </template>
 <script>
 export default {
-  data() {
-    return {
-      identifyCode: '1234',
-      identifyCodes: '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', //绘制的随机数
-    }
-  },
   props: {
     fontSizeMin: {
       type: Number,
@@ -59,6 +53,21 @@ export default {
       default: 40,
     },
   },
+  data() {
+    return {
+      identifyCode: '1234',
+      identifyCodes: '23456789ABCDEFGHJKLMNPQRSTUVWXYZ', //绘制的随机数
+    }
+  },
+  watch: {
+    identifyCode() {
+      this.drawPic()
+    },
+  },
+  mounted() {
+    this.drawPic()
+    this.refreshCode()
+  },
   methods: {
     // 生成一个随机数
     getCode() {
@@ -91,7 +100,7 @@ export default {
     drawText(ctx, txt, i) {
       ctx.fillStyle = this.randomColor(this.colorMin, this.colorMax)
       ctx.font = this.randomNum(this.fontSizeMin, this.fontSizeMax) + 'px SimHei'
-      let x = (i + 1) * (this.contentWidth / (this.identifyCode.length+2))
+      let x = (i + 1) * (this.contentWidth / (this.identifyCode.length + 2))
       let y = this.randomNum(this.fontSizeMax, this.contentHeight - 5)
       var deg = this.randomNum(-10, 10)
       // 修改坐标原点和旋转角度
@@ -135,15 +144,6 @@ export default {
         this.identifyCode += data[this.randomNum(0, data.length - 1)]
       }
     },
-  },
-  watch: {
-    identifyCode() {
-      this.drawPic()
-    },
-  },
-  mounted() {
-    this.drawPic()
-    this.refreshCode()
   },
 }
 </script>

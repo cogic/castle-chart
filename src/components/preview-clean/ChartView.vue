@@ -6,6 +6,12 @@
 import EChart from '@/components/master/tab/EChart.vue'
 export default {
   components: { EChart },
+  data() {
+    return {
+      chartData: {},
+      chartOption: {},
+    }
+  },
   mounted() {
     this.$API.getChart({ _id: this.$route.params.viewid }, (message) => {
       if (message.success) {
@@ -13,12 +19,6 @@ export default {
         this.chartOption = message.info.option
       }
     })
-  },
-  data() {
-    return {
-      chartData: {},
-      chartOption: {},
-    }
   },
 }
 </script>

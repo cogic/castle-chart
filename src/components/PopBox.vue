@@ -13,9 +13,6 @@
 
 <script>
 export default {
-  data() {
-    return {}
-  },
   props: {
     trueFunc: {
       default: function () {},
@@ -29,6 +26,9 @@ export default {
       default: true,
       type: Boolean,
     },
+  },
+  data() {
+    return {}
   },
   methods: {
     close(e) {

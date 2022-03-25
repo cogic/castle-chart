@@ -96,6 +96,14 @@ import ShareWindow from '@/components/ShareWindow.vue'
 import html2canvas from 'html2canvas'
 export default {
   components: { EChart, HTable, SetBox, ShareWindow },
+  props: {
+    addTab: {
+      type: Function,
+    },
+    checkNewLoad: {
+      type: Function,
+    },
+  },
   data() {
     return {
       keepData: false,
@@ -117,14 +125,6 @@ export default {
       isPop: false,
     }
   },
-  props: {
-    addTab: {
-      type: Function,
-    },
-    checkNewLoad: {
-      type: Function,
-    },
-  },
   watch: {
     openMatch() {
       setTimeout(() => {
@@ -136,6 +136,56 @@ export default {
         this.loadDataSource()
       }
     },
+  },
+  mounted() {
+    // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
+    this.$API.getSampleList((message) => {
+      if (message.success) {
+        this.chartSamples = message.info
+        this.curSampleName = message.info[0].name
+      }
+    })
+  },
+  updated() {
+    this.$refs.myChart.chartResize()
+  },
+  activated() {
+    // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
+    this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
+      if (flag) {
+        this.clearChart() // 在加载数据前清除一下画布，消除keepalive的影响
+        this.$API.getChart({ _id: this.$route.params.tabkey }, (message) => {
+          if (message.success) {
+            callback({ type: 'chart', topic: message.info.name, key: message.info._id })
+            this.chartId = this.$route.params.tabkey
+            this.chartName = message.info.name
+            this.loadData(message.info.data)
+            this.chartData = message.info.data
+            this.chartOption = message.info.option
+            this.$refs.setBox.setSettings(message.info.option)
+          }
+        })
+        this.isDataBox = false
+        this.hasTableData = false
+        this.dataSoruceBox = false
+        this.keepData = false
+        if (this.chartSamples[0]) {
+          this.curSampleName = this.chartSamples[0].name
+        }
+        this.saveTip = ''
+        this.leftShow = true
+        this.rightShow = true
+        this.isPop = false
+      }
+    })
+    this.autoSave = setInterval(() => {
+      // 每1分钟自动保存一次
+      this.save()
+    }, 1000 * 60)
+  },
+  deactivated() {
+    this.save()
+    clearInterval(this.autoSave)
   },
   methods: {
     setChartByExample(example) {
@@ -226,56 +276,6 @@ export default {
         console.log(message)
       })
     },
-  },
-  mounted() {
-    // TODO chartSamples 可以设置为 store 中的全局变量，这样就不用每次都 get 了，包括 PanelTab 中的也是
-    this.$API.getSampleList((message) => {
-      if (message.success) {
-        this.chartSamples = message.info
-        this.curSampleName = message.info[0].name
-      }
-    })
-  },
-  updated() {
-    this.$refs.myChart.chartResize()
-  },
-  activated() {
-    // 在进入tab时会触发，检查是否是新打开的tab，新打开的话要重新加载一下数据，否则会因为keep-alive出现不好的事情
-    this.checkNewLoad(this.$route.params.tabkey, (flag, callback) => {
-      if (flag) {
-        this.clearChart() // 在加载数据前清除一下画布，消除keepalive的影响
-        this.$API.getChart({ _id: this.$route.params.tabkey }, (message) => {
-          if (message.success) {
-            callback({ type: 'chart', topic: message.info.name, key: message.info._id })
-            this.chartId = this.$route.params.tabkey
-            this.chartName = message.info.name
-            this.loadData(message.info.data)
-            this.chartData = message.info.data
-            this.chartOption = message.info.option
-            this.$refs.setBox.setSettings(message.info.option)
-          }
-        })
-        this.isDataBox = false
-        this.hasTableData = false
-        this.dataSoruceBox = false
-        this.keepData = false
-        if (this.chartSamples[0]) {
-          this.curSampleName = this.chartSamples[0].name
-        }
-        this.saveTip = ''
-        this.leftShow = true
-        this.rightShow = true
-        this.isPop = false
-      }
-    })
-    this.autoSave = setInterval(() => {
-      // 每1分钟自动保存一次
-      this.save()
-    }, 1000 * 60)
-  },
-  deactivated() {
-    this.save()
-    clearInterval(this.autoSave)
   },
 }
 </script>

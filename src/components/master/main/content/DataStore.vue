@@ -5,13 +5,6 @@
 <script>
 import StoreStage from '@/components/master/main/StoreStage.vue'
 export default {
-  mounted() {
-    this.$API.getTableList((message)=>{
-      if (message.success) {
-        this.stageConfig.files = message.info
-      }
-    })
-  },
   components: { StoreStage },
   data() {
     return {
@@ -34,6 +27,13 @@ export default {
         },
       },
     }
+  },
+  mounted() {
+    this.$API.getTableList((message) => {
+      if (message.success) {
+        this.stageConfig.files = message.info
+      }
+    })
   },
 }
 </script>

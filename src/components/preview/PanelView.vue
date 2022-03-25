@@ -8,6 +8,12 @@
 import GLayout from '@/components/master/tab/GLayout.vue'
 export default {
   components: { GLayout },
+  data() {
+    return {
+      panelBackColor: '',
+      panelItemMargin: '',
+    }
+  },
   mounted() {
     this.$API.getSharedPanel({ _id: this.$route.params.viewid }, (message) => {
       if (message.success) {
@@ -16,12 +22,6 @@ export default {
         this.panelItemMargin = message.info.back.config.itemMargin
       }
     })
-  },
-  data() {
-    return {
-      panelBackColor: '',
-      panelItemMargin: '',
-    }
   },
   methods: {
     setLayout(layout, back) {
@@ -35,7 +35,7 @@ export default {
 </script>
 
 <style scoped>
-.container-box{
+.container-box {
   width: 100%;
   height: 100%;
   overflow-y: auto;

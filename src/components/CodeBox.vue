@@ -3,37 +3,36 @@
 </template>
 
 <script>
-
 export default {
-  mounted() {
-        let editor = ace.edit('editor')
-        editor.setTheme('ace/theme/dawn')
-        editor.session.setMode('ace/mode/javascript')
-        editor.setFontSize(18)
-        editor.setReadOnly(false)
-        editor.setOption('wrap', 'free')
-        ace.require('ace/ext/language_tools')
-        editor.setOptions({
-          enableBasicAutocompletion: true,
-          enableSnippets: true,
-          enableLiveAutocompletion: true,
-        })
-        this.codeEditor = editor
-  },
   data() {
     return {
       codeEditor: undefined,
     }
   },
-  methods:{
-    getCopyText(){
+  mounted() {
+    let editor = ace.edit('editor')
+    editor.setTheme('ace/theme/dawn')
+    editor.session.setMode('ace/mode/javascript')
+    editor.setFontSize(18)
+    editor.setReadOnly(false)
+    editor.setOption('wrap', 'free')
+    ace.require('ace/ext/language_tools')
+    editor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true,
+    })
+    this.codeEditor = editor
+  },
+  methods: {
+    getCopyText() {
       return this.codeEditor.getValue()
     },
-    setValue(str){
-      this.codeEditor.setValue(str,)
+    setValue(str) {
+      this.codeEditor.setValue(str)
       this.codeEditor.clearSelection()
-    }
-  }
+    },
+  },
 }
 </script>
 

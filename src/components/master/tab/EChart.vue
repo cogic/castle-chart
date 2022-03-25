@@ -8,19 +8,6 @@ import echarts from '@/assets/script/myEcharts'
 import 'echarts-countries-js/echarts-countries-js/china'
 import { markRaw } from '@vue/reactivity'
 export default {
-  mounted() {
-    this.myChart = markRaw(echarts.init(this.$refs.chartBox))
-    if (this.data.length !== 0) {
-      this.setOption(this.data, this.option)
-    }
-    setTimeout(() => {
-      this.chartResize()
-    }, 0)
-    window.addEventListener('resize', this.chartResize)
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.chartResize)
-  },
   props: {
     data: {
       type: Array,
@@ -30,6 +17,11 @@ export default {
       type: Object,
       default: {},
     },
+  },
+  data() {
+    return {
+      myChart: {},
+    }
   },
   watch: {
     data(newValueData) {
@@ -42,10 +34,18 @@ export default {
       deep: true,
     },
   },
-  data() {
-    return {
-      myChart: {},
+  mounted() {
+    this.myChart = markRaw(echarts.init(this.$refs.chartBox))
+    if (this.data.length !== 0) {
+      this.setOption(this.data, this.option)
     }
+    setTimeout(() => {
+      this.chartResize()
+    }, 0)
+    window.addEventListener('resize', this.chartResize)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.chartResize)
   },
   methods: {
     test() {
@@ -89,7 +89,7 @@ export default {
           one.data = data[i].slice(1)
           series.push(one)
         }
-        if (data.length - 1!=preSeries.length) {
+        if (data.length - 1 != preSeries.length) {
           // 当'line', 'bar'等图的seires数变化时，需要清除一下series
           this.myChart.setOption(
             {

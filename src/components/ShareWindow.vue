@@ -15,13 +15,24 @@
   </div>
 </template>
 
-<script> 
+<script>
 export default {
   data() {
     return {
       isShared: true,
       isCopied: false,
     }
+  },
+  computed: {
+    link() {
+      let type
+      if (this.$route.name === 'ChartTab') {
+        type = 'chart'
+      } else if (this.$route.name === 'PanelTab') {
+        type = 'panel'
+      }
+      return window.location.origin + '/preview/' + type + '/' + this.$route.params.tabkey
+    },
   },
   watch: {
     isShared(newValue) {
@@ -34,17 +45,6 @@ export default {
           console.log(message)
         })
       }
-    },
-  },
-  computed: {
-    link() {
-      let type
-      if (this.$route.name === 'ChartTab') {
-        type = 'chart'
-      } else if (this.$route.name === 'PanelTab') {
-        type = 'panel'
-      }
-      return window.location.origin + '/preview/' + type + '/' + this.$route.params.tabkey
     },
   },
   methods: {

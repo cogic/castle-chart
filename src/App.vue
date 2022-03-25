@@ -10,12 +10,27 @@
 
 <script>
 export default {
-  //  errorCaptured(err, vm, info) {
-  //   console.log(err)
-  //   console.log(vm)
-  //   console.log(info)
-  //   return false
-  // },
+  // components
+  // props
+  // emits
+  // data
+  // computed
+  // watch
+  // 生命周期事件 (按照它们被调用的顺序)
+  // beforeCreate
+  // created
+  // beforeMount
+  // mounted
+  // beforeUpdate
+  // updated
+  // activated
+  // deactivated
+  // beforeUnmount
+  // unmounted
+  // errorCaptured
+  // renderTracked
+  // renderTriggered
+  // methods
 }
 </script>
 
@@ -80,7 +95,7 @@ input {
 /* .iconfont{
   user-select: none;
 } */
-.text-disable{
-  user-select: none;  
+.text-disable {
+  user-select: none;
 }
 </style>
