@@ -31,6 +31,7 @@ export default {
       username: '',
       password: '',
       repassword: '',
+      safecode: '',
       mesg: '',
     }
   },
@@ -78,6 +79,7 @@ export default {
           }
         )
       }
+      this.safecode = ''
     },
   },
 }
