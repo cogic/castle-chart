@@ -89,42 +89,10 @@
             <div class="set-box" v-show="!isDataBox">
               <set-box v-if="item.type === 'chart'" :ref="'setBox' + item.i" :onSetChange="setChart"></set-box>
               <div v-else-if="item.type === 'back'">
-                <div class="set-item">
-                  <div class="name">背景</div>
-                  <div class="setting">颜色<input type="color" v-model="panelBackColor" /></div>
-                </div>
-                <div class="set-item">
-                  <div class="name">组件块</div>
-                  <div class="setting">间距<input type="number" v-model="panelItemMargin" /></div>
-                </div>
+                <set-box-item :itemConfigs="getItemConfigsBack(item)"></set-box-item>
               </div>
               <div v-else-if="item.type === 'text'">
-                <div class="set-item">
-                  <div class="name">文本</div>
-                  <div class="setting">内容<input type="text" v-model="item.config.content" @input="textItemChange(item)" /></div>
-                  <div class="setting">
-                    字体
-                    <select v-model="item.config.fontFamily" @input="textItemChange(item)">
-                      <template v-for="(fontFamily, index) in fontFamilys">
-                        <option :value="fontFamily">{{ fontFamily }}</option>
-                      </template>
-                    </select>
-                  </div>
-                  <div class="setting">
-                    字体大小
-                    <input type="number" v-model="item.config.fontSize" @input="textItemChange(item)" />
-                  </div>
-                  <div class="setting">
-                    字体粗细
-                    <select v-model="item.config.fontWeight" @input="textItemChange(item)">
-                      <template v-for="(fontWeight, index) in fontWeights">
-                        <option :value="fontWeight">{{ fontWeight }}</option>
-                      </template>
-                    </select>
-                  </div>
-                  <div class="setting">文字颜色<input type="color" v-model="item.config.color" @input="textItemChange(item)" /></div>
-                  <div class="setting">背景颜色<input type="color" v-model="item.config.backgroundColor" @input="textItemChange(item)" /></div>
-                </div>
+                <set-box-item :itemConfigs="getItemConfigsText(item)"></set-box-item>
               </div>
               <div v-else-if="item.type === 'image'">image</div>
             </div>
@@ -161,10 +129,11 @@ import HTable from '@/components/general/HTable.vue'
 import SetBox from '@/components/tab/SetBox.vue'
 import ShareWindow from '@/components/tab/ShareWindow.vue'
 import PopBox from '@/components/general/PopBox.vue'
+import SetBoxItem from '@/components/tab/SetBoxItem.vue'
 import XSheet from '@/assets/script/x-sheet'
 import html2canvas from 'html2canvas'
 export default {
-  components: { GLayout, HTable, SetBox, ShareWindow, PopBox },
+  components: { GLayout, HTable, SetBox, SetBoxItem, ShareWindow, PopBox },
   props: {
     addTab: {
       type: Function,
@@ -175,8 +144,24 @@ export default {
   },
   data() {
     return {
-      fontWeights: ['normal', 'bold', 'bolder', 'lighter'],
-      fontFamilys: ['sans-serif', 'serif', 'monospace', 'Arial', 'Courier New', 'Microsoft YaHei', 'Cursive', 'Fantasy'],
+      selectOptions: {
+        fontWeights: [
+          { label: 'normal', value: ['normal'] },
+          { label: 'bold', value: ['bold'] },
+          { label: 'bolder', value: ['bolder'] },
+          { label: 'lighter', value: ['lighter'] },
+        ],
+        fontFamilys: [
+          { label: 'sans-serif', value: ['sans-serif'] },
+          { label: 'serif', value: ['serif'] },
+          { label: 'monospace', value: ['monospace'] },
+          { label: 'Arial', value: ['Arial'] },
+          { label: 'Courier New', value: ['Courier New'] },
+          { label: 'Microsoft YaHei', value: ['Microsoft YaHei'] },
+          { label: 'Cursive', value: ['Cursive'] },
+          { label: 'Fantasy', value: ['Fantasy'] },
+        ],
+      },
       keepData: false,
       dataSoruceBox: false,
       dataProjects: [],
@@ -184,8 +169,10 @@ export default {
       chartProjectBox: false,
       chartProjects: [],
 
-      panelBackColor: '',
-      panelItemMargin: '',
+      panelConfig: {
+        panelBackColor: '',
+        panelItemMargin: '',
+      },
 
       isDataBox: false,
 
@@ -281,13 +268,6 @@ export default {
         window.dispatchEvent(new Event('resize'))
       }, 0)
     },
-    panelBackColor(newValue) {
-      this.$refs.GLayout.back.config.backgroundColor = newValue
-    },
-    panelItemMargin(newValue) {
-      this.$refs.GLayout.margin = [newValue, newValue]
-      this.$refs.GLayout.back.config.itemMargin = newValue
-    },
     openMatch() {
       setTimeout(() => {
         this.$refs.myTable.render()
@@ -319,8 +299,8 @@ export default {
             this.panelName = message.info.name
             this.setLayout(message.info.layout, message.info.back)
             this.setCurItemToBack()
-            this.panelBackColor = message.info.back.config.backgroundColor
-            this.panelItemMargin = message.info.back.config.itemMargin
+            this.panelConfig.panelBackColor = message.info.back.config.backgroundColor
+            this.panelConfig.panelItemMargin = message.info.back.config.itemMargin
           }
         })
         this.isDataBox = false
@@ -343,6 +323,122 @@ export default {
     clearInterval(this.autoSave)
   },
   methods: {
+    getItemConfigsBack(item) {
+      return [
+        {
+          close: false,
+          name: '仪表板',
+          show: true,
+          projects: [
+            {
+              name: '基础',
+              open: true,
+              sets: [
+                {
+                  name: '背景颜色',
+                  type: 'color',
+                  model: this.panelConfig.panelBackColor,
+                  event: (val) => {
+                    this.panelConfig.panelBackColor = val
+                    this.$refs.GLayout.back.config.backgroundColor = val
+                  },
+                },
+                {
+                  name: '组件块间距',
+                  type: 'number',
+                  min: 0,
+                  max: 40,
+                  model: this.panelItemMargin,
+                  event: (val) => {
+                    this.panelItemMargin = val
+                    this.$refs.GLayout.margin = [val, val]
+                    this.$refs.GLayout.back.config.itemMargin = val
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+    },
+    getItemConfigsText(item) {
+      return [
+        {
+          close: false,
+          name: '文本组件',
+          show: true,
+          projects: [
+            {
+              name: '基础',
+              open: true,
+              sets: [
+                {
+                  name: '文本内容',
+                  type: 'text',
+                  model: item.config.content,
+                  placeholder: '输入文本',
+                  event: (val) => {
+                    item.config.content = val
+                    this.textItemChange(item)
+                  },
+                },
+                {
+                  name: '字体',
+                  type: 'select',
+                  model: item.config.fontFamily,
+                  options: this.selectOptions.fontFamilys,
+                  placeholder: '选择字体',
+                  event: (val) => {
+                    item.config.fontFamily = val
+                    this.textItemChange(item)
+                  },
+                },
+                {
+                  name: '字体大小',
+                  type: 'number',
+                  min: 12,
+                  max: 50,
+                  model: item.config.fontSize,
+                  event: (val) => {
+                    item.config.fontSize = val
+                    this.textItemChange(item)
+                  },
+                },
+                {
+                  name: '字体粗细',
+                  type: 'select',
+                  model: item.config.fontWeight,
+                  options: this.selectOptions.fontWeights,
+                  placeholder: '选择字体粗细',
+                  event: (val) => {
+                    item.config.fontWeight = val
+                    this.textItemChange(item)
+                  },
+                },
+                {
+                  name: '文字颜色',
+                  type: 'color',
+                  model: item.config.color,
+                  event: (val) => {
+                    item.config.color = val
+                    this.textItemChange(item)
+                  },
+                },
+                {
+                  name: '背景颜色',
+                  type: 'color',
+                  model: item.config.backgroundColor,
+                  event: (val) => {
+                    item.config.backgroundColor = val
+                    this.textItemChange(item)
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]
+    },
     transData() {
       this.$refs['table' + this.getCurItem().i][0].transData()
     },

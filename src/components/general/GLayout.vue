@@ -94,11 +94,9 @@ export default {
       this.setLayout([])
     },
     setTextItem(item) {
-      document.getElementById('text' + item.i).innerHTML = item.config.content
-      document.getElementById('text' + item.i).style.fontFamily = item.config.fontFamily
-      document.getElementById('text' + item.i).style.fontSize = item.config.fontSize + 'px'
-      document.getElementById('text' + item.i).style.fontWeight = item.config.fontWeight
-      document.getElementById('text' + item.i).style.color = item.config.color
+      const $text = document.getElementById('text' + item.i)
+      $text.innerHTML = item.config.content
+      $text.style.cssText = `color:${item.config.color};font-family:${item.config.fontFamily};font-size:${item.config.fontSize + 'px'};font-weight:${item.config.fontWeight}`
       document.getElementById('textParent' + item.i).style.backgroundColor = item.config.backgroundColor
     },
     setLayout(layoutData) {

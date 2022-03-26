@@ -1,59 +1,12 @@
 <template>
-  <template v-for="itemConfig in itemConfigs">
-    <div class="set-item" v-if="itemConfig">
-      <div class="name text-disable" @click="itemConfig.close = !itemConfig.close">
-        {{ itemConfig.name }}
-        <span class="iconfont" v-if="itemConfig.close">&#xe633;</span>
-        <span class="iconfont" v-else>&#xe62f;</span>
-      </div>
-      <div v-show="!itemConfig.close">
-        <div class="project" v-for="project in itemConfig.projects">
-          <div class="name text-disable" @click="project.open = !project.open">
-            <span class="iconfont" v-if="!project.open">&#xe633;</span>
-            <span class="iconfont" v-else>&#xe62f;</span>
-            {{ project.name }}
-          </div>
-          <div v-show="project.open">
-            <div class="setting" v-for="set in project.sets">
-              <span class="name">{{ set.name }}</span>
-              <template v-if="set.type === 'select'">
-                <el-select v-model="set.model" class="m-2" size="small" :placeholder="set.placeholder" @change="set.event">
-                  <el-option v-for="option in set.options" :key="option.value" :label="option.label" :value="option.value"> </el-option>
-                </el-select>
-                <div class="aline" v-if="set.type2 === 'color'">
-                  <template v-for="(color, index) in set.model">
-                    <el-color-picker v-model="set.model[index]" size="small" show-alpha />
-                  </template>
-                </div>
-              </template>
-              <template v-else-if="set.type === 'text'">
-                <el-input v-model="set.model" class="w-50 m-2" size="small" :placeholder="set.placeholder" @input="set.event" />
-              </template>
-              <template v-else-if="set.type === 'color'">
-                <div class="aline">
-                  <el-color-picker v-model="set.model" size="small" show-alpha @active-change="set.event" />
-                  <span :style="{ color: set.model }">{{ set.model }}</span>
-                </div>
-              </template>
-              <template v-else-if="set.type === 'number'">
-                <el-slider v-model="set.model" show-input size="small" :step="set.step" :min="set.min" :max="set.max" @input="set.event" :format-tooltip="set.format"> </el-slider>
-              </template>
-              <template v-else-if="set.type === 'switch'">
-                <el-switch v-model="set.model" size="small" @input="set.event" />
-              </template>
-              <template v-else> error </template>
-            </div>
-          </div>
-        </div>
-        <div class="close text-disable" @click="itemConfig.close = !itemConfig.close"><span class="iconfont">&#xe65e;</span></div>
-      </div>
-    </div>
-  </template>
+  <set-box-item :itemConfigs="itemConfigs"></set-box-item>
 </template>
 
 <script>
 import echarts from '@/assets/script/myEcharts'
+import SetBoxItem from '@/components/tab/SetBoxItem.vue'
 export default {
+  components: { SetBoxItem },
   props: {
     onSetChange: {
       type: Function,
@@ -62,59 +15,61 @@ export default {
   },
   data() {
     return {
-      direction: [
-        { label: '竖直', value: 'vertical' },
-        { label: '水平', value: 'horizontal' },
-      ],
-      legendIcon: [
-        { label: '圆形', value: 'circle' },
-        { label: '矩形', value: 'rect' },
-        { label: '圆角矩形', value: 'roundRect' },
-        { label: '三角', value: 'triangle' },
-        { label: '菱形', value: 'diamond' },
-        { label: '箭头', value: 'arrow' },
-        { label: '无', value: 'none' },
-      ],
-      horizontal: [
-        { label: '居左', value: 'left' },
-        { label: '居中', value: 'center' },
-        { label: '居右', value: 'right' },
-      ],
-      vertical: [
-        { label: '居上', value: 'top' },
-        { label: '居中', value: 'middle' },
-        { label: '居下', value: 'bottom' },
-      ],
-      inRanges: [
-        { label: '调色1', value: ['#f6efa6', '#d88273', '#bf444c'] },
-        { label: '调色2', value: ['#d6ecff', '#5f5de0', '#c368ff'] },
-        { label: '调色3', value: ['#fbffd6', '#c58031', '#970b06'] },
-        { label: '调色4', value: ['#d6ffd9', '#61e05d', '#069743'] },
-      ],
-      formatters: [null, '{b}{c}', '{b}<br/>{c}', '{b}: {c}'],
-      fontWeights: [
-        { label: 'normal', value: ['normal'] },
-        { label: 'bold', value: ['bold'] },
-        { label: 'bolder', value: ['bolder'] },
-        { label: 'lighter', value: ['lighter'] },
-      ],
-      fontFamilys: [
-        { label: 'sans-serif', value: ['sans-serif'] },
-        { label: 'serif', value: ['serif'] },
-        { label: 'monospace', value: ['monospace'] },
-        { label: 'Arial', value: ['Arial'] },
-        { label: 'Courier New', value: ['Courier New'] },
-        { label: 'Microsoft YaHei', value: ['Microsoft YaHei'] },
-        { label: 'Cursive', value: ['Cursive'] },
-        { label: 'Fantasy', value: ['Fantasy'] },
-      ],
-      colorTheme: [
-        { label: '主题1', value: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'] },
-        { label: '主题2', value: ['#893448', '#d95850', '#eb8146', '#ffb248', '#f2d643', '#ebdba4'] },
-        { label: '主题3', value: ['#516b91', '#59c4e6', '#edafda', '#93b7e3', '#a5e7f0', '#cbb0e3'] },
-        { label: '主题4', value: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8'] },
-        { label: '主题5', value: ['#c12e34', '#e6b600', '#0098d9', '#2b821d', '#005eaa', '#339ca8', '#cda819', '#32a487'] },
-      ],
+      selectOptions: {
+        direction: [
+          { label: '竖直', value: 'vertical' },
+          { label: '水平', value: 'horizontal' },
+        ],
+        legendIcon: [
+          { label: '圆形', value: 'circle' },
+          { label: '矩形', value: 'rect' },
+          { label: '圆角矩形', value: 'roundRect' },
+          { label: '三角', value: 'triangle' },
+          { label: '菱形', value: 'diamond' },
+          { label: '箭头', value: 'arrow' },
+          { label: '无', value: 'none' },
+        ],
+        horizontal: [
+          { label: '居左', value: 'left' },
+          { label: '居中', value: 'center' },
+          { label: '居右', value: 'right' },
+        ],
+        vertical: [
+          { label: '居上', value: 'top' },
+          { label: '居中', value: 'middle' },
+          { label: '居下', value: 'bottom' },
+        ],
+        inRanges: [
+          { label: '调色1', value: ['#f6efa6', '#d88273', '#bf444c'] },
+          { label: '调色2', value: ['#d6ecff', '#5f5de0', '#c368ff'] },
+          { label: '调色3', value: ['#fbffd6', '#c58031', '#970b06'] },
+          { label: '调色4', value: ['#d6ffd9', '#61e05d', '#069743'] },
+        ],
+        formatters: [null, '{b}{c}', '{b}<br/>{c}', '{b}: {c}'],
+        fontWeights: [
+          { label: 'normal', value: ['normal'] },
+          { label: 'bold', value: ['bold'] },
+          { label: 'bolder', value: ['bolder'] },
+          { label: 'lighter', value: ['lighter'] },
+        ],
+        fontFamilys: [
+          { label: 'sans-serif', value: ['sans-serif'] },
+          { label: 'serif', value: ['serif'] },
+          { label: 'monospace', value: ['monospace'] },
+          { label: 'Arial', value: ['Arial'] },
+          { label: 'Courier New', value: ['Courier New'] },
+          { label: 'Microsoft YaHei', value: ['Microsoft YaHei'] },
+          { label: 'Cursive', value: ['Cursive'] },
+          { label: 'Fantasy', value: ['Fantasy'] },
+        ],
+        colorTheme: [
+          { label: '主题1', value: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'] },
+          { label: '主题2', value: ['#893448', '#d95850', '#eb8146', '#ffb248', '#f2d643', '#ebdba4'] },
+          { label: '主题3', value: ['#516b91', '#59c4e6', '#edafda', '#93b7e3', '#a5e7f0', '#cbb0e3'] },
+          { label: '主题4', value: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8'] },
+          { label: '主题5', value: ['#c12e34', '#e6b600', '#0098d9', '#2b821d', '#005eaa', '#339ca8', '#cda819', '#32a487'] },
+        ],
+      },
       settings: {
         title: [
           {
@@ -430,11 +385,11 @@ export default {
     },
     setSetItems(settings) {
       this.itemConfigs = [
-        !(this.colorTheme[0] && settings.title[0])
+        !(this.selectOptions.colorTheme[0] && settings.title[0])
           ? undefined
           : {
               name: '主题',
-              show: this.colorTheme[0] && settings.title[0],
+              show: this.selectOptions.colorTheme[0] && settings.title[0],
               projects: [
                 {
                   name: '基础',
@@ -444,7 +399,7 @@ export default {
                       type: 'select',
                       type2: 'color',
                       model: settings.color,
-                      options: this.colorTheme,
+                      options: this.selectOptions.colorTheme,
                       placeholder: '选择主题色',
                       event: (val, index) => {
                         settings.color = val
@@ -498,7 +453,7 @@ export default {
                       name: '水平位置',
                       type: 'select',
                       model: settings.title[0].left,
-                      options: this.horizontal,
+                      options: this.selectOptions.horizontal,
                       placeholder: '选择水平位置',
                       event: (val) => {
                         settings.title[0].left = val
@@ -508,7 +463,7 @@ export default {
                       name: '竖直位置',
                       type: 'select',
                       model: settings.title[0].top,
-                      options: this.vertical,
+                      options: this.selectOptions.vertical,
                       placeholder: '选择竖直位置',
                       event: (val) => {
                         settings.title[0].top = val
@@ -532,7 +487,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.title[0].textStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.title[0].textStyle.fontFamily = val
@@ -552,7 +507,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.title[0].textStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.title[0].textStyle.fontWeight = val
@@ -584,7 +539,7 @@ export default {
                       name: '副标题字体',
                       type: 'select',
                       model: settings.title[0].subtextStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.title[0].subtextStyle.fontFamily = val
@@ -604,7 +559,7 @@ export default {
                       name: '副标题字体粗细',
                       type: 'select',
                       model: settings.title[0].subtextStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.title[0].subtextStyle.fontWeight = val
@@ -643,7 +598,7 @@ export default {
                       name: '布局朝向',
                       type: 'select',
                       model: settings.legend[0].orient,
-                      options: this.direction,
+                      options: this.selectOptions.direction,
                       placeholder: '选择布局朝向',
                       event: (val) => {
                         settings.legend[0].orient = val
@@ -653,7 +608,7 @@ export default {
                       name: '水平位置',
                       type: 'select',
                       model: settings.legend[0].left,
-                      options: this.horizontal,
+                      options: this.selectOptions.horizontal,
                       placeholder: '选择水平位置',
                       event: (val) => {
                         settings.legend[0].left = val
@@ -663,7 +618,7 @@ export default {
                       name: '竖直位置',
                       type: 'select',
                       model: settings.legend[0].top,
-                      options: this.vertical,
+                      options: this.selectOptions.vertical,
                       placeholder: '选择竖直位置',
                       event: (val) => {
                         settings.legend[0].top = val
@@ -698,7 +653,7 @@ export default {
                       name: '图标样式',
                       type: 'select',
                       model: settings.legend[0].icon,
-                      options: this.legendIcon,
+                      options: this.selectOptions.legendIcon,
                       placeholder: '图标样式',
                       event: (val) => {
                         settings.legend[0].icon = val
@@ -733,7 +688,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.legend[0].textStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.legend[0].textStyle.fontFamily = val
@@ -753,7 +708,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.legend[0].textStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.legend[0].textStyle.fontWeight = val
@@ -878,7 +833,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.tooltip[0].textStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.tooltip[0].textStyle.fontFamily = val
@@ -898,7 +853,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.tooltip[0].textStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.tooltip[0].textStyle.fontWeight = val
@@ -937,7 +892,7 @@ export default {
                       name: '方向',
                       type: 'select',
                       model: settings.visualMap[0].orient,
-                      options: this.direction,
+                      options: this.selectOptions.direction,
                       placeholder: '选择组件方向',
                       event: (val) => {
                         settings.visualMap[0].orient = val
@@ -947,7 +902,7 @@ export default {
                       name: '水平位置',
                       type: 'select',
                       model: settings.visualMap[0].left,
-                      options: this.horizontal,
+                      options: this.selectOptions.horizontal,
                       placeholder: '选择水平位置',
                       event: (val) => {
                         settings.visualMap[0].left = val
@@ -957,7 +912,7 @@ export default {
                       name: '竖直位置',
                       type: 'select',
                       model: settings.visualMap[0].top,
-                      options: this.vertical,
+                      options: this.selectOptions.vertical,
                       placeholder: '选择竖直位置',
                       event: (val) => {
                         settings.visualMap[0].top = val
@@ -998,7 +953,7 @@ export default {
                       type: 'select',
                       type2: 'color',
                       model: settings.visualMap[0].inRange.color,
-                      options: this.inRanges,
+                      options: this.selectOptions.inRanges,
                       placeholder: '选择调色主题',
                       event: (val) => {
                         settings.visualMap[0].inRange.color = val
@@ -1015,7 +970,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.visualMap[0].textStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.visualMap[0].textStyle.fontFamily = val
@@ -1035,7 +990,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.visualMap[0].textStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.visualMap[0].textStyle.fontWeight = val
@@ -1122,7 +1077,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.xAxis[0].nameTextStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.xAxis[0].nameTextStyle.fontFamily = val
@@ -1142,7 +1097,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.xAxis[0].nameTextStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.xAxis[0].nameTextStyle.fontWeight = val
@@ -1185,7 +1140,7 @@ export default {
                       name: '轴标样式',
                       type: 'select',
                       model: settings.xAxis[0].axisLine.symbol[1],
-                      options: this.legendIcon,
+                      options: this.selectOptions.legendIcon,
                       placeholder: '轴标样式',
                       event: (val) => {
                         settings.xAxis[0].axisLine.symbol[1] = val
@@ -1271,7 +1226,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.xAxis[0].axisLabel.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.xAxis[0].axisLabel.fontFamily = val
@@ -1291,7 +1246,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.xAxis[0].axisLabel.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.xAxis[0].axisLabel.fontWeight = val
@@ -1445,7 +1400,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.yAxis[0].nameTextStyle.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.yAxis[0].nameTextStyle.fontFamily = val
@@ -1465,7 +1420,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.yAxis[0].nameTextStyle.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.yAxis[0].nameTextStyle.fontWeight = val
@@ -1508,7 +1463,7 @@ export default {
                       name: '轴标样式',
                       type: 'select',
                       model: settings.yAxis[0].axisLine.symbol[1],
-                      options: this.legendIcon,
+                      options: this.selectOptions.legendIcon,
                       placeholder: '轴标样式',
                       event: (val) => {
                         settings.yAxis[0].axisLine.symbol[1] = val
@@ -1594,7 +1549,7 @@ export default {
                       name: '字体',
                       type: 'select',
                       model: settings.yAxis[0].axisLabel.fontFamily,
-                      options: this.fontFamilys,
+                      options: this.selectOptions.fontFamilys,
                       placeholder: '选择字体',
                       event: (val) => {
                         settings.yAxis[0].axisLabel.fontFamily = val
@@ -1614,7 +1569,7 @@ export default {
                       name: '字体粗细',
                       type: 'select',
                       model: settings.yAxis[0].axisLabel.fontWeight,
-                      options: this.fontWeights,
+                      options: this.selectOptions.fontWeights,
                       placeholder: '选择字体粗细',
                       event: (val) => {
                         settings.yAxis[0].axisLabel.fontWeight = val
@@ -1744,80 +1699,4 @@ export default {
 </script>
 
 <style scoped>
-.set-item {
-  margin: 0 0 5px 0;
-  padding: 0 5px 5px 5px;
-  background-color: rgb(140 160 182);
-  border-radius: 5px;
-}
-.set-item:hover {
-  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
-}
-.set-item .close {
-  color: rgb(255, 255, 255);
-  text-align: center;
-  font-size: 20px;
-  cursor: pointer;
-}
-.set-item > .name {
-  color: rgb(255, 255, 255);
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 50px;
-  cursor: pointer;
-}
-.set-item > .name .iconfont {
-  float: right;
-}
-.set-item .project {
-  margin-top: 10px;
-  padding: 5px;
-  border-radius: 3px;
-  background-color: rgb(255, 255, 255);
-}
-
-.set-item .project > .name {
-  padding: 5px;
-  color: #6b6b6b;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 3px;
-  cursor: pointer;
-}
-.set-item .project > .name:hover {
-  background-color: rgb(175, 196, 202);
-}
-.set-item .setting {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 2px 0;
-  padding: 5px 20px;
-  border-radius: 3px;
-}
-.set-item .setting .name {
-  width: 170px;
-  line-height: 30px;
-  color: rgb(82, 99, 93);
-  font-size: 14px;
-  cursor: default;
-}
-.set-item .setting:hover {
-  box-shadow: 5px 5px 10px rgba(208, 208, 208, 0.4), -5px -5px 10px rgba(240, 240, 240, 0.4);
-}
-.set-item .aline {
-  display: flex;
-}
-.set-item .aline span {
-  font-size: 14px;
-  line-height: 24px;
-  margin-left: 10px;
-  font-weight: bold;
-}
-.aaaa {
-  color: #d6ecff #5f5de0 #c368ff;
-  color: #d6ffd9 #61e05d #069743;
-  color: #fbffd6 #c58031 #970b06;
-}
 </style>
