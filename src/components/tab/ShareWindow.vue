@@ -1,7 +1,7 @@
 <template>
   <div id="popwin" @mousedown="close">
     <div class="middle-box">
-      <div class="check"><input type="checkbox" v-model="isShared" />分享当前项目</div>
+      <div class="check">分享当前项目<el-switch v-model="isShared" active-color="#4CA208" width="40" inline-prompt/></div>
       <div class="link" v-show="!isShared">
         <div class="tip">已取消分享</div>
       </div>
@@ -91,12 +91,6 @@ export default {
   height: 50px;
   font-size: 25px;
   text-align: center;
-}
-.middle-box .check input {
-  width: 25px;
-  height: 25px;
-  margin-right: 10px;
-  vertical-align: middle;
 }
 .middle-box .link {
   height: 100px;
