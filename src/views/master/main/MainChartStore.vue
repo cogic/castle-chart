@@ -1,5 +1,4 @@
 <template>
-  <!-- <component is="StoreStage" :stageConfig="stageConfig" :key="randNum"></component> -->
   <store-stage :stageConfig="stageConfig"></store-stage>
 </template>
 

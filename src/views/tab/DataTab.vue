@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     downloadFile() {
-      // TODO 可以添加【导出前设置导出的文件名】功能
       XSheet.downloadFile(this.$refs.table.getData(), 'out.xlsx')
     },
     saveTableData(isHand) {
@@ -89,7 +88,6 @@ export default {
     },
     importData() {
       XSheet.importFile((tableData, tableName) => {
-        // this.tableName = tableName
         this.tableData = tableData
       })
     },
@@ -139,7 +137,6 @@ export default {
   color: rgb(141, 197, 212);
   line-height: 30px;
   font-size: 14px;
-  /* background-color: rgb(218, 218, 218); */
 }
 
 .sheet {
@@ -152,6 +149,5 @@ export default {
   flex-grow: 1;
   width: 100px;
   background-color: rgb(255, 255, 255);
-  /* overflow: scroll; */
 }
 </style>

@@ -25,16 +25,11 @@
       </div>
     </div>
   </header>
-  <!-- <section> -->
-  <!-- <main> -->
-  <!-- <router-view :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" ></router-view> -->
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" :addTab="tabSwitch" :checkNewLoad="checkNewLoad" @new-tab="tabSwitch" :key="tabKey" />
     </keep-alive>
   </router-view>
-  <!-- </main> -->
-  <!-- </section> -->
   <footer>&copy;2021</footer>
 </template>
 
@@ -44,7 +39,7 @@ export default {
     return {
       testdata: 1,
       currentTabKey: 'main',
-      currentMainTabPath: '/master/main/home', // FIXME 这里默认设的是 home ，但是如果最初的不是 home，那么首次点击mainTab时切换回的也是 home，可改为生命周期中根据 $route 设置
+      currentMainTabPath: '/master/main/home',
       tabMap: new Map(),
       username: '用户名',
       userPortraitPath: 'image/portrait.png',
@@ -185,8 +180,6 @@ export default {
 <style scoped>
 header {
   display: flex;
-  /* justify-content: space-between; */
-
   padding: 5px;
   background-color: rgb(246, 246, 246);
 }
@@ -194,7 +187,6 @@ header {
 .left-head {
   display: flex;
   align-items: center;
-
   flex-shrink: 0;
   cursor: default;
 }
@@ -237,7 +229,6 @@ header {
 .right-head {
   display: flex;
   align-items: center;
-
   flex-shrink: 0;
 }
 .right-head .name {
@@ -302,20 +293,15 @@ header {
 header .center-head {
   display: flex;
   align-items: center;
-
-  min-width: 100px;
   flex-grow: 1;
-
   padding: 0 20px;
-  /* background-color: aquamarine; */
+  min-width: 100px;
 }
 .center-head .tab {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   flex-basis: 150px;
-
   height: 35px;
   margin-right: 5px;
   padding: 0 10px;
@@ -343,7 +329,6 @@ header .center-head {
 .center-head .closebt {
   color: rgb(70, 70, 70);
   font-size: 20px;
-  /* background-color: antiquewhite; */
   border-radius: 5px;
 }
 .center-head .closebt:hover {
@@ -355,8 +340,6 @@ header .center-head {
 }
 
 footer {
-  /* position: absolute; */
-  /* bottom: 0; */
   width: 100%;
   font-size: 14px;
   text-align: center;

@@ -41,9 +41,6 @@ router
 
 .post('/chart/get-shared',business.getSharedChart)
 .post('/panel/get-shared',business.getSharedPanel)
-// .post('/chart/set-shared',business.setSharedChart)
-// .post('/panel/set-shared',business.setSharedPanel)
-
 
 module.exports = router;
 

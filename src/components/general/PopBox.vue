@@ -33,9 +33,7 @@ export default {
   methods: {
     close(e) {
       if (!e || e.target.id === 'popwin') {
-        // setTimeout(() => {
         this.$parent.toShow = false
-        // }, 0)
       }
     },
     confirm() {

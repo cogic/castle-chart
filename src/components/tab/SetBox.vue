@@ -1,7 +1,6 @@
 <template>
   <template v-for="itemConfig in itemConfigs">
     <div class="set-item" v-if="itemConfig">
-      <!-- <template v-if="itemConfig"> -->
       <div class="name text-disable" @click="itemConfig.close = !itemConfig.close">
         {{ itemConfig.name }}
         <span class="iconfont" v-if="itemConfig.close">&#xe633;</span>
@@ -38,7 +37,6 @@
               </template>
               <template v-else-if="set.type === 'number'">
                 <el-slider v-model="set.model" show-input size="small" :step="set.step" :min="set.min" :max="set.max" @input="set.event" :format-tooltip="set.format"> </el-slider>
-                <!-- <el-input-number v-model="set.model" class="mx-4" :min="set.min" :max="set.max" controls-position="right" @input="set.event" /> -->
               </template>
               <template v-else-if="set.type === 'switch'">
                 <el-switch v-model="set.model" size="small" @input="set.event" />
@@ -49,13 +47,11 @@
         </div>
         <div class="close text-disable" @click="itemConfig.close = !itemConfig.close"><span class="iconfont">&#xe65e;</span></div>
       </div>
-      <!-- </template> -->
     </div>
   </template>
 </template>
 
 <script>
-// import * as echarts from 'echarts'
 import echarts from '@/assets/script/myEcharts'
 export default {
   props: {
@@ -1769,7 +1765,6 @@ export default {
   font-weight: bold;
   text-align: center;
   line-height: 50px;
-  /* border-bottom: 2px solid rgb(197, 197, 197); */
   cursor: pointer;
 }
 .set-item > .name .iconfont {
@@ -1787,7 +1782,6 @@ export default {
   color: #6b6b6b;
   font-size: 18px;
   font-weight: bold;
-  /* background-color: rgb(255, 255, 255); */
   border-radius: 3px;
   cursor: pointer;
 }
@@ -1800,8 +1794,6 @@ export default {
   justify-content: space-between;
   margin: 2px 0;
   padding: 5px 20px;
-  /* color: rgb(17, 106, 77);
-  font-size: 16px; */
   border-radius: 3px;
 }
 .set-item .setting .name {
@@ -1812,13 +1804,10 @@ export default {
   cursor: default;
 }
 .set-item .setting:hover {
-  /* background-color: rgb(233, 233, 233); */
   box-shadow: 5px 5px 10px rgba(208, 208, 208, 0.4), -5px -5px 10px rgba(240, 240, 240, 0.4);
 }
 .set-item .aline {
   display: flex;
-  /* justify-content: center; */
-  /* align-items:flex-start; */
 }
 .set-item .aline span {
   font-size: 14px;

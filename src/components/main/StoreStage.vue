@@ -151,7 +151,6 @@ export default {
         return
       }
       setTimeout(() => {
-        // document.getElementById(this.selectedFile._id).focus()
         document.getElementById(this.selectedFile._id).select()
         document.getElementById(this.selectedFile._id).readOnly = false
         document.getElementById(this.selectedFile._id).className = 'editing'
@@ -350,7 +349,7 @@ export default {
   overflow-y: auto;
 }
 .store.store2 {
-  flex-direction: column; /**dfsdfsdfsdfsdddddddddddddddddddddddd */
+  flex-direction: column;
 }
 .store .file {
   display: flex;
@@ -374,7 +373,6 @@ export default {
 }
 .store .file .fileview {
   flex-grow: 1;
-  /* height: 160px; */
   text-align: center;
   background-color: rgb(243, 243, 243);
   border-radius: 10px 10px 0 0;
@@ -382,10 +380,7 @@ export default {
 }
 .store .file .fileview img {
   max-width: 100px;
-  /* margin-top: -30px; */
   min-height: 70px;
-  /* width: 100%; */
-  /* margin-top: 10px; */
 }
 .store .file .filename {
   border-radius: 0 0 10px 10px;
@@ -424,7 +419,6 @@ export default {
   box-shadow: 0px 0px 20px -5px #62a3bd;
 }
 .store .file2 .fileview {
-  /* text-align: center; */
   width: 60px;
   height: 40px;
   background-color: rgb(238, 238, 238);
@@ -433,10 +427,6 @@ export default {
 }
 .store .file2 .fileview img {
   width: 60px;
-  /* height: 40px; */
-  /* height: unset; */
-  /* padding: 5px; */
-  /* margin-top: 10px; */
 }
 .store .file2 .filename {
   border-radius: 0 6px 6px 0;

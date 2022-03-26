@@ -1,11 +1,5 @@
 <template>
-  <!-- TODO 这里的 router-view 要不要加 keep-alive 呢？ -->
   <router-view />
-  <!-- <router-view v-slot="{ Component }">
-        <keep-alive>
-          <component :is="Component"/>
-        </keep-alive>
-      </router-view> -->
 </template>
 
 <script>
@@ -47,9 +41,6 @@ export default {
   width: 10px;
   height: 10px;
   background-color: rgb(255, 255, 255);
-  /* border: 1px solid rgb(203, 203, 203); */
-  /* outline: 1px solid rgb(203, 203, 203); */
-  /* border-radius: 5px; */
 }
 *::-webkit-scrollbar-thumb {
   background-color: rgb(193, 193, 193);
@@ -92,9 +83,6 @@ input {
   align-content: center;
   height: 100%;
 }
-/* .iconfont{
-  user-select: none;
-} */
 .text-disable {
   user-select: none;
 }

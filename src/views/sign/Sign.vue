@@ -5,7 +5,6 @@
         <img class="logo" src="@/assets/image/logo.png" alt="logo" />
         <h1 class="headline">CastleChart</h1>
       </div>
-      <!-- <footer>&copy;2021</footer> -->
     </div>
     <div class="account">
       <div class="signbox">
@@ -112,7 +111,6 @@ export default {
   border-radius: 10px;
 }
 .signbox:hover {
-  /* box-shadow: 0 0 10px 0 #666666; */
   box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
 }
 .signbox nav {

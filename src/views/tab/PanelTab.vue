@@ -34,7 +34,6 @@
           <div class="model-box">
             <div class="model-item text-disable" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
               <div class="item-img">
-                <!-- <img src="@/assets/image/图表.png" alt="" /> -->
                 <img class="project" :src="project.imgSrc" alt="img" />
               </div>
               <div class="item-name">{{ project.name }}</div>
@@ -49,12 +48,6 @@
             <div class="model-box" v-if="isCurrentSample(sample)">
               <div class="model-item text-disable" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
                 <div class="item-img">
-                  <!-- <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
-                  <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
-                  <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
-                  <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
-                  <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
-                  <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" /> -->
                   <img :src="example.imgSrc" alt="" />
                 </div>
                 <div class="item-name">{{ example.name }}</div>
@@ -111,7 +104,6 @@
                   <div class="setting">内容<input type="text" v-model="item.config.content" @input="textItemChange(item)" /></div>
                   <div class="setting">
                     字体
-                    <!-- <input type="text" v-model="item.config.fontFamily" @input="textItemChange(item)" /> -->
                     <select v-model="item.config.fontFamily" @input="textItemChange(item)">
                       <template v-for="(fontFamily, index) in fontFamilys">
                         <option :value="fontFamily">{{ fontFamily }}</option>
@@ -124,7 +116,6 @@
                   </div>
                   <div class="setting">
                     字体粗细
-                    <!-- <input type="text" v-model="item.config.fontWeight" @input="textItemChange(item)" /> -->
                     <select v-model="item.config.fontWeight" @input="textItemChange(item)">
                       <template v-for="(fontWeight, index) in fontWeights">
                         <option :value="fontWeight">{{ fontWeight }}</option>
@@ -309,10 +300,6 @@ export default {
     },
   },
   mounted() {
-    // API.getChartExamples((result) => {
-    //   this.chartSamples = result
-    //   this.curSampleName = null
-    // })
     this.$API.getSampleList((message) => {
       if (message.success) {
         this.chartSamples = message.info
@@ -334,7 +321,6 @@ export default {
             this.setCurItemToBack()
             this.panelBackColor = message.info.back.config.backgroundColor
             this.panelItemMargin = message.info.back.config.itemMargin
-            // this.$refs.GLayout.index = message.fileData.layout.length
           }
         })
         this.isDataBox = false
@@ -395,7 +381,6 @@ export default {
     tableChange(data, item) {
       setTimeout(() => {
         this.setChart(data, undefined, undefined, item)
-        // console.log(item, new Date().toLocaleTimeString())
       }, 0)
     },
     setChart(data, option, flag, item) {
@@ -499,7 +484,8 @@ export default {
         let curItem = this.$refs.GLayout.addItem('chart', {})
         let that = this
         setTimeout(function () {
-          that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
+          // 下面这行对图表的data和option进行设置应该是不需要的，因为后续对HTable和SetBox的设置也会导致图表的更新
+          // that.$refs.GLayout.$refs['chart' + curItem.i][0].setOption(that.chartSamples[0].examples[0].tableData, that.chartSamples[0].examples[0].option)
           that.loadData(that.chartSamples[0].examples[0].tableData, curItem)
           that.setSetBox(that.chartSamples[0].examples[0].option, curItem)
           window.addEventListener('resize', that.$refs.GLayout.$refs['chart' + curItem.i][0].chartResize)
@@ -556,7 +542,6 @@ export default {
 <style scoped>
 #stage {
   display: flex;
-  /* position: relative; 为分享页面PopWindow而设置，否则其height:100%是以Body为参照 */
   flex-direction: column;
   height: 100%;
 }
@@ -610,7 +595,6 @@ export default {
   display: flex;
   flex-direction: column;
   width: 180px;
-  /* height: 200px; */
   background-color: rgb(255, 255, 255);
 }
 .content .left-box .menu-top {
@@ -809,8 +793,6 @@ export default {
 }
 .content .left-box .model-box .model-item .item-img img {
   width: 100px;
-  /* height: 80px; */
-  /* margin-top: 10px; */
 }
 .content .left-box .model-box .model-item .item-img img.project {
   width: 100%;
@@ -1007,7 +989,6 @@ export default {
   text-overflow: ellipsis;
   text-overflow: ellipsis;
   overflow: hidden;
-  /* word-break: keep-all; */
   cursor: pointer;
 }
 .content .right-box .option-box .data-import .source-box .source-item:hover {
@@ -1032,10 +1013,8 @@ export default {
   height: 100%;
   padding: 5px;
   background-color: rgb(44, 44, 44);
-  /* overflow-y: scroll; */
 }
 .content .center-box .center-content {
-  /* position: relative; */
   width: 100%;
   height: 100%;
   overflow-y: auto;

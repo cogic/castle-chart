@@ -456,7 +456,6 @@ export default {
       return tempChart.getOption()
     },
     run() {
-      // this.chartOption = JSON.parse(this.$refs.code.getCopyText())
       this.chartOption = this.formatOption(JSON.parse(this.$refs.code.getCopyText()), this.settings)
       this.curChart.option = this.chartOption
       setTimeout(() => {
@@ -510,7 +509,6 @@ export default {
   font-size: 30px;
   font-weight: bold;
   color: rgb(255, 255, 255);
-  /* text-align: center; */
   background-color: rgb(13, 101, 128);
 }
 
@@ -530,9 +528,7 @@ export default {
 }
 .main-box .item-box {
   width: 150px;
-  /* height: 100px; */
   margin: 10px;
-  /* background-color: aquamarine; */
   border: 2px solid rgb(0, 0, 0);
   border-radius: 6px;
   overflow: hidden;
@@ -551,7 +547,6 @@ export default {
 }
 .main-box .item-box .item-img img {
   width: 100%;
-  /* height: 80px; */
 }
 
 .main-box .item-box .item-name {
@@ -571,7 +566,6 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  /* padding: 30px; */
   background-color: rgba(131, 131, 131, 0.212);
   border-radius: 15px;
 }
@@ -610,12 +604,10 @@ export default {
 }
 .content-box .center .tool-box {
   padding: 5px;
-  /* background-color: #000000; */
 }
 .content-box .center .content {
   flex-grow: 1;
   padding: 5px;
-  /* background-color: #000000; */
 }
 .content-box .right {
   display: flex;

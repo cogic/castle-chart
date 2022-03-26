@@ -3,7 +3,6 @@
 </template>
 
 <script>
-// import * as echarts from 'echarts'
 import echarts from '@/assets/script/myEcharts'
 import 'echarts-countries-js/echarts-countries-js/china'
 import { markRaw } from '@vue/reactivity'

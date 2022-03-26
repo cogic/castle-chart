@@ -5,8 +5,6 @@
 <script>
 import XSheet from '@/assets/script/x-sheet'
 import { HotTable } from '@handsontable/vue3'
-// import { registerAllModules } from 'handsontable/registry'
-// registerAllModules()
 import {
   AutoColumnSize,
   AutoRowSize,

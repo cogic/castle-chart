@@ -153,13 +153,6 @@ function getGeoJson(adcode, callback) {
   })
 }
 
-// function setSharedChart(data){
-//   netPost('/chart/set-shared', data, callback)
-// }
-// function setSharedPanel(data){
-//   netPost('/panel/set-shared', data, callback)
-// }
-
 export default {
   newSample,
   saveSample,

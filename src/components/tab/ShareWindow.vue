@@ -91,7 +91,6 @@ export default {
   height: 50px;
   font-size: 25px;
   text-align: center;
-  /* background-color: antiquewhite; */
 }
 .middle-box .check input {
   width: 25px;
@@ -104,7 +103,6 @@ export default {
   color: rgb(58, 58, 58);
   font-size: 16px;
   text-align: center;
-  /* background-color: aqua; */
 }
 .middle-box .link .tip {
   margin: 0 0 10px 0;
@@ -127,7 +125,6 @@ export default {
   height: 30px;
   padding: 0 10px;
   color: rgb(88, 88, 88);
-  /* line-height: 30px; */
   border: solid rgb(0, 0, 0);
   border-width: 1px 0 1px 0;
   vertical-align: middle;

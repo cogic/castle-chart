@@ -104,7 +104,6 @@ export default {
     setLayout(layoutData) {
       this.layout = []
       layoutData.forEach((el) => {
-        // this.addItem(el.type, el.config)
         this.layout.push(el)
         this.curItem = el
         if (el.type === 'chart') {
@@ -128,9 +127,6 @@ export default {
         setTimeout(() => {
           this.$refs['chart' + item.i][0].chartResize()
         }, 0)
-        // setTimeout(() => {
-        //   this.$refs['chart' + item.i][0].chartResize()
-        // }, 10)
       }
     },
     setChart(data, option, item) {
@@ -149,7 +145,6 @@ export default {
           item.config.option = option
         }
       }
-      // this.$refs['chart' + this.curItem.i][0].chartResize()
     },
     clearChart() {
       this.$refs['chart' + this.curItem.i][0].clear()
@@ -168,7 +163,7 @@ export default {
     addItem(type, config) {
       let item = {
         x: (this.layout.length * this.defaultW) % this.colNum,
-        y: this.layout.length + this.colNum, // puts it at the bottom
+        y: this.layout.length + this.colNum,
         w: this.defaultW,
         h: this.defaultH,
         i: this.index,
@@ -194,16 +189,6 @@ export default {
         this.curItem = this.back
       }, 0)
     },
-    // getItemById(id){
-    //   for (const key in this.layout) {
-    //     if (Object.hasOwnProperty.call(this.layout, key)) {
-    //       const item = this.layout[key];
-    //       if(item.i === id) {
-    //         return item
-    //       }
-    //     }
-    //   }
-    // }
   },
 }
 </script>
@@ -211,13 +196,11 @@ export default {
 <style>
 .vue-grid-item:not(.vue-grid-placeholder) {
   background: rgb(255, 255, 255);
-  /* border: 1px solid black; */
 }
 .vue-grid-item.selected:not(.vue-grid-placeholder) {
   outline: 2px solid rgb(68, 122, 185);
 }
 .vue-grid-item.vue-grid-placeholder {
-  /* border: 1px solid black; */
   background: rgb(0, 0, 0) !important;
 }
 .vue-resizable-handle {
@@ -240,7 +223,6 @@ export default {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  /* background-color: antiquewhite; */
 }
 .vue-grid-item:hover .remove {
   display: block;
@@ -256,18 +238,15 @@ export default {
 .item-content {
   width: 100%;
   height: 100%;
-  /* background-color: bisque; */
 }
 .item-content.text {
   display: flex;
   align-items: center;
-  /* background-color: antiquewhite; */
   overflow: hidden;
   vertical-align: middle;
 }
 .item-content.text h1 {
   flex-grow: 1;
-  /* display: inline-block; */
   text-align: center;
 }
 </style>

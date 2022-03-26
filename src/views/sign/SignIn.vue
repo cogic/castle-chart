@@ -34,8 +34,7 @@ export default {
     this.mesg = ''
   },
   methods: {
-    // TODO 对输入长度、特殊字符等进行限制
-    // TODO 设置验证码
+    // TODO 对输入特殊字符等进行限制
 
     fixText(e) {
       // 不允许空格

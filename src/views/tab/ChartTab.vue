@@ -6,7 +6,6 @@
       <div class="head-menu">
         <div class="menu-tip">{{ saveTip }}</div>
         <div class="menu-item text-disable" @click="save(true, true)">保存</div>
-        <!-- <div class="menu-item" @click="preview">预览</div> -->
         <div class="menu-item text-disable" @click="share">分享</div>
       </div>
     </div>
@@ -24,14 +23,6 @@
           <div class="model-box" v-if="isCurrentSample(sample)">
             <div class="model-item text-disable" v-for="example in sample.examples" @click="setChartByExample(example)">
               <div class="item-img">
-                <!-- <img src="@/assets/image/折线图.png" alt="" v-show="sample.name === '折线图'" />
-                <img src="@/assets/image/柱状图.png" alt="" v-show="sample.name === '柱状图'" />
-                <img src="@/assets/image/饼图.png" alt="" v-show="sample.name === '饼图'" />
-                <img src="@/assets/image/散点图.png" alt="" v-show="sample.name === '散点图'" />
-                <img src="@/assets/image/漏斗图.png" alt="" v-show="sample.name === '漏斗图'" />
-                <img src="@/assets/image/雷达图.png" alt="" v-show="sample.name === '雷达图'" />
-                <img src="@/assets/image/地图.png" alt="" v-show="sample.name === '地图'" />
-                <img src="@/assets/image/仪表盘.png" alt="" v-show="sample.name === '仪表盘'" /> -->
                 <img :src="example.imgSrc" alt="" />
               </div>
               <div class="item-name">{{ example.name }}</div>
@@ -88,7 +79,6 @@
 </template>
 
 <script>
-// TODO 切换图表时询问是否保留数据
 import EChart from '@/components/general/EChart.vue'
 import HTable from '@/components/general/HTable.vue'
 import SetBox from '@/components/tab/SetBox.vue'
