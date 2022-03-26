@@ -1,0 +1,13 @@
+[{
+  "_id": {
+    "$oid": "622c7a7c3f558bc5b15a4948"
+  },
+  "username": "snow",
+  "password": "10086",
+  "createTime": {
+    "$date": "2022-03-12T10:48:28.287Z"
+  },
+  "updateTime": {
+    "$date": "2022-03-12T10:48:28.287Z"
+  }
+}]
