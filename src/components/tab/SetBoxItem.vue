@@ -86,9 +86,7 @@ export default {
     }
   },
   beforeCreate(){
-    console.log(this.itemConfigs);
     this.myItemConfigs = this.itemConfigs
-    console.log(this.myItemConfigs);
   }
 }
 </script>

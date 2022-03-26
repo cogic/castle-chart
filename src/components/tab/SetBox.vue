@@ -371,6 +371,8 @@ export default {
   watch: {
     settings: {
       handler(newValue) {
+        // newValue.series = undefined
+        console.log(newValue);
         this.onSetChange(undefined, newValue, undefined, this.thisItem)
       },
       deep: true,
@@ -1666,6 +1668,7 @@ export default {
       } else {
         this.cutSettings(tempSetting)
       }
+      tempSetting.series[0].name = undefined // 此举目的是防止仅设置图表样式而不改变图表数据时，series[0].name这一属性对图表数据的影响
       this.settings = tempSetting
       this.setSetItems(this.settings)
     },

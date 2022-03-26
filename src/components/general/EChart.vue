@@ -1,4 +1,5 @@
 <template>
+  <button @click="test">test</button>
   <div id="chart-box" ref="chartBox"></div>
 </template>
 
@@ -48,7 +49,6 @@ export default {
   },
   methods: {
     test() {
-      console.log(this.myChart.getOption())
     },
     chartResize() {
       this.myChart.resize()
@@ -60,82 +60,82 @@ export default {
       return this.myChart.getOption()
     },
     setOption(data, option = {}) {
-      this.myChart.setOption(option)
-      if (!data) {
-        return
-      }
-      const preOption = this.myChart.getOption()
-      const preSeries = preOption.series
-      if (data.length === 0) {
-        data = [[]]
-      } else if (preSeries[0] && data.length <= 1) {
-        let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
-        one.data = []
-        this.myChart.setOption({
-          series: [one],
-        })
-      }
-      if (preSeries[0] && ['line', 'bar'].includes(preSeries[0].type)) {
-        let series = []
-        for (let i = 1; i < data.length; i++) {
-          let one
-          if (preSeries[i - 1]) {
-            one = JSON.parse(JSON.stringify(preSeries[i - 1]))
-          } else {
-            one = JSON.parse(JSON.stringify(preSeries[0]))
-          }
-          one.name = data[i][0]
-          one.data = data[i].slice(1)
-          series.push(one)
+        this.myChart.setOption(option)
+        if (!data) {
+          return
         }
-        if (data.length - 1 != preSeries.length) {
-          // 当'line', 'bar'等图的seires数变化时，需要清除一下series
-          this.myChart.setOption(
-            {
-              series: undefined,
-            },
-            { replaceMerge: ['series'] }
-          )
-        }
-        this.myChart.setOption({
-          xAxis: {
-            data: data[0].slice(1),
-          },
-          yAxis: {
-            data: data[0].slice(1),
-          },
-          series,
-        })
-      } else if (preSeries[0] && ['pie', 'funnel', 'gauge', 'map'].includes(preSeries[0].type)) {
-        let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
-        let newData = []
-        for (let i = 1; i < data.length; i++) {
-          newData.push({
-            name: data[i][0],
-            value: data[i][1],
+        const preOption = this.myChart.getOption()
+        const preSeries = preOption.series
+        if (data.length === 0) {
+          data = [[]]
+        } else if (preSeries[0] && data.length <= 1) {
+          let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
+          one.data = []
+          this.myChart.setOption({
+            series: [one],
           })
         }
-        one.data = newData
-        this.myChart.setOption({
-          series: [one],
-        })
-      } else if (preSeries[0] && preSeries[0].type === 'scatter') {
-        let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
-        let newData = []
-        for (let i = 1; i < data.length; i++) {
-          newData.push(data[i].slice(1))
+        if (preSeries[0] && ['line', 'bar'].includes(preSeries[0].type)) {
+          let series = []
+          for (let i = 1; i < data.length; i++) {
+            let one
+            if (preSeries[i - 1]) {
+              one = JSON.parse(JSON.stringify(preSeries[i - 1]))
+            } else {
+              one = JSON.parse(JSON.stringify(preSeries[0]))
+            }
+            one.name = data[i][0]
+            one.data = data[i].slice(1)
+            series.push(one)
+          }
+          if (data.length - 1 != preSeries.length) {
+            // 当'line', 'bar'等图的seires数变化时，需要清除一下series
+            this.myChart.setOption(
+              {
+                series: undefined,
+              },
+              { replaceMerge: ['series'] }
+            )
+          }
+          this.myChart.setOption({
+            xAxis: {
+              data: data[0].slice(1),
+            },
+            yAxis: {
+              data: data[0].slice(1),
+            },
+            series,
+          })
+        } else if (preSeries[0] && ['pie', 'funnel', 'gauge', 'map'].includes(preSeries[0].type)) {
+          let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
+          let newData = []
+          for (let i = 1; i < data.length; i++) {
+            newData.push({
+              name: data[i][0],
+              value: data[i][1],
+            })
+          }
+          one.data = newData
+          this.myChart.setOption({
+            series: [one],
+          })
+        } else if (preSeries[0] && preSeries[0].type === 'scatter') {
+          let one = JSON.parse(JSON.stringify(preSeries[preSeries.length - 1]))
+          let newData = []
+          for (let i = 1; i < data.length; i++) {
+            newData.push(data[i].slice(1))
+          }
+          one.data = newData
+          this.myChart.setOption({
+            xAxis: {
+              data: data[0].slice(1),
+            },
+            yAxis: {
+              data: data[0].slice(1),
+            },
+            series: [one],
+          })
         }
-        one.data = newData
-        this.myChart.setOption({
-          xAxis: {
-            data: data[0].slice(1),
-          },
-          yAxis: {
-            data: data[0].slice(1),
-          },
-          series: [one],
-        })
-      }
     },
   },
 }
