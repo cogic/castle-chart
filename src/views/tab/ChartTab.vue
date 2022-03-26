@@ -11,24 +11,7 @@
     </div>
     <div class="content">
       <div class="left-box" v-show="leftShow">
-        <div class="model-menu">
-          <div class="menu-label">图表类型</div>
-          <div class="menu-label check">
-            <div>保留数据</div>
-            <el-switch v-model="keepData" active-color="#3B8DD7" width="60" active-text="是" inactive-text="否" inline-prompt />
-          </div>
-          <div class="menu-item" :class="{ 'text-disable': true, current: curSampleName === sample.name }" v-for="sample in chartSamples" @click="this.curSampleName = sample.name">{{ sample.name }}</div>
-        </div>
-        <template v-for="sample in chartSamples">
-          <div class="model-box" v-if="isCurrentSample(sample)">
-            <div class="model-item text-disable" v-for="example in sample.examples" @click="setChartByExample(example)">
-              <div class="item-img">
-                <img :src="example.imgSrc" alt="" />
-              </div>
-              <div class="item-name">{{ example.name }}</div>
-            </div>
-          </div>
-        </template>
+          <left-chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setChartByExample"></left-chart-select-box>
       </div>
       <div class="inout-button text-disable" @click="leftShow = !leftShow">
         <span class="iconfont" v-if="leftShow">&#xe619;</span>
@@ -82,10 +65,11 @@
 import EChart from '@/components/general/EChart.vue'
 import HTable from '@/components/general/HTable.vue'
 import SetBox from '@/components/tab/SetBox.vue'
+import LeftChartSelectBox from '@/components/tab/LeftChartSelectBox.vue'
 import ShareWindow from '@/components/tab/ShareWindow.vue'
 import html2canvas from 'html2canvas'
 export default {
-  components: { EChart, HTable, SetBox, ShareWindow },
+  components: { EChart, HTable, SetBox,LeftChartSelectBox, ShareWindow },
   props: {
     addTab: {
       type: Function,
@@ -103,7 +87,6 @@ export default {
       chartOption: {},
       chartId: '',
       isDataBox: true,
-      curSampleName: '',
       openMatch: false,
       dataSoruceBox: false,
       dataProjects: [],
@@ -132,7 +115,7 @@ export default {
     this.$API.getSampleList((message) => {
       if (message.success) {
         this.chartSamples = message.info
-        this.curSampleName = message.info[0].name
+        // this.curSampleName = message.info[0].name
       }
     })
   },
@@ -159,9 +142,6 @@ export default {
         this.hasTableData = false
         this.dataSoruceBox = false
         this.keepData = false
-        if (this.chartSamples[0]) {
-          this.curSampleName = this.chartSamples[0].name
-        }
         this.saveTip = ''
         this.leftShow = true
         this.rightShow = true
@@ -178,6 +158,9 @@ export default {
     clearInterval(this.autoSave)
   },
   methods: {
+    setKeepData(val) {
+      this.keepData = val
+    },
     setChartByExample(example) {
       this.clearChart()
       this.loadData(example.tableData, true)
@@ -185,13 +168,6 @@ export default {
     },
     transData() {
       this.$refs.myTable.transData()
-    },
-    isCurrentSample(sample) {
-      if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
-        return true
-      } else {
-        return sample.name === this.curSampleName
-      }
     },
     loadDataSource() {
       this.$.getTableList((message) => {
@@ -273,7 +249,6 @@ export default {
 <style scoped>
 #stage {
   display: flex;
-  /* position: relative; 为分享页面PopWindow而设置，否则其height:100%是以Body为参照 */
   flex-direction: column;
   height: 100%;
 }
@@ -325,93 +300,9 @@ export default {
 
 .content .left-box {
   display: flex;
-}
-.content .left-box .model-menu {
-  width: 100px;
-  background-color: rgb(253, 253, 253);
-}
-.content .left-box .menu-label {
-  color: rgb(253, 253, 253);
-  font-size: 20px;
-  text-align: center;
-  line-height: 60px;
-  background-color: rgb(97, 161, 103);
-  cursor: default;
-}
-.content .left-box .menu-label.check {
-  color: rgb(37, 37, 37);
-  font-size: 14px;
-  line-height: 30px;
-  background-color: rgb(192, 192, 192);
-}
-.content .left-box .menu-label.check input {
-  width: 20px;
-  height: 20px;
-  margin-left: 5px;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.content .left-box .model-menu .menu-item {
-  color: rgb(63, 63, 63);
-  font-size: 16px;
-  line-height: 40px;
-  text-align: center;
-  cursor: pointer;
-  border-left: 6px solid rgba(0, 0, 0, 0);
-  border-right: 6px solid rgba(0, 0, 0, 0);
-}
-.content .left-box .model-menu .menu-item:hover {
-  background-color: rgb(248, 248, 248);
-}
-.content .left-box .model-menu .menu-item.current {
-  background-color: rgb(241, 241, 241);
-  border-left-color: rgb(7, 107, 61);
-}
-.content .left-box .model-menu .menu-item:active {
-  background-color: rgb(194, 194, 194);
-}
-
-.content .left-box .model-box {
-  background-color: rgb(241, 241, 241);
-  overflow-y: scroll;
-}
-.content .left-box .model-box .model-item {
-  display: flex;
   flex-direction: column;
-  margin: 15px;
+  width: 180px;
   background-color: rgb(255, 255, 255);
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.26);
-  cursor: pointer;
-}
-.content .left-box .model-box .model-item:hover {
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.4);
-}
-.content .left-box .model-box .model-item:active {
-  box-shadow: 0px 0px 15px 0px rgba(7, 161, 27, 0.671);
-}
-.content .left-box .model-box .model-item .item-img {
-  width: 100px;
-  height: 80px;
-  flex-grow: 1;
-  text-align: center;
-  border-radius: 5px 5px 0 0;
-  overflow: hidden;
-}
-.content .left-box .model-box .model-item .item-img img {
-  width: 100px;
-  /* height: 80px; */
-  /* margin-top: 10px; */
-}
-.content .left-box .model-box .model-item .item-name {
-  width: 100px;
-  padding: 2px 5px;
-  color: rgb(66, 66, 66);
-  font-size: 16px;
-  text-align: center;
-  background-color: rgb(228, 228, 228);
-  border-radius: 0 0 5px 5px;
 }
 
 .content .right-box {

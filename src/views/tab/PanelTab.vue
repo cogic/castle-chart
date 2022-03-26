@@ -24,45 +24,35 @@
             </div>
           </div>
         </div>
-        <div class="menu-label" v-show="getCurItem().type === 'chart' && !chartProjectBox">图表类型</div>
-        <div class="menu-label check" v-show="getCurItem().type === 'chart' && !chartProjectBox">保留数据&nbsp;<el-switch v-model="keepData" active-color="#3B8DD7" width="50" active-text="是" inactive-text="否" inline-prompt /></div>
-        <div class="menu-label" v-show="getCurItem().type === 'text' && !chartProjectBox">文本样式</div>
-        <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div>
-        <div class="menu-label return text-disable" v-show="chartProjectBox" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
-        <div class="menu-label" v-show="chartProjectBox">图表项目</div>
-        <div class="model-main" v-show="chartProjectBox">
-          <div class="model-box">
-            <div class="model-item text-disable" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
-              <div class="item-img">
-                <img class="project" :src="project.imgSrc" alt="img" />
+        <template v-if="chartProjectBox">
+          <div class="menu-label return text-disable" @click="chartProjectBox = false"><span class="iconfont">&#xe608;</span>返回</div>
+          <div class="menu-label">图表项目</div>
+          <div class="model-main">
+            <div class="model-box">
+              <div class="model-item text-disable" v-for="project in chartProjects" @click="addSource('addOldChart', project)">
+                <div class="item-img">
+                  <img class="project" :src="project.imgSrc" alt="img" />
+                </div>
+                <div class="item-name">{{ project.name }}</div>
               </div>
-              <div class="item-name">{{ project.name }}</div>
             </div>
           </div>
-        </div>
-        <div class="model-main" v-show="getCurItem().type === 'chart' && !chartProjectBox">
-          <div class="model-menu">
-            <div class="menu-item text-disable" :class="{ current: isCurrentSample(sample) }" v-for="sample in chartSamples" @click="setCurSample($event, sample.name)">{{ sample.name }}</div>
-          </div>
-          <template v-for="sample in chartSamples">
-            <div class="model-box" v-if="isCurrentSample(sample)">
-              <div class="model-item text-disable" v-for="example in sample.examples" @click="setProj(example.tableData, example.option)">
-                <div class="item-img">
-                  <img :src="example.imgSrc" alt="" />
-                </div>
+        </template>
+        <template v-else-if="getCurItem().type === 'chart'">
+          <left-chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setProj"></left-chart-select-box>
+        </template>
+        <template v-else-if="getCurItem().type === 'text'">
+          <div class="menu-label">文本样式</div>
+          <div class="model-main">
+            <div class="model-box">
+              <div class="model-item text-disable" v-for="example in textExamples" @click="textSetExample(example.config)">
+                <div class="item-img text" :style="example.config">Text 文本</div>
                 <div class="item-name">{{ example.name }}</div>
               </div>
             </div>
-          </template>
-        </div>
-        <div class="model-main" v-if="getCurItem().type === 'text' && !chartProjectBox">
-          <div class="model-box">
-            <div class="model-item text-disable" v-for="example in textExamples" @click="textSetExample(example.config)">
-              <div class="item-img text" :style="example.config">Text 文本</div>
-              <div class="item-name">{{ example.name }}</div>
-            </div>
           </div>
-        </div>
+        </template>
+        <!-- <div class="menu-label" v-show="getCurItem().type === 'image' && !chartProjectBox">图片</div> -->
       </div>
       <div class="inout-button text-disable" @click="leftShow = !leftShow">
         <span class="iconfont" v-if="leftShow">&#xe619;</span>
@@ -130,10 +120,11 @@ import SetBox from '@/components/tab/SetBox.vue'
 import ShareWindow from '@/components/tab/ShareWindow.vue'
 import PopBox from '@/components/general/PopBox.vue'
 import SetBoxItem from '@/components/tab/SetBoxItem.vue'
+import LeftChartSelectBox from '@/components/tab/LeftChartSelectBox.vue'
 import XSheet from '@/assets/script/x-sheet'
 import html2canvas from 'html2canvas'
 export default {
-  components: { GLayout, HTable, SetBox, SetBoxItem, ShareWindow, PopBox },
+  components: { GLayout, HTable, SetBox, SetBoxItem, LeftChartSelectBox, ShareWindow, PopBox },
   props: {
     addTab: {
       type: Function,
@@ -179,7 +170,7 @@ export default {
       openMatch: false,
 
       chartSamples: [],
-      curSampleName: '',
+
       textExamples: [
         {
           name: '标题字',
@@ -283,7 +274,6 @@ export default {
     this.$API.getSampleList((message) => {
       if (message.success) {
         this.chartSamples = message.info
-        this.curSampleName = null
       }
     })
   },
@@ -323,6 +313,9 @@ export default {
     clearInterval(this.autoSave)
   },
   methods: {
+    setKeepData(val) {
+      this.keepData = val
+    },
     getItemConfigsBack(item) {
       return [
         {
@@ -450,11 +443,11 @@ export default {
         console.log(message)
       })
     },
-    setProj(tableData, option) {
+    setProj(example) {
       this.clearChart()
-      this.setChart(tableData, option, true)
-      this.loadData(tableData, undefined, true)
-      this.setSetBox(option)
+      this.setChart(example.tableData, example.option, true)
+      this.loadData(example.tableData, undefined, true)
+      this.setSetBox(example.option)
     },
     textSetExample(config) {
       this.getCurItem().config = Object.assign(this.getCurItem().config, config)
@@ -513,19 +506,9 @@ export default {
         this.loadData(tableData)
       })
     },
-    setCurSample(e, sampleName) {
-      this.curSampleName = sampleName
-    },
-    isCurrentSample(sample) {
-      if (sample.name === this.chartSamples[0].name && (this.curSampleName === '' || this.curSampleName === null)) {
-        return true
-      } else {
-        return sample.name === this.curSampleName
-      }
-    },
     curItemChange() {
       this.isDataBox = false
-      this.curSampleName = null
+      // this.curSampleName = null
     },
     save(isHand, isCur) {
       if (!this.$refs.GLayout) return
@@ -810,10 +793,17 @@ export default {
   line-height: 50px;
   font-size: 15px;
   background-color: rgb(97, 137, 161);
+  cursor: pointer;
 }
 .content .left-box .menu-label.return .iconfont {
   margin-right: 5px;
   font-size: 20px;
+}
+.content .left-box .menu-label.return:hover {
+  background-color: rgb(128, 172, 199);
+}
+.content .left-box .menu-label.return:active {
+  background-color: rgb(70, 165, 224);
 }
 .content .left-box .menu-label.check {
   color: rgb(37, 37, 37);
@@ -836,25 +826,6 @@ export default {
 .content .left-box .model-main .model-menu {
   width: 60px;
   background-color: rgb(253, 253, 253);
-}
-.content .left-box .model-main .model-menu .menu-item {
-  color: rgb(63, 63, 63);
-  font-size: 14px;
-  line-height: 40px;
-  text-align: center;
-  cursor: pointer;
-  border-left: 6px solid rgba(0, 0, 0, 0);
-  border-right: 6px solid rgba(0, 0, 0, 0);
-}
-.content .left-box .model-menu .menu-item:hover {
-  background-color: rgb(248, 248, 248);
-}
-.content .left-box .model-menu .menu-item.current {
-  background-color: rgb(241, 241, 241);
-  border-left-color: rgb(7, 107, 61);
-}
-.content .left-box .model-menu .menu-item:active {
-  background-color: rgb(194, 194, 194);
 }
 
 .content .left-box .model-box {
