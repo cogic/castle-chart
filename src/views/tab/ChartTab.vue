@@ -170,7 +170,7 @@ export default {
       this.$refs.myTable.transData()
     },
     loadDataSource() {
-      this.$.getTableList((message) => {
+      this.$API.getTableList((message) => {
         this.dataProjects = message.info
       })
       this.dataProjects = this.dataProjects.map((val) => {
