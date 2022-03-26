@@ -1,5 +1,6 @@
 <template>
   <div class="outer">
+    <pop-box ref="PopBox" :trueFunc="deleteSample" :info="'确定要删除该模板吗？'" v-if="toShow" />
     <div class="headline">CastleChart&nbsp图表模板中心</div>
     <div class="menu-box">
       <el-button @click="showEditBox(newChartInfo)">新建</el-button>
@@ -16,7 +17,7 @@
     <div class="show-box" id="showBox" @mousedown="hideEditBox" v-show="isEditBoxShow">
       <div class="menu-box">
         <el-button type="primary" @click="save">保存</el-button>
-        <el-button type="danger" @click="deleteSample">删除</el-button>
+        <el-button type="danger" @click="toShow = true">删除</el-button>
         <el-button type="warning" @click="hideEditBox(1)">取消</el-button>
       </div>
       <div class="content-box">
@@ -54,13 +55,15 @@
 import CodeBox from '@/components/general/CodeBox.vue'
 import EChart from '@/components/general/EChart.vue'
 import HTable from '@/components/general/HTable.vue'
+import PopBox from '@/components/general/PopBox'
 import echarts from '@/assets/script/myEcharts'
 import html2canvas from 'html2canvas'
 
 export default {
-  components: { CodeBox, EChart, HTable },
+  components: { CodeBox, EChart, HTable, PopBox },
   data() {
     return {
+      toShow: false,
       newChartInfo: {
         name: '新建图表',
         type: 'line',
@@ -385,11 +388,11 @@ export default {
     }
   },
   beforeCreate() {
-    this.$.checkAdmin((message) => {
+    this.$API.checkAdmin((message) => {
       if (message.success) {
         this.username = message.info.username
       } else {
-        this.$router.replace({name:'Sign'})
+        this.$router.replace({ name: 'Sign' })
       }
     })
   },
@@ -402,7 +405,7 @@ export default {
   methods: {
     flush() {
       this.sampleCharts = []
-      this.$.getSampleListDefault((message) => {
+      this.$API.getSampleListDefault((message) => {
         this.sampleCharts = message.info
       })
     },
@@ -423,12 +426,9 @@ export default {
       })
     },
     deleteSample() {
-      if (window.confirm('确定要删除该模板吗？')) {
-        this.$API.deleteSample({ _id: this.curChart._id }, (message) => {
-          this.hideEditBox(1)
-        })
-      } else {
-      }
+      this.$API.deleteSample({ _id: this.curChart._id }, (message) => {
+        this.hideEditBox(1)
+      })
     },
     cutSettings(settings, type) {
       if (type) {
@@ -456,9 +456,11 @@ export default {
       return tempChart.getOption()
     },
     run() {
-      this.chartOption = this.formatOption(JSON.parse(this.$refs.code.getCopyText()), this.settings)
+      eval(this.$refs.code.getCopyText() + ';this.chartOption = option')
+      this.chartOption = this.formatOption(this.chartOption, this.settings)
       this.curChart.option = this.chartOption
       setTimeout(() => {
+        console.log(this.curChart.option);
         this.setChart(this.curChart.tableData)
       }, 0)
     },
@@ -467,7 +469,8 @@ export default {
       this.cutSettings(this.settings, chartItem.type)
       this.$refs.chart.clear()
       this.curChart = chartItem
-      this.$refs.code.setValue(JSON.stringify(chartItem.option, null, '\t'))
+      // this.$refs.code.setValue(JSON.stringify(chartItem.option, null, '\t'))
+      this.$refs.code.setValue('let option = ' + JSON.stringify(chartItem.option, null, '\t'))
       setTimeout(() => {
         this.$refs.chart.chartResize()
       }, 0)
@@ -529,21 +532,20 @@ export default {
 .main-box .item-box {
   width: 150px;
   margin: 10px;
-  border: 2px solid rgb(0, 0, 0);
+  border: 2px solid rgb(167, 167, 167);
   border-radius: 6px;
   overflow: hidden;
   transition: all 0.3s;
+  cursor: pointer;
 }
 .main-box .item-box:hover {
+  border: 2px solid rgb(0, 0, 0);
   box-shadow: 6px 6px 12px #c1c1c1, -6px -6px 12px #ffffff;
 }
 .main-box .item-box .item-img {
   height: 80px;
   background-color: rgb(230, 230, 230);
   overflow: hidden;
-}
-.main-box .item-box:hover .item-img {
-  overflow: unset;
 }
 .main-box .item-box .item-img img {
   width: 100%;
@@ -567,7 +569,6 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(131, 131, 131, 0.212);
-  border-radius: 15px;
 }
 .show-box .menu-box {
   padding: 5px;
@@ -578,28 +579,24 @@ export default {
   display: flex;
   width: 100%;
   flex-grow: 1;
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(173, 34, 34);
 }
 .content-box .left {
   display: flex;
   flex-direction: column;
   width: 30%;
-  height: 100%;
-  overflow: scroll;
 }
 .content-box .left .tool-box {
   padding: 5px;
-  background-color: #c1c1c1;
+  background-color: #e9e9e9;
 }
 .content-box .left .content {
   flex-grow: 1;
-  height: 100%;
 }
 .content-box .center {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: 100%;
   background-color: rgb(66, 66, 66);
 }
 .content-box .center .tool-box {
@@ -613,11 +610,10 @@ export default {
   display: flex;
   flex-direction: column;
   width: 30%;
-  height: 100%;
 }
 .content-box .right .tool-box {
   padding: 5px;
-  background-color: #be5d0e;
+  background-color: #ddc6b1;
 }
 .content-box .right .content {
   flex-grow: 1;
