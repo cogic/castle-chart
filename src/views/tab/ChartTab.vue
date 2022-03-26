@@ -11,7 +11,7 @@
     </div>
     <div class="content">
       <div class="left-box" v-show="leftShow">
-          <left-chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setChartByExample"></left-chart-select-box>
+          <chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setChartByExample"></chart-select-box>
       </div>
       <div class="inout-button text-disable" @click="leftShow = !leftShow">
         <span class="iconfont" v-if="leftShow">&#xe619;</span>
@@ -40,7 +40,7 @@
               <div class="menu-item text-disable" @click="importData">本地导入</div>
               <div class="menu-item text-disable" @click=";(dataSoruceBox = true), (dataProjectSelect = {})">数据源导入</div>
               <!-- TODO URL导入待做 -->
-              <div class="menu-item text-disable" v-show="false">URL导入</div>
+              <!-- <div class="menu-item text-disable" v-if="false">URL导入</div> -->
             </div>
             <h-table ref="myTable" :hookFunc="tableChange"></h-table>
             <div class="data-match text-disable" @click="transData">转置数据</div>
@@ -65,11 +65,11 @@
 import EChart from '@/components/general/EChart.vue'
 import HTable from '@/components/general/HTable.vue'
 import SetBox from '@/components/tab/SetBox.vue'
-import LeftChartSelectBox from '@/components/tab/LeftChartSelectBox.vue'
+import ChartSelectBox from '@/components/tab/ChartSelectBox.vue'
 import ShareWindow from '@/components/tab/ShareWindow.vue'
 import html2canvas from 'html2canvas'
 export default {
-  components: { EChart, HTable, SetBox,LeftChartSelectBox, ShareWindow },
+  components: { EChart, HTable, SetBox,ChartSelectBox, ShareWindow },
   props: {
     addTab: {
       type: Function,

@@ -1,5 +1,4 @@
 <template>
-  <button @click="test">test</button>
   <div id="chart-box" ref="chartBox"></div>
 </template>
 
@@ -48,8 +47,6 @@ export default {
     window.removeEventListener('resize', this.chartResize)
   },
   methods: {
-    test() {
-    },
     chartResize() {
       this.myChart.resize()
     },

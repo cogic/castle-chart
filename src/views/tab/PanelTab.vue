@@ -39,7 +39,7 @@
           </div>
         </template>
         <template v-else-if="getCurItem().type === 'chart'">
-          <left-chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setProj"></left-chart-select-box>
+          <chart-select-box :keepData="keepData" :setKeepData="setKeepData" :chartSamples="chartSamples" :setProj="setProj"></chart-select-box>
         </template>
         <template v-else-if="getCurItem().type === 'text'">
           <div class="menu-label">文本样式</div>
@@ -91,7 +91,7 @@
                 <div class="menu-item text-disable" @click="importData">本地导入</div>
                 <div class="menu-item text-disable" @click=";(dataSoruceBox = true), (dataProjectSelectId = null)">数据源导入</div>
                 <!-- TODO URL导入待做 -->
-                <div class="menu-item text-disable" v-show="false">URL导入</div>
+                <!-- <div class="menu-item text-disable" v-if="false">URL导入</div> -->
               </div>
               <h-table :ref="'table' + item.i" :hookFunc="tableChange" :item="item"></h-table>
               <div class="data-match text-disable" @click="transData">转置数据</div>
@@ -120,11 +120,11 @@ import SetBox from '@/components/tab/SetBox.vue'
 import ShareWindow from '@/components/tab/ShareWindow.vue'
 import PopBox from '@/components/general/PopBox.vue'
 import SetBoxItem from '@/components/tab/SetBoxItem.vue'
-import LeftChartSelectBox from '@/components/tab/LeftChartSelectBox.vue'
+import ChartSelectBox from '@/components/tab/ChartSelectBox.vue'
 import XSheet from '@/assets/script/x-sheet'
 import html2canvas from 'html2canvas'
 export default {
-  components: { GLayout, HTable, SetBox, SetBoxItem, LeftChartSelectBox, ShareWindow, PopBox },
+  components: { GLayout, HTable, SetBox, SetBoxItem, ChartSelectBox, ShareWindow, PopBox },
   props: {
     addTab: {
       type: Function,
