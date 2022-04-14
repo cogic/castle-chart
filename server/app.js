@@ -2,6 +2,7 @@ const express = require('express')
 const cookieSession = require('cookie-session')
 const process = require('process')
 
+const hostname = require('./host').hostname
 const router = require('./routes')
 const app = express()
 const port = 3030
@@ -26,6 +27,5 @@ app.use(express.static('public'))
 
 // 设置 router
 app.use(router).listen(port, () => {
-  // console.clear()
-  console.log('服务运行于localhost:' + port)
+  console.log(`服务运行于 ${hostname}:${port}`)
 })
