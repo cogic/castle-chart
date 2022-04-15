@@ -1,8 +1,8 @@
 const MongoClient = require('mongodb').MongoClient
 const assert = require('assert')
 
-const hostname = require('../host').hostname
-const url = `mongodb://${hostname}:27017`
+// const hostname = require('../host').hostname
+const url = `mongodb://localhost:27017`
 const dbName = 'castlechart'
 
 /**
