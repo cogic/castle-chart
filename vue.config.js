@@ -3,6 +3,10 @@ const Components = require('unplugin-vue-components/webpack')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
 module.exports = {
+  // 用于打包dist
+  // assetsDir: 'static',
+  // parallel: false,
+  // publicPath: './',
   configureWebpack: {
     plugins: [
       AutoImport({
@@ -22,6 +26,7 @@ module.exports = {
       //配置跨域
       '/api': {
         target: 'http://localhost:3030/', // node 服务运行在的地址
+        // target: 'http://121.37.1.182:3030/', // node 服务运行在的地址
         // ws: true,
         changOrigin: true, //允许跨域
         pathRewrite: {
