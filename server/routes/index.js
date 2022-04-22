@@ -9,7 +9,7 @@ router
 .post('/sample/set-one',business.setSample)
 .post('/sample/delete-one',business.deleteSample)
 .post('/sample/get-default',business.getSampleListDefault)
-.post('/sample/get-list',business.getSampleList)
+.get('/sample/get-list',business.getSampleList)
 .post('/admin/check', business.checkAdmin)
 .post('/chart/get-img', business.getChartImg)
 .post('/panel/get-img', business.getPanelImg)

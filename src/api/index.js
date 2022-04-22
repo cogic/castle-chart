@@ -31,6 +31,12 @@ function netPost(url, data, callback) {
     })
   }
 }
+function netGet(url, data, callback) {
+  Network.get(url).then((result) => {
+    aLog(data, result.data)
+    callback(result.data)
+  })
+}
 
 function newSample(data, callback) {
   netPost('/sample/new-one', data, callback)
@@ -41,11 +47,11 @@ function saveSample(data, callback) {
 function deleteSample(data, callback) {
   netPost('/sample/delete-one', data, callback)
 }
-function getSampleListDefault(callback){
+function getSampleListDefault(callback) {
   netPost('/sample/get-default', undefined, callback)
 }
-function getSampleList(callback){
-  netPost('/sample/get-list', undefined, callback)
+function getSampleList(callback) {
+  netGet('/sample/get-list', undefined, callback)
 }
 
 function checkAdmin(callback) {

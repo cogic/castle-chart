@@ -2,6 +2,7 @@ const database = require('../models/database')
 // const template = require('art-template')
 const ObjectId = require('mongodb').ObjectId
 const puppeteer = require('puppeteer')
+const crypto = require('crypto')
 // template.defaults.root = './'
 
 function nowDate() {
@@ -49,10 +50,25 @@ function Message(success, code, info) {
   this.code = code
   this.info = info
 }
-function endText(res, message, funcName) {
+function endText(req, res, message, funcName) {
   if (funcName) {
     // console.log(`${funcName} 返回:`, message)
   }
+
+  let data = JSON.stringify(message)
+  let etag = crypto.createHash('md5').update(data).digest('hex')
+
+  if (req.headers['if-none-match'] === etag) {
+    console.log('协商缓存')
+    res.statusCode = 304
+    res.writeHead(304)
+    res.end()
+    return
+  }
+  res.setHeader('Cache-Control', 'max-age=600')
+  // res.setHeader('Content-Type', 'application/javascript;charset=UTF-8')
+  res.setHeader('ETag', etag)
+
   res.writeHead(200, { 'Content-Type': 'text/plain' })
   res.end(JSON.stringify(message))
 }
@@ -79,7 +95,7 @@ function newSample(req, res) {
     req,
     (obj) => {
       database.insertDoc('sample', { creatorId: loginInfo(req).id,lastModifierId:loginInfo(req).id, name: obj.name,type:obj.type, tableData: obj.tableData,option:obj.option, imgSrc: obj.imgSrc, createTime: nowDate(), updateTime: nowDate() }, (result) => {
-        endText(res, new Message(true, 10, result.insertedId), 'newSample')
+        endText(req, res, new Message(true, 10, result.insertedId), 'newSample')
       })
     },
     'newSample'
@@ -110,7 +126,7 @@ function setSample(req, res) {
       //   })
       // })
       database.updateDoc('sample', { _id: new ObjectId(obj._id) }, newObj, (result) => {
-        endText(res, new Message(true, 10, '更新Sample图表成功'), 'setSample')
+        endText(req, res, new Message(true, 10, '更新Sample图表成功'), 'setSample')
       })
     },
     'setSample'
@@ -121,7 +137,7 @@ function deleteSample(req, res) {
     req,
     (obj) => {
       database.deleteDoc('sample', { _id: new ObjectId(obj._id)}, (result) => {
-        endText(res, new Message(true, 10, '删除Sample图表成功'), 'deleteSample')
+        endText(req, res, new Message(true, 10, '删除Sample图表成功'), 'deleteSample')
       })
     },
     'deleteSample'
@@ -129,7 +145,7 @@ function deleteSample(req, res) {
 }
 function getSampleListDefault(req, res) {
   database.findDoc('sample', {}, (docs) => {
-    endText(res, new Message(true, 10, docs), 'getSampleListDefault')
+    endText(req, res, new Message(true, 10, docs), 'getSampleListDefault')
   })
 }
 function getSampleList(req, res) {
@@ -148,7 +164,7 @@ function getSampleList(req, res) {
               sample.push({ name: '漏斗图', examples: docs })
               database.findDoc('sample', { type: 'map' }, (docs) => {
                 sample.push({ name: '地图', examples: docs })
-                endText(res, new Message(true, 10, sample), 'getSampleList')
+                endText(req, res, new Message(true, 10, sample), 'getSampleList')
               })
             })
           })
@@ -162,13 +178,13 @@ function checkAdmin(req, res) {
   if (loginInfo(req)) {
     database.findDoc('admin', { username: loginInfo(req).username }, (docs) => {
       if (docs.length !== 0) {
-        endText(res, new Message(true, 10, { username: loginInfo(req).username }), 'checkAdmin')
+        endText(req, res, new Message(true, 10, { username: loginInfo(req).username }), 'checkAdmin')
       } else {
-        endText(res, new Message(false, 41, '登录用户非管理员'), 'checkAdmin')
+        endText(req, res, new Message(false, 41, '登录用户非管理员'), 'checkAdmin')
       }
     })
   } else {
-    endText(res, new Message(false, 40, undefined), 'checkAdmin')
+    endText(req, res, new Message(false, 40, undefined), 'checkAdmin')
   }
 }
 function userRegister(req, res) {
@@ -179,10 +195,10 @@ function userRegister(req, res) {
         if (docs.length === 0) {
           database.insertDoc('user', { username: obj.username, password: obj.password, createTime: nowDate(), updateTime: nowDate() }, (result) => {
             req.session.sevalue = { id: result.insertedId, username: obj.username, password: obj.password }
-            endText(res, new Message(true, 10, '用户注册成功'), 'userRegister')
+            endText(req, res, new Message(true, 10, '用户注册成功'), 'userRegister')
           })
         } else {
-          endText(res, new Message(false, 40, '用户名重复'), 'userRegister')
+          endText(req, res, new Message(false, 40, '用户名重复'), 'userRegister')
         }
       })
     },
@@ -203,7 +219,7 @@ function userLogin(req, res) {
         } else {
           message = new Message(false, 41, '密码错误')
         }
-        endText(res, message, 'userLogin')
+        endText(req, res, message, 'userLogin')
       })
     },
     'userLogin'
@@ -211,15 +227,15 @@ function userLogin(req, res) {
 }
 function checkLogin(req, res) {
   if (loginInfo(req)) {
-    endText(res, new Message(true, 10, { username: loginInfo(req).username }), 'checkLogin')
+    endText(req, res, new Message(true, 10, { username: loginInfo(req).username }), 'checkLogin')
   } else {
-    endText(res, new Message(false, 40, undefined), 'checkLogin')
+    endText(req, res, new Message(false, 40, undefined), 'checkLogin')
   }
 }
 function userLogout(req, res) {
   // 退出登录，重置 session，回到登录页面
   req.session.sevalue = undefined
-  endText(res, new Message(true, 10, '退出登录成功'), 'userLogout')
+  endText(req, res, new Message(true, 10, '退出登录成功'), 'userLogout')
 }
 
 function newTable(req, res) {
@@ -227,7 +243,7 @@ function newTable(req, res) {
     req,
     (obj) => {
       database.insertDoc('table', { ownerId: loginInfo(req).id, name: obj.name, data: obj.data, imgSrc: obj.imgSrc, createTime: nowDate(), updateTime: nowDate() }, (result) => {
-        endText(res, new Message(true, 10, result.insertedId), 'newTable')
+        endText(req, res, new Message(true, 10, result.insertedId), 'newTable')
       })
     },
     'newTable'
@@ -238,7 +254,7 @@ function newChart(req, res) {
     req,
     (obj) => {
       database.insertDoc('chart', { ownerId: loginInfo(req).id, name: obj.name, data: obj.data, imgSrc: obj.imgSrc, createTime: nowDate(), updateTime: nowDate() }, (result) => {
-        endText(res, new Message(true, 10, result.insertedId), 'newChart')
+        endText(req, res, new Message(true, 10, result.insertedId), 'newChart')
       })
     },
     'newChart'
@@ -249,7 +265,7 @@ function newPanel(req, res) {
     req,
     (obj) => {
       database.insertDoc('panel', { ownerId: loginInfo(req).id, name: obj.name, back: obj.back, layout: obj.layout, imgSrc: obj.imgSrc, createTime: nowDate(), updateTime: nowDate() }, (result) => {
-        endText(res, new Message(true, 10, result.insertedId), 'newPanel')
+        endText(req, res, new Message(true, 10, result.insertedId), 'newPanel')
       })
     },
     'newPanel'
@@ -262,9 +278,9 @@ function getTable(req, res) {
     (obj) => {
       database.findDoc('table', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '数据源不存在'), 'getTable')
+          endText(req, res, new Message(false, 40, '数据源不存在'), 'getTable')
         } else {
-          endText(res, new Message(true, 10, docs[0]), 'getTable')
+          endText(req, res, new Message(true, 10, docs[0]), 'getTable')
         }
       })
     },
@@ -278,9 +294,9 @@ function getChart(req, res) {
       // database.findDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (docs) => {
       database.findDoc('chart', { _id: new ObjectId(obj._id) }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '图表不存在'), 'getChart')
+          endText(req, res, new Message(false, 40, '图表不存在'), 'getChart')
         } else {
-          endText(res, new Message(true, 10, docs[0]), 'getChart')
+          endText(req, res, new Message(true, 10, docs[0]), 'getChart')
         }
       })
     },
@@ -294,9 +310,9 @@ function getPanel(req, res) {
       // database.findDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (docs) => {
       database.findDoc('panel', { _id: new ObjectId(obj._id) }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '仪表板不存在'), 'getPanel')
+          endText(req, res, new Message(false, 40, '仪表板不存在'), 'getPanel')
         } else {
-          endText(res, new Message(true, 10, docs[0]), 'getPanel')
+          endText(req, res, new Message(true, 10, docs[0]), 'getPanel')
         }
       })
     },
@@ -314,9 +330,9 @@ function getChartImg(req, res) {
             database.updateDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, { imgSrc: imgcode }, (result) => {
             })
           })
-          endText(res, new Message(true, 10, { path: '//localhost:3030/img/' + 'chart' + obj._id + '.jpeg' }), 'getChartImg')
+          endText(req, res, new Message(true, 10, { path: '//localhost:3030/img/' + 'chart' + obj._id + '.jpeg' }), 'getChartImg')
         } else {
-          endText(res, new Message(false, 40, '图表不存在'), 'getChartImg')
+          endText(req, res, new Message(false, 40, '图表不存在'), 'getChartImg')
         }
       })
     },
@@ -329,13 +345,13 @@ function getPanelImg(req, res) {
     (obj) => {
       database.findDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '仪表板不存在'), 'getPanelImg')
+          endText(req, res, new Message(false, 40, '仪表板不存在'), 'getPanelImg')
         } else {
           getImg(obj.path + obj._id, 'public/img/panel' + obj._id + '.jpeg',(imgcode)=>{
             database.updateDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, { imgSrc: imgcode }, (result) => {
             })
           })
-          endText(res, new Message(true, 10, { path: '//localhost:3030/img/' + 'panel' + obj._id + '.jpeg' }), 'getPanelImg')
+          endText(req, res, new Message(true, 10, { path: '//localhost:3030/img/' + 'panel' + obj._id + '.jpeg' }), 'getPanelImg')
         }
       })
     },
@@ -349,9 +365,9 @@ function getSharedChart(req, res) {
     (obj) => {
       database.findDoc('chart', { _id: new ObjectId(obj._id), isShared: true }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '图表不存在'), 'getSharedChart')
+          endText(req, res, new Message(false, 40, '图表不存在'), 'getSharedChart')
         } else {
-          endText(res, new Message(true, 10, docs[0]), 'getSharedChart')
+          endText(req, res, new Message(true, 10, docs[0]), 'getSharedChart')
         }
       })
     },
@@ -364,9 +380,9 @@ function getSharedPanel(req, res) {
     (obj) => {
       database.findDoc('panel', { _id: new ObjectId(obj._id), isShared: true }, (docs) => {
         if (docs.length === 0) {
-          endText(res, new Message(false, 40, '仪表板不存在'), 'getSharedPanel')
+          endText(req, res, new Message(false, 40, '仪表板不存在'), 'getSharedPanel')
         } else {
-          endText(res, new Message(true, 10, docs[0]), 'getSharedPanel')
+          endText(req, res, new Message(true, 10, docs[0]), 'getSharedPanel')
         }
       })
     },
@@ -386,7 +402,7 @@ function setTable(req, res) {
         newObj.data = obj.data
       }
       database.updateDoc('table', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, newObj, (result) => {
-        endText(res, new Message(true, 10, '更新数据源成功'), 'setTable')
+        endText(req, res, new Message(true, 10, '更新数据源成功'), 'setTable')
       })
     },
     'setTable'
@@ -413,7 +429,7 @@ function setChart(req, res) {
         newObj.isShared = obj.isShared
       }
       database.updateDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, newObj, (result) => {
-        endText(res, new Message(true, 10, '更新图表成功'), 'setChart')
+        endText(req, res, new Message(true, 10, '更新图表成功'), 'setChart')
       })
     },
     'setChart'
@@ -440,7 +456,7 @@ function setPanel(req, res) {
         newObj.isShared = obj.isShared
       }
       database.updateDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, newObj, (result) => {
-        endText(res, new Message(true, 10, '更新仪表板成功'), 'setPanel')
+        endText(req, res, new Message(true, 10, '更新仪表板成功'), 'setPanel')
       })
     },
     'setPanel'
@@ -452,7 +468,7 @@ function deleteTable(req, res) {
     req,
     (obj) => {
       database.deleteDoc('table', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (result) => {
-        endText(res, new Message(true, 10, '删除数据源成功'), 'deleteTable')
+        endText(req, res, new Message(true, 10, '删除数据源成功'), 'deleteTable')
       })
     },
     'deleteTable'
@@ -463,7 +479,7 @@ function deleteChart(req, res) {
     req,
     (obj) => {
       database.deleteDoc('chart', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (result) => {
-        endText(res, new Message(true, 10, '删除图表成功'), 'deleteChart')
+        endText(req, res, new Message(true, 10, '删除图表成功'), 'deleteChart')
       })
     },
     'deleteChart'
@@ -474,7 +490,7 @@ function deletePanel(req, res) {
     req,
     (obj) => {
       database.deleteDoc('panel', { _id: new ObjectId(obj._id), ownerId: loginInfo(req).id }, (result) => {
-        endText(res, new Message(true, 10, '删除仪表板成功'), 'deletePanel')
+        endText(req, res, new Message(true, 10, '删除仪表板成功'), 'deletePanel')
       })
     },
     'deletePanel'
@@ -483,17 +499,17 @@ function deletePanel(req, res) {
 
 function getTableList(req, res) {
   database.findDoc('table', { ownerId: loginInfo(req).id }, (docs) => {
-    endText(res, new Message(true, 10, docs), 'getTableList')
+    endText(req, res, new Message(true, 10, docs), 'getTableList')
   })
 }
 function getChartList(req, res) {
   database.findDoc('chart', { ownerId: loginInfo(req).id }, (docs) => {
-    endText(res, new Message(true, 10, docs), 'getChartList')
+    endText(req, res, new Message(true, 10, docs), 'getChartList')
   })
 }
 function getPanelList(req, res) {
   database.findDoc('panel', { ownerId: loginInfo(req).id }, (docs) => {
-    endText(res, new Message(true, 10, docs), 'getPanelList')
+    endText(req, res, new Message(true, 10, docs), 'getPanelList')
   })
 }
 
@@ -502,9 +518,9 @@ function test(req, res) {
   database.findDoc('table', { _id: new ObjectId('61ee7bee2edf8c6a4ee364ca') }, (docs) => {
     console.log()
     if (docs.length === 0) {
-      endText(res, new Message(false, 40, '数据源不存在'), 'getTable')
+      endText(req, res, new Message(false, 40, '数据源不存在'), 'getTable')
     } else {
-      endText(res, new Message(true, 10, docs), 'getTable')
+      endText(req, res, new Message(true, 10, docs), 'getTable')
     }
   })
 }
