@@ -313,6 +313,7 @@ export default {
 
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
   background-color: rgb(255, 255, 255);
 }
 .toolbar .tool {

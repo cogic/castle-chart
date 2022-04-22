@@ -74,7 +74,7 @@ export default {
       if (message.success) {
         this.username = message.info.username
       } else {
-        this.$router.replace({name:'Sign'})
+        this.$router.replace({ name: 'Sign' })
       }
     })
   },
@@ -124,7 +124,7 @@ export default {
       this.$API.userLogout((message) => {
         console.log(message)
         if (message.success) {
-          this.$router.replace({name:'Sign'})
+          this.$router.replace({ name: 'Sign' })
         }
       })
     },
@@ -178,6 +178,12 @@ export default {
 </script>
 
 <style scoped>
+@media only screen and (max-width: 640px) {
+  .left-head .headline {
+    display: none;
+  }
+}
+
 header {
   display: flex;
   padding: 5px;
@@ -202,6 +208,7 @@ header {
   color: rgb(58, 58, 58);
   font-size: 24px;
 }
+
 .left-head .main-page {
   display: inline-block;
   cursor: pointer;

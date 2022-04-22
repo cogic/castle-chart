@@ -62,6 +62,7 @@ export default {
   display: flex;
 
   width: 100%;
+  width: 100vw;
   height: 100%;
   background-color: rgb(246, 246, 246);
 }

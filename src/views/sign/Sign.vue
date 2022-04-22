@@ -4,6 +4,7 @@
       <div>
         <img class="logo" src="@/assets/image/logo.png" alt="logo" />
         <h1 class="headline">CastleChart</h1>
+        <h1 class="headline2">数据可视化搭建平台</h1>
       </div>
     </div>
     <div class="account">
@@ -61,6 +62,8 @@ export default {
   flex-grow: 1;
 
   width: 100%;
+  min-width: min-content;
+  height: 100%;
   background-color: rgb(241, 240, 240);
 }
 
@@ -85,6 +88,11 @@ export default {
   line-height: 80px;
   text-align: center;
 }
+h1.headline2{
+  font-size: 30px;
+  font-weight: normal;
+  color: #333333;
+}
 
 .account {
   display: flex;
@@ -98,7 +106,7 @@ export default {
   flex-basis: 400px;
 
   width: 200px;
-  margin-bottom: 100px;
+  margin-bottom: 30px;
 }
 .signbox {
   display: flex;
