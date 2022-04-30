@@ -18,5 +18,11 @@ npm start
 ```
 
 ### 数据库
+需要手动打开MongoDB服务并创建基础数据库
 数据库的三个基础 collection 暂存于 public/database-collection 中，
 后续将添加脚本以快速建立数据库
+
+
+### 使用
+管理员用户名snow 密码10086
+登录后点击左上角平台Logo进入管理员界面
