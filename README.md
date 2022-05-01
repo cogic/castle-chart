@@ -26,3 +26,21 @@ npm start
 ### 使用
 管理员用户名snow 密码10086
 登录后点击左上角平台Logo进入管理员界面
+
+
+### 界面展示
+
+![](README.assets/登录.png)
+
+![](README.assets/首页.png)
+
+![](README.assets/仪表板.png)
+
+![](README.assets/图表编辑.png)
+
+![](README.assets/数据源编辑.png)
+
+![](README.assets/仪表板编辑.png)
+
+![](README.assets/模板中心.png)
+
